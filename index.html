@@ -253,54 +253,66 @@
         listEl.appendChild(div);
       });
     }
-
-    // 送信処理
-    // 2. 送信処理（POST通信）の修正
+// 送信処理（完全対応版）
     document.getElementById("attendance-form").addEventListener("submit", async (e) => {
-      // ...（中略）...
+      e.preventDefault();
 
-      const payload = {
-        apiKey: API_KEY, // ★送信データの中に合言葉を含める
-        eventId: eventId,
-        userId: currentUser.userId,
-        userName: currentUser.displayName,
-        status: status,
-        comment: comment
-      };
+      const submitBtn = document.getElementById("submit-btn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "送信中...";
 
       try {
-        const res = await fetch(GAS_API_URL, {
+        const eventSelect = document.getElementById("event-select");
+        const eventId = eventSelect.value;
+        const selectedEventText = eventSelect.selectedOptions[0] ? eventSelect.selectedOptions[0].text : "";
+
+        const statusRadio = document.querySelector('input[name="status"]:checked');
+        if (!statusRadio) {
+          throw new Error("出欠ステータスが選択されていません");
+        }
+        const status = statusRadio.value;
+        const comment = document.getElementById("comment").value;
+
+        const payload = {
+          apiKey: API_KEY,
+          eventId: eventId,
+          userId: currentUser.userId,
+          userName: currentUser.displayName,
+          status: status,
+          comment: comment
+        };
+
+        // mode: "no-cors" で事前確認エラーを回避して送信
+        await fetch(GAS_API_URL, {
           method: "POST",
-          headers: { "Content-Type": "text/plain" },
+          mode: "no-cors",
           body: JSON.stringify(payload)
         });
-        const result = await res.json();
 
-        if (!result.success) throw new Error(result.message);
-
-        // トークルームへの自動通知（LINEアプリ内から開いた場合のみ）
+        // トークルームへの自動通知
         if (liff.isInClient()) {
-          const selectedEventText = document.getElementById("event-select").selectedOptions[0].text;
-          await liff.sendMessages([
-            {
-              type: "text",
-              text: `【出欠回答】\n${selectedEventText}\nステータス: ${status}${comment ? '\n備考: ' + comment : ''}`
-            }
-          ]).catch(() => {}); // メッセージ送信権限がない場合のエラー抑止
+          try {
+            await liff.sendMessages([
+              {
+                type: "text",
+                text: `【出欠回答】\n${selectedEventText}\nステータス: ${status}${comment ? '\n備考: ' + comment : ''}`
+              }
+            ]);
+          } catch (lineErr) {
+            console.log("トーク送信スキップ:", lineErr);
+          }
         }
 
-        alert("出欠を正常に送信・更新しました！");
+        alert("出欠を送信しました！");
 
-        // 画面を最新状態に更新
         await fetchData();
 
-        // LINEアプリ内なら自動で画面を閉じる
         if (liff.isInClient()) {
           liff.closeWindow();
         }
 
       } catch (err) {
-        alert("送信に失敗しました: " + err);
+        alert("エラー詳細: " + err.message);
         console.error(err);
       } finally {
         submitBtn.disabled = false;
