@@ -1,584 +1,685 @@
 <!--きゃー、のび太さんのえっち-->
 
-
-
-
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>部活出欠カレンダー</title>
-  <!-- LIFF SDK -->
-  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
-    :root {
-      --primary: #06c755;
-      --primary-dark: #05a847;
-      --primary-light: #eefbf3;
-      --bg: #f4f5f7;
-      --card-bg: #ffffff;
-      --text: #191919;
-      --text-sub: #777777;
-      --border: #e6e8eb;
-      --sunday: #e15241;
-      --saturday: #3b82f6;
-      --pending: #f59e0b;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>部活出欠カレンダー</title>
+    <!-- LIFF SDK -->
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        :root {
+            --primary: #06c755;
+            --primary-dark: #05a847;
+            --primary-light: #eefbf3;
+            --bg: #f4f5f7;
+            --card-bg: #ffffff;
+            --text: #191919;
+            --text-sub: #777777;
+            --border: #e6e8eb;
+            --sunday: #e15241;
+            --saturday: #3b82f6;
+            --pending: #f59e0b;
 
-      /* ドット色 */
-      --dot-regular: #06c755; /* 正規練: 緑 */
-      --dot-free: #3b82f6;    /* 自主練: 青 */
-      --dot-obog: #f59e0b;    /* OBOG練: オレンジ */
-      --dot-other: #e15241;   /* その他: 赤 */
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      padding: 12px 12px 100px 12px; /* ボタンと被らないよう下部に余裕を持たせる */
-      line-height: 1.4;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .container { max-width: 480px; margin: 0 auto; position: relative; }
+            /* ドット色 */
+            --dot-regular: #06c755;
+            /* 正規練: 緑 */
+            --dot-free: #3b82f6;
+            /* 自主練: 青 */
+            --dot-obog: #f59e0b;
+            /* OBOG練: オレンジ */
+            --dot-other: #e15241;
+            /* その他: 赤 */
+        }
 
-    /* ユーザーバッジ */
-    .user-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--card-bg);
-      padding: 10px 16px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      font-size: 0.85rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-    .user-bar b { color: var(--primary-dark); }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    /* カレンダー凡例 */
-    .legend-bar {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      font-size: 0.72rem;
-      color: var(--text-sub);
-      margin-bottom: 8px;
-    }
-    .legend-item { display: flex; align-items: center; gap: 4px; }
-    .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 12px 12px 100px 12px;
+            /* ボタンと被らないよう下部に余裕を持たせる */
+            line-height: 1.4;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    /* カレンダーカード */
-    .calendar-card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 16px 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      margin-bottom: 14px;
-    }
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      padding: 0 8px;
-    }
-    .month-title { font-size: 1.15rem; font-weight: bold; letter-spacing: 0.5px; }
-    .nav-btn {
-      background: #f0f2f5;
-      border: none;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .nav-btn:active { background: #e2e5e9; }
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+        }
 
-    /* カレンダーグリッド */
-    .week-header {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      text-align: center;
-      font-size: 0.75rem;
-      font-weight: bold;
-      color: var(--text-sub);
-      margin-bottom: 6px;
-    }
-    .week-header span:first-child { color: var(--sunday); }
-    .week-header span:last-child { color: var(--saturday); }
+        /* ユーザーバッジ */
+        .user-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 10px 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
 
-    .days-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 3px;
-    }
-    .day-cell {
-      position: relative;
-      height: 48px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 500;
-    }
-    .day-cell.other-month { color: #ccc; cursor: default; }
-    .day-cell.sunday { color: var(--sunday); }
-    .day-cell.saturday { color: var(--saturday); }
-    .day-cell.today .day-number { border-bottom: 2px solid var(--primary); }
-    
-    .day-cell.selected {
-      background-color: var(--primary) !important;
-      color: #ffffff !important;
-      font-weight: bold;
-    }
+        .user-bar b {
+            color: var(--primary-dark);
+        }
 
-    /* 複数ドットのコンテナ */
-    .dots-container {
-      display: flex;
-      gap: 3px;
-      margin-top: 3px;
-      justify-content: center;
-    }
-    .event-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-    }
-    .day-cell.selected .event-dot {
-      background-color: #ffffff !important;
-    }
+        /* カレンダー凡例 */
+        .legend-bar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
 
-    /* 選択日の日付ヘッダー */
-    .date-header {
-      font-size: 1.05rem;
-      font-weight: bold;
-      margin: 8px 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
 
-    /* イベント詳細エリア */
-    #event-detail-area {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .event-card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      border: 1px solid var(--border);
-    }
-    .event-title {
-      font-size: 1.05rem;
-      font-weight: bold;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .title-badge {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-    .event-meta {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
+        .legend-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
 
-    /* 集計サマリーバー */
-    .summary-stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 6px 2px;
-      margin-bottom: 12px;
-      text-align: center;
-      font-size: 0.72rem;
-    }
-    .stat-item b { display: block; font-size: 0.9rem; color: var(--text); }
-    .stat-join b { color: var(--primary-dark); }
-    .stat-pending b { color: var(--pending); }
-    .stat-absent b { color: var(--sunday); }
+        /* カレンダーカード */
+        .calendar-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 14px;
+        }
 
-    /* トグル式出欠ボタン (5択) */
-    .status-group {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
-      margin-bottom: 8px;
-    }
-    .status-btn {
-      text-align: center;
-      padding: 8px 0;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.78rem;
-      font-weight: bold;
-      background: #fff;
-      color: var(--text-sub);
-      transition: all 0.15s;
-      user-select: none;
-    }
-    .status-btn.active {
-      border-color: var(--primary);
-      background-color: var(--primary-light);
-      color: var(--primary-dark);
-    }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 8px;
+        }
 
-    .status-hint {
-      font-size: 0.72rem;
-      color: #999;
-      text-align: right;
-      margin-bottom: 8px;
-    }
+        .month-title {
+            font-size: 1.15rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
 
-    textarea {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.85rem;
-      outline: none;
-      resize: none;
-      margin-bottom: 8px;
-    }
-    textarea:focus { border-color: var(--primary); }
+        .nav-btn {
+            background: #f0f2f5;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    /* 統一送信ボタンエリア（少し上に浮かせて押しやすく配置） */
-    .action-area {
-      position: fixed;
-      bottom: calc(28px + env(safe-area-inset-bottom, 0px)); /* 下から少し上に動かした位置 */
-      left: 0;
-      right: 0;
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 0 16px;
-      z-index: 99;
-    }
-    .btn-submit-all {
-      width: 100%;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 15px;
-      border-radius: 14px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 6px 18px rgba(6, 199, 85, 0.38);
-      transition: transform 0.1s, background-color 0.2s;
-    }
-    .btn-submit-all:active {
-      transform: scale(0.98);
-    }
-    .btn-submit-all:disabled {
-      background: #cbd5e1;
-      box-shadow: none;
-      cursor: not-allowed;
-      transform: none;
-    }
+        .nav-btn:active {
+            background: #e2e5e9;
+        }
 
-    /* メンバー一覧アコーディオン */
-    .members-toggle {
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      text-align: center;
-      margin-top: 8px;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    .members-list {
-      margin-top: 8px;
-      border-top: 1px dashed var(--border);
-      padding-top: 8px;
-      max-height: 140px;
-      overflow-y: auto;
-      font-size: 0.8rem;
-    }
-    .member-row { display: flex; justify-content: space-between; padding: 3px 0; }
+        /* カレンダーグリッド */
+        .week-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
 
-    .no-event {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 32px 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      text-align: center;
-      color: var(--text-sub);
-      font-size: 0.9rem;
-    }
+        .week-header span:first-child {
+            color: var(--sunday);
+        }
 
-    #loading { text-align: center; padding: 60px 0; color: var(--text-sub); }
-    .hidden { display: none !important; }
-  </style>
+        .week-header span:last-child {
+            color: var(--saturday);
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .day-cell {
+            position: relative;
+            height: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .day-cell.other-month {
+            color: #ccc;
+            cursor: default;
+        }
+
+        .day-cell.sunday {
+            color: var(--sunday);
+        }
+
+        .day-cell.saturday {
+            color: var(--saturday);
+        }
+
+        .day-cell.today .day-number {
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .day-cell.selected {
+            background-color: var(--primary) !important;
+            color: #ffffff !important;
+            font-weight: bold;
+        }
+
+        /* 複数ドットのコンテナ */
+        .dots-container {
+            display: flex;
+            gap: 3px;
+            margin-top: 3px;
+            justify-content: center;
+        }
+
+        .event-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .day-cell.selected .event-dot {
+            background-color: #ffffff !important;
+        }
+
+        /* 選択日の日付ヘッダー */
+        .date-header {
+            font-size: 1.05rem;
+            font-weight: bold;
+            margin: 8px 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* イベント詳細エリア */
+        #event-detail-area {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .event-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+
+        .event-title {
+            font-size: 1.05rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .title-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .event-meta {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        /* 集計サマリーバー */
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 2px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 0.72rem;
+        }
+
+        .stat-item b {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .stat-join b {
+            color: var(--primary-dark);
+        }
+
+        .stat-pending b {
+            color: var(--pending);
+        }
+
+        .stat-absent b {
+            color: var(--sunday);
+        }
+
+        /* トグル式出欠ボタン (5択) */
+        .status-group {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .status-btn {
+            text-align: center;
+            padding: 8px 0;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: bold;
+            background: #fff;
+            color: var(--text-sub);
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .status-btn.active {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .status-hint {
+            font-size: 0.72rem;
+            color: #999;
+            text-align: right;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+            resize: none;
+            margin-bottom: 8px;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+        }
+
+        /* 統一送信ボタンエリア（少し上に浮かせて押しやすく配置） */
+        .action-area {
+            position: fixed;
+            bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+            /* 下から少し上に動かした位置 */
+            left: 0;
+            right: 0;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 16px;
+            z-index: 99;
+        }
+
+        .btn-submit-all {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(6, 199, 85, 0.38);
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .btn-submit-all:active {
+            transform: scale(0.98);
+        }
+
+        .btn-submit-all:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* メンバー一覧アコーディオン */
+        .members-toggle {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            text-align: center;
+            margin-top: 8px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .members-list {
+            margin-top: 8px;
+            border-top: 1px dashed var(--border);
+            padding-top: 8px;
+            max-height: 140px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+        }
+
+        .member-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+        }
+
+        .no-event {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-sub);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
+
 <body>
 
-  <div class="container">
-    <div id="loading">カレンダーを読み込み中...</div>
+    <div class="container">
+        <div id="loading">カレンダーを読み込み中...</div>
 
-    <div id="app" class="hidden">
-      <!-- ユーザー名表示 -->
-      <div class="user-bar">
-        <span>部員: <b id="user-name">取得中...</b></span>
-        <span style="color: #06c755; font-size: 0.75rem;">● LINE連携中</span>
-      </div>
+        <div id="app" class="hidden">
+            <!-- ユーザー名表示 -->
+            <div class="user-bar">
+                <span>部員: <b id="user-name">取得中...</b></span>
+                <span style="color: #06c755; font-size: 0.75rem;">● LINE連携中</span>
+            </div>
 
-      <!-- 凡例 -->
-      <div class="legend-bar">
-        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-regular);"></span>正規練</div>
-        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-free);"></span>自主練</div>
-        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-obog);"></span>OBOG練</div>
-        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-other);"></span>その他</div>
-      </div>
+            <!-- 凡例 -->
+            <div class="legend-bar">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--dot-regular);"></span>正規練
+                </div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--dot-free);"></span>自主練</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--dot-obog);"></span>OBOG練</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--dot-other);"></span>その他</div>
+            </div>
 
-      <!-- 月間カレンダー -->
-      <div class="calendar-card">
-        <div class="calendar-header">
-          <button class="nav-btn" id="prev-month">‹</button>
-          <div class="month-title" id="month-display">2026年 9月</div>
-          <button class="nav-btn" id="next-month">›</button>
+            <!-- 月間カレンダー -->
+            <div class="calendar-card">
+                <div class="calendar-header">
+                    <button class="nav-btn" id="prev-month">‹</button>
+                    <div class="month-title" id="month-display">2026年 9月</div>
+                    <button class="nav-btn" id="next-month">›</button>
+                </div>
+
+                <div class="week-header">
+                    <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+                </div>
+
+                <div class="days-grid" id="days-container"></div>
+            </div>
+
+            <!-- 選択日の日付ヘッダー -->
+            <div class="date-header" id="date-display-header"></div>
+
+            <!-- イベント詳細エリア -->
+            <div id="event-detail-area"></div>
+
+            <!-- 統一送信ボタン（常に押しやすい高さに配置） -->
+            <div class="action-area" id="submit-all-area">
+                <button type="button" class="btn-submit-all" id="btn-submit-all">回答を一括保存する</button>
+            </div>
         </div>
-
-        <div class="week-header">
-          <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
-        </div>
-
-        <div class="days-grid" id="days-container"></div>
-      </div>
-
-      <!-- 選択日の日付ヘッダー -->
-      <div class="date-header" id="date-display-header"></div>
-
-      <!-- イベント詳細エリア -->
-      <div id="event-detail-area"></div>
-
-      <!-- 統一送信ボタン（常に押しやすい高さに配置） -->
-      <div class="action-area" id="submit-all-area">
-        <button type="button" class="btn-submit-all" id="btn-submit-all">回答を一括保存する</button>
-      </div>
     </div>
-  </div>
 
-  <script>
-    const LIFF_ID = "2011385981-NUAxdrph";
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyIbNM8iZ7ciXvk-PPLY1CeT88AaGN79DLKs1GCVtENdlXZkYCvMSWKaP3X3rySJ7Rq/exec";
-    const API_KEY = "akHF3ikejc4Doa75kdjh6go";
+    <script>
+        const LIFF_ID = "2011385981-NUAxdrph";
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyIbNM8iZ7ciXvk-PPLY1CeT88AaGN79DLKs1GCVtENdlXZkYCvMSWKaP3X3rySJ7Rq/exec";
+        const API_KEY = "akHF3ikejc4Doa75kdjh6go";
 
-    let currentUser = { userId: "", displayName: "" };
-    let cachedEvents = [];
-    let cachedAttendances = [];
-    
-    // 全イベントに対するローカルの回答編集状態を管理（日付をまたいでも消えない）
-    let editState = {}; // { [eventId]: { status: string, comment: string, isModified: boolean } }
+        let currentUser = { userId: "", displayName: "" };
+        let cachedEvents = [];
+        let cachedAttendances = [];
 
-    let viewDate = new Date();
-    let selectedDateStr = ""; // YYYY-MM-DD
+        // 全イベントに対するローカルの回答編集状態を管理（日付をまたいでも消えない）
+        let editState = {}; // { [eventId]: { status: string, comment: string, isModified: boolean } }
 
-    const WEEK_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
+        let viewDate = new Date();
+        let selectedDateStr = ""; // YYYY-MM-DD
 
-    async function init() {
-      try {
-        const fetchPromise = fetchData();
+        const WEEK_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
 
-        await liff.init({ liffId: LIFF_ID });
-        if (!liff.isInClient() && !liff.isLoggedIn()) {
-          liff.login();
-          return;
+        async function init() {
+            try {
+                const fetchPromise = fetchData();
+
+                await liff.init({ liffId: LIFF_ID });
+                if (!liff.isInClient() && !liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+
+                const profile = await liff.getProfile();
+                currentUser.userId = profile.userId;
+                currentUser.displayName = profile.displayName;
+                document.getElementById("user-name").textContent = currentUser.displayName;
+
+                await fetchPromise;
+
+                initEditState();
+                setDefaultSelectedDate();
+                renderCalendar();
+                renderEventDetails();
+                updateSubmitButtonUI();
+
+                document.getElementById("loading").classList.add("hidden");
+                document.getElementById("app").classList.remove("hidden");
+            } catch (err) {
+                alert("初期化エラー: " + err.message);
+                console.error(err);
+            }
         }
 
-        const profile = await liff.getProfile();
-        currentUser.userId = profile.userId;
-        currentUser.displayName = profile.displayName;
-        document.getElementById("user-name").textContent = currentUser.displayName;
+        async function fetchData() {
+            const res = await fetch(`${GAS_API_URL}?key=${API_KEY}`);
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
 
-        await fetchPromise;
-
-        initEditState();
-        setDefaultSelectedDate();
-        renderCalendar();
-        renderEventDetails();
-        updateSubmitButtonUI();
-
-        document.getElementById("loading").classList.add("hidden");
-        document.getElementById("app").classList.remove("hidden");
-      } catch (err) {
-        alert("初期化エラー: " + err.message);
-        console.error(err);
-      }
-    }
-
-    async function fetchData() {
-      const res = await fetch(`${GAS_API_URL}?key=${API_KEY}`);
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
-
-      cachedEvents = data.events;
-      cachedAttendances = data.attendances;
-    }
-
-    // スプレッドシートの既存回答を editState に初期設定
-    function initEditState() {
-      editState = {};
-      cachedEvents.forEach(ev => {
-        const evId = String(ev.eventId);
-        const myRecord = cachedAttendances.find(a => String(a.eventId) === evId && String(a.userId) === String(currentUser.userId));
-        editState[evId] = {
-          status: myRecord ? myRecord.status : "",
-          comment: myRecord ? myRecord.comment : "",
-          originalStatus: myRecord ? myRecord.status : "",
-          originalComment: myRecord ? myRecord.comment : "",
-          isModified: false
-        };
-      });
-    }
-
-    // デフォルト選択日：今日以降で最も直近の練習日
-    function setDefaultSelectedDate() {
-      const todayStr = getTodayJSTStr();
-      const upcoming = cachedEvents
-        .filter(ev => toStandardYMD(ev.date) >= todayStr)
-        .sort((a, b) => toStandardYMD(a.date).localeCompare(toStandardYMD(b.date)));
-
-      if (upcoming.length > 0) {
-        selectedDateStr = toStandardYMD(upcoming[0].date);
-        const [y, m] = selectedDateStr.split("-");
-        viewDate = new Date(parseInt(y), parseInt(m) - 1, 1);
-      } else if (cachedEvents.length > 0) {
-        selectedDateStr = toStandardYMD(cachedEvents[0].date);
-      } else {
-        selectedDateStr = todayStr;
-      }
-    }
-
-    // カレンダー描画
-    function renderCalendar() {
-      const year = viewDate.getFullYear();
-      const month = viewDate.getMonth();
-
-      document.getElementById("month-display").textContent = `${year}年 ${month + 1}月`;
-
-      const firstDayIndex = new Date(year, month, 1).getDay();
-      const lastDate = new Date(year, month + 1, 0).getDate();
-      const prevLastDate = new Date(year, month, 0).getDate();
-
-      const container = document.getElementById("days-container");
-      container.innerHTML = "";
-
-      const todayStr = getTodayJSTStr();
-
-      // 前月の余白
-      for (let i = firstDayIndex - 1; i >= 0; i--) {
-        const cell = document.createElement("div");
-        cell.className = "day-cell other-month";
-        cell.innerHTML = `<span class="day-number">${prevLastDate - i}</span>`;
-        container.appendChild(cell);
-      }
-
-      // 当月の日付
-      for (let day = 1; day <= lastDate; day++) {
-        const cell = document.createElement("div");
-        const dayOfWeek = (firstDayIndex + day - 1) % 7;
-        const currentStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-        cell.className = "day-cell";
-        if (dayOfWeek === 0) cell.classList.add("sunday");
-        if (dayOfWeek === 6) cell.classList.add("saturday");
-        if (currentStr === todayStr) cell.classList.add("today");
-        if (currentStr === selectedDateStr) cell.classList.add("selected");
-
-        const dayEvents = cachedEvents.filter(ev => toStandardYMD(ev.date) === currentStr);
-
-        let html = `<span class="day-number">${day}</span>`;
-        if (dayEvents.length > 0) {
-          html += `<div class="dots-container">`;
-          dayEvents.forEach(ev => {
-            const color = getEventColor(ev.title);
-            html += `<span class="event-dot" style="background-color: ${color};"></span>`;
-          });
-          html += `</div>`;
+            cachedEvents = data.events;
+            cachedAttendances = data.attendances;
         }
-        cell.innerHTML = html;
 
-        cell.addEventListener("click", () => {
-          selectedDateStr = currentStr;
-          renderCalendar();
-          renderEventDetails();
-        });
+        // スプレッドシートの既存回答を editState に初期設定
+        function initEditState() {
+            editState = {};
+            cachedEvents.forEach(ev => {
+                const evId = String(ev.eventId);
+                const myRecord = cachedAttendances.find(a => String(a.eventId) === evId && String(a.userId) === String(currentUser.userId));
+                editState[evId] = {
+                    status: myRecord ? myRecord.status : "",
+                    comment: myRecord ? myRecord.comment : "",
+                    originalStatus: myRecord ? myRecord.status : "",
+                    originalComment: myRecord ? myRecord.comment : "",
+                    isModified: false
+                };
+            });
+        }
 
-        container.appendChild(cell);
-      }
+        // デフォルト選択日：今日以降で最も直近の練習日
+        function setDefaultSelectedDate() {
+            const todayStr = getTodayJSTStr();
+            const upcoming = cachedEvents
+                .filter(ev => toStandardYMD(ev.date) >= todayStr)
+                .sort((a, b) => toStandardYMD(a.date).localeCompare(toStandardYMD(b.date)));
 
-      // 翌月の余白
-      const totalCells = firstDayIndex + lastDate;
-      const nextDays = (7 - (totalCells % 7)) % 7;
-      for (let i = 1; i <= nextDays; i++) {
-        const cell = document.createElement("div");
-        cell.className = "day-cell other-month";
-        cell.innerHTML = `<span class="day-number">${i}</span>`;
-        container.appendChild(cell);
-      }
-    }
+            if (upcoming.length > 0) {
+                selectedDateStr = toStandardYMD(upcoming[0].date);
+                const [y, m] = selectedDateStr.split("-");
+                viewDate = new Date(parseInt(y), parseInt(m) - 1, 1);
+            } else if (cachedEvents.length > 0) {
+                selectedDateStr = toStandardYMD(cachedEvents[0].date);
+            } else {
+                selectedDateStr = todayStr;
+            }
+        }
 
-    // イベント詳細エリアを描画
-    function renderEventDetails() {
-      const area = document.getElementById("event-detail-area");
-      const dateHeaderEl = document.getElementById("date-display-header");
+        // カレンダー描画
+        function renderCalendar() {
+            const year = viewDate.getFullYear();
+            const month = viewDate.getMonth();
 
-      const [y, m, d] = selectedDateStr.split("-").map(Number);
-      const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
-      
-      dateHeaderEl.textContent = `📅 ${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')} (${weekDay})`;
+            document.getElementById("month-display").textContent = `${year}年 ${month + 1}月`;
 
-      const matchedEvents = cachedEvents.filter(ev => toStandardYMD(ev.date) === selectedDateStr);
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+            const prevLastDate = new Date(year, month, 0).getDate();
 
-      if (matchedEvents.length === 0) {
-        area.innerHTML = `
+            const container = document.getElementById("days-container");
+            container.innerHTML = "";
+
+            const todayStr = getTodayJSTStr();
+
+            // 前月の余白
+            for (let i = firstDayIndex - 1; i >= 0; i--) {
+                const cell = document.createElement("div");
+                cell.className = "day-cell other-month";
+                cell.innerHTML = `<span class="day-number">${prevLastDate - i}</span>`;
+                container.appendChild(cell);
+            }
+
+            // 当月の日付
+            for (let day = 1; day <= lastDate; day++) {
+                const cell = document.createElement("div");
+                const dayOfWeek = (firstDayIndex + day - 1) % 7;
+                const currentStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                cell.className = "day-cell";
+                if (dayOfWeek === 0) cell.classList.add("sunday");
+                if (dayOfWeek === 6) cell.classList.add("saturday");
+                if (currentStr === todayStr) cell.classList.add("today");
+                if (currentStr === selectedDateStr) cell.classList.add("selected");
+
+                const dayEvents = cachedEvents.filter(ev => toStandardYMD(ev.date) === currentStr);
+
+                let html = `<span class="day-number">${day}</span>`;
+                if (dayEvents.length > 0) {
+                    html += `<div class="dots-container">`;
+                    dayEvents.forEach(ev => {
+                        const color = getEventColor(ev.title);
+                        html += `<span class="event-dot" style="background-color: ${color};"></span>`;
+                    });
+                    html += `</div>`;
+                }
+                cell.innerHTML = html;
+
+                cell.addEventListener("click", () => {
+                    selectedDateStr = currentStr;
+                    renderCalendar();
+                    renderEventDetails();
+                });
+
+                container.appendChild(cell);
+            }
+
+            // 翌月の余白
+            const totalCells = firstDayIndex + lastDate;
+            const nextDays = (7 - (totalCells % 7)) % 7;
+            for (let i = 1; i <= nextDays; i++) {
+                const cell = document.createElement("div");
+                cell.className = "day-cell other-month";
+                cell.innerHTML = `<span class="day-number">${i}</span>`;
+                container.appendChild(cell);
+            }
+        }
+
+        // イベント詳細エリアを描画
+        function renderEventDetails() {
+            const area = document.getElementById("event-detail-area");
+            const dateHeaderEl = document.getElementById("date-display-header");
+
+            const [y, m, d] = selectedDateStr.split("-").map(Number);
+            const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
+
+            dateHeaderEl.textContent = `📅 ${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')} (${weekDay})`;
+
+            const matchedEvents = cachedEvents.filter(ev => toStandardYMD(ev.date) === selectedDateStr);
+
+            if (matchedEvents.length === 0) {
+                area.innerHTML = `
           <div class="no-event">
             <p style="font-size: 1.05rem; font-weight: bold; margin-bottom: 6px;">練習予定はありません ☕</p>
             <p>ゆっくり休養するか、自主練を企画しましょう！</p>
           </div>
         `;
-        return;
-      }
+                return;
+            }
 
-      let html = "";
-      matchedEvents.forEach((eventItem) => {
-        const evId = String(eventItem.eventId);
-        const color = getEventColor(eventItem.title);
+            let html = "";
+            matchedEvents.forEach((eventItem) => {
+                const evId = String(eventItem.eventId);
+                const color = getEventColor(eventItem.title);
 
-        const attendees = cachedAttendances.filter(a => String(a.eventId) === evId);
-        const countJoin = attendees.filter(a => a.status === "参加").length;
-        const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
-        const countPending = attendees.filter(a => a.status === "未定").length;
-        const countAbsent = attendees.filter(a => a.status === "不参加").length;
+                const attendees = cachedAttendances.filter(a => String(a.eventId) === evId);
+                const countJoin = attendees.filter(a => a.status === "参加").length;
+                const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
+                const countPending = attendees.filter(a => a.status === "未定").length;
+                const countAbsent = attendees.filter(a => a.status === "不参加").length;
 
-        // editState（未保存の入力状態）から現在の値を取り出す
-        const currentData = editState[evId] || { status: "", comment: "" };
-        const myStatus = currentData.status;
-        const myComment = currentData.comment;
+                // editState（未保存の入力状態）から現在の値を取り出す
+                const currentData = editState[evId] || { status: "", comment: "" };
+                const myStatus = currentData.status;
+                const myComment = currentData.comment;
 
-        html += `
+                html += `
           <div class="event-card" id="card-${evId}" data-event-id="${evId}">
             <div class="event-title">
               <span class="title-badge" style="background-color: ${color};"></span>
@@ -589,14 +690,6 @@
               <div>🏸 場所: ${escapeHtml(eventItem.place)}</div>
             </div>
 
-            <!-- 集計バー -->
-            <div class="summary-stats">
-              <div class="stat-item stat-join">参加<b>${countJoin}人</b></div>
-              <div class="stat-item">遅刻/早退<b>${countLate}人</b></div>
-              <div class="stat-item stat-pending">未定<b>${countPending}人</b></div>
-              <div class="stat-item stat-absent">不参加<b>${countAbsent}人</b></div>
-            </div>
-
             <!-- 出欠ボタン（5択 & トグル消去対応） -->
             <div class="status-group" data-event-id="${evId}">
               <div class="status-btn ${myStatus === '参加' ? 'active' : ''}" data-val="参加">参加</div>
@@ -605,249 +698,257 @@
               <div class="status-btn ${myStatus === '未定' ? 'active' : ''}" data-val="未定">未定</div>
               <div class="status-btn ${myStatus === '不参加' ? 'active' : ''}" data-val="不参加">不参加</div>
             </div>
-            <div class="status-hint">※選択中のボタンをもう一度押すと消去（未回答）に戻せます</div>
 
             <textarea id="comment-${evId}" rows="2" placeholder="備考（遅刻理由や未定の詳細など）">${escapeHtml(myComment)}</textarea>
+
+            <!-- 集計バー -->
+            <div class="summary-stats">
+              <div class="stat-item stat-join">参加<b>${countJoin}人</b></div>
+              <div class="stat-item">遅刻/早退<b>${countLate}人</b></div>
+              <div class="stat-item stat-pending">未定<b>${countPending}人</b></div>
+              <div class="stat-item stat-absent">不参加<b>${countAbsent}人</b></div>
+            </div>
 
             <!-- メンバー一覧 -->
             <div class="members-toggle" data-target="list-${evId}">回答メンバー一覧を表示 ▼</div>
             <div class="members-list hidden" id="list-${evId}">
-              ${attendees.length === 0 ? '<div style="color:#888; text-align:center;">まだ回答はありません</div>' : 
-                attendees.map(a => `
+              ${attendees.length === 0 ? '<div style="color:#888; text-align:center;">まだ回答はありません</div>' :
+                        attendees.map(a => `
                   <div class="member-row">
                     <span><b>${escapeHtml(a.userName)}</b>（${escapeHtml(a.status)}）</span>
                     <span style="color:#777;">${escapeHtml(a.comment || "")}</span>
                   </div>
                 `).join('')
-              }
+                    }
             </div>
           </div>
         `;
-      });
+            });
 
-      area.innerHTML = html;
+            area.innerHTML = html;
 
-      // ボタンのトグル動作＆editStateへの保存
-      document.querySelectorAll(".status-group").forEach(group => {
-        const evId = group.getAttribute("data-event-id");
-        const buttons = group.querySelectorAll(".status-btn");
+            // ボタンのトグル動作＆editStateへの保存
+            document.querySelectorAll(".status-group").forEach(group => {
+                const evId = group.getAttribute("data-event-id");
+                const buttons = group.querySelectorAll(".status-btn");
 
-        buttons.forEach(btn => {
-          btn.addEventListener("click", () => {
-            let nextStatus = "";
-            if (btn.classList.contains("active")) {
-              btn.classList.remove("active");
-              nextStatus = ""; // 消去
+                buttons.forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        let nextStatus = "";
+                        if (btn.classList.contains("active")) {
+                            btn.classList.remove("active");
+                            nextStatus = ""; // 消去
+                        } else {
+                            buttons.forEach(b => b.classList.remove("active"));
+                            btn.classList.add("active");
+                            nextStatus = btn.getAttribute("data-val");
+                        }
+
+                        // 状態を記録
+                        if (!editState[evId]) editState[evId] = { comment: "" };
+                        editState[evId].status = nextStatus;
+                        checkModified(evId);
+                        updateSubmitButtonUI();
+                    });
+                });
+            });
+
+            // テキストエリア入力監視＆editStateへの保存
+            matchedEvents.forEach(ev => {
+                const evId = String(ev.eventId);
+                const commentEl = document.getElementById(`comment-${evId}`);
+                if (commentEl) {
+                    commentEl.addEventListener("input", (e) => {
+                        if (!editState[evId]) editState[evId] = { status: "" };
+                        editState[evId].comment = e.target.value;
+                        checkModified(evId);
+                        updateSubmitButtonUI();
+                    });
+                }
+            });
+
+            // メンバー一覧アコーディオン開閉
+            document.querySelectorAll(".members-toggle").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const targetId = btn.getAttribute("data-target");
+                    const listEl = document.getElementById(targetId);
+                    if (listEl.classList.contains("hidden")) {
+                        listEl.classList.remove("hidden");
+                        btn.textContent = "回答メンバー一覧を閉じる ▲";
+                    } else {
+                        listEl.classList.add("hidden");
+                        btn.textContent = "回答メンバー一覧を表示 ▼";
+                    }
+                });
+            });
+        }
+
+        // 変更の有無をチェック
+        function checkModified(evId) {
+            const item = editState[evId];
+            if (!item) return;
+            item.isModified = (item.status !== item.originalStatus) || (item.comment !== item.originalComment);
+        }
+
+        // 保存ボタンのテキストと状態を更新
+        function updateSubmitButtonUI() {
+            const submitBtn = document.getElementById("btn-submit-all");
+            const modifiedCount = Object.values(editState).filter(item => item.isModified).length;
+
+            if (modifiedCount > 0) {
+                submitBtn.textContent = `回答を一括保存する (${modifiedCount}件の変更)`;
+                submitBtn.style.background = "var(--primary)";
             } else {
-              buttons.forEach(b => b.classList.remove("active"));
-              btn.classList.add("active");
-              nextStatus = btn.getAttribute("data-val");
+                submitBtn.textContent = "回答を一括保存する";
+                submitBtn.style.background = "var(--primary)";
             }
-
-            // 状態を記録
-            if (!editState[evId]) editState[evId] = { comment: "" };
-            editState[evId].status = nextStatus;
-            checkModified(evId);
-            updateSubmitButtonUI();
-          });
-        });
-      });
-
-      // テキストエリア入力監視＆editStateへの保存
-      matchedEvents.forEach(ev => {
-        const evId = String(ev.eventId);
-        const commentEl = document.getElementById(`comment-${evId}`);
-        if (commentEl) {
-          commentEl.addEventListener("input", (e) => {
-            if (!editState[evId]) editState[evId] = { status: "" };
-            editState[evId].comment = e.target.value;
-            checkModified(evId);
-            updateSubmitButtonUI();
-          });
-        }
-      });
-
-      // メンバー一覧アコーディオン開閉
-      document.querySelectorAll(".members-toggle").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const targetId = btn.getAttribute("data-target");
-          const listEl = document.getElementById(targetId);
-          if (listEl.classList.contains("hidden")) {
-            listEl.classList.remove("hidden");
-            btn.textContent = "回答メンバー一覧を閉じる ▲";
-          } else {
-            listEl.classList.add("hidden");
-            btn.textContent = "回答メンバー一覧を表示 ▼";
-          }
-        });
-      });
-    }
-
-    // 変更の有無をチェック
-    function checkModified(evId) {
-      const item = editState[evId];
-      if (!item) return;
-      item.isModified = (item.status !== item.originalStatus) || (item.comment !== item.originalComment);
-    }
-
-    // 保存ボタンのテキストと状態を更新
-    function updateSubmitButtonUI() {
-      const submitBtn = document.getElementById("btn-submit-all");
-      const modifiedCount = Object.values(editState).filter(item => item.isModified).length;
-
-      if (modifiedCount > 0) {
-        submitBtn.textContent = `回答を一括保存する (${modifiedCount}件の変更)`;
-        submitBtn.style.background = "var(--primary)";
-      } else {
-        submitBtn.textContent = "回答を一括保存する";
-        submitBtn.style.background = "var(--primary)";
-      }
-    }
-
-    // 一括送信ボタンの処理（日付をまたいで変更された全日程を送信）
-    document.getElementById("btn-submit-all").addEventListener("click", async () => {
-      const submitBtn = document.getElementById("btn-submit-all");
-      
-      // 変更があったイベント（または現在ステータスが入っている全イベント）を抽出
-      const changedEvents = Object.keys(editState).filter(evId => editState[evId].isModified);
-
-      if (changedEvents.length === 0) {
-        alert("変更された回答はありません。");
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = "一括保存中...";
-
-      const answers = [];
-      const lineMessages = [];
-
-      // 日付順にソートしてメッセージとペイロードを作成
-      const sortedEventIds = changedEvents.sort((a, b) => {
-        const evA = cachedEvents.find(e => String(e.eventId) === a);
-        const evB = cachedEvents.find(e => String(e.eventId) === b);
-        return toStandardYMD(evA ? evA.date : "").localeCompare(toStandardYMD(evB ? evB.date : ""));
-      });
-
-      sortedEventIds.forEach(evId => {
-        const ev = cachedEvents.find(e => String(e.eventId) === evId);
-        if (!ev) return;
-
-        const data = editState[evId];
-        const status = data.status;
-        const comment = data.comment || "";
-
-        answers.push({
-          eventId: evId,
-          status: status,
-          comment: comment,
-          isDelete: !status // statusが空ならスプレッドシート上から消去
-        });
-
-        // 日付・曜日フォーマット
-        const [y, m, d] = toStandardYMD(ev.date).split("-").map(Number);
-        const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
-        const dateStr = `${m}/${d}(${weekDay})`;
-
-        const statusText = status ? status : "【消去】";
-        lineMessages.push(`・${dateStr} ${ev.title}: ${statusText}${comment ? ' (' + comment + ')' : ''}`);
-      });
-
-      const payload = {
-        apiKey: API_KEY,
-        userId: currentUser.userId,
-        userName: currentUser.displayName,
-        answers: answers
-      };
-
-      try {
-        await fetch(GAS_API_URL, {
-          method: "POST",
-          mode: "no-cors",
-          body: JSON.stringify(payload)
-        });
-
-        // LINEトークへの一括送信（複数日程をまとめて投稿）
-        if (liff.isInClient() && lineMessages.length > 0) {
-          await liff.sendMessages([
-            {
-              type: "text",
-              text: `【出欠一括更新】\n` + lineMessages.join("\n")
-            }
-          ]).catch(() => {});
         }
 
-        alert(`全${answers.length}件の回答を一括保存しました！`);
+        // 一括送信ボタンの処理（日付をまたいで変更された全日程を送信）
+        document.getElementById("btn-submit-all").addEventListener("click", async () => {
+            const submitBtn = document.getElementById("btn-submit-all");
 
-        // 最新データを再取得して画面をリセット
-        await fetchData();
-        initEditState();
-        renderEventDetails();
-        updateSubmitButtonUI();
+            // 変更があったイベント（または現在ステータスが入っている全イベント）を抽出
+            const changedEvents = Object.keys(editState).filter(evId => editState[evId].isModified);
 
-      } catch (err) {
-        alert("送信エラー: " + err.message);
-        console.error(err);
-      } finally {
-        submitBtn.disabled = false;
-        updateSubmitButtonUI();
-      }
-    });
+            if (changedEvents.length === 0) {
+                alert("変更された回答はありません。");
+                return;
+            }
 
-    // 前月・次月ボタン
-    document.getElementById("prev-month").addEventListener("click", () => {
-      viewDate.setMonth(viewDate.getMonth() - 1);
-      renderCalendar();
-    });
-    document.getElementById("next-month").addEventListener("click", () => {
-      viewDate.setMonth(viewDate.getMonth() + 1);
-      renderCalendar();
-    });
+            submitBtn.disabled = true;
+            submitBtn.textContent = "一括保存中...";
 
-    // タイトルに応じたドット色判定
-    function getEventColor(title) {
-      if (!title) return "var(--dot-other)";
-      if (title.includes("正規練")) return "var(--dot-regular)";
-      if (title.includes("自主練")) return "var(--dot-free)";
-      if (title.includes("OBOG練") || title.includes("OB") || title.includes("OG")) return "var(--dot-obog)";
-      return "var(--dot-other)";
-    }
+            const answers = [];
+            const lineMessages = [];
 
-    // 日付フォーマット
-    function toStandardYMD(dateVal) {
-      if (!dateVal) return "";
-      if (typeof dateVal === 'string' && dateVal.includes('T')) {
-        const d = new Date(dateVal);
-        return formatJSTDate(d);
-      }
-      const parts = String(dateVal).replace(/\//g, "-").split("-");
-      if (parts.length === 3) {
-        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-      }
-      return formatJSTDate(new Date(dateVal));
-    }
+            // 日付順にソートしてメッセージとペイロードを作成
+            const sortedEventIds = changedEvents.sort((a, b) => {
+                const evA = cachedEvents.find(e => String(e.eventId) === a);
+                const evB = cachedEvents.find(e => String(e.eventId) === b);
+                return toStandardYMD(evA ? evA.date : "").localeCompare(toStandardYMD(evB ? evB.date : ""));
+            });
 
-    function formatJSTDate(d) {
-      if (isNaN(d.getTime())) return "";
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
+            sortedEventIds.forEach(evId => {
+                const ev = cachedEvents.find(e => String(e.eventId) === evId);
+                if (!ev) return;
 
-    function getTodayJSTStr() {
-      const now = new Date();
-      return formatJSTDate(now);
-    }
+                const data = editState[evId];
+                const status = data.status;
+                const comment = data.comment || "";
 
-    function escapeHtml(str) {
-      if (!str) return "";
-      return String(str).replace(/[&<>"']/g, m => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[m]));
-    }
+                answers.push({
+                    eventId: evId,
+                    status: status,
+                    comment: comment,
+                    isDelete: !status // statusが空ならスプレッドシート上から消去
+                });
 
-    init();
-  </script>
+                // 日付・曜日フォーマット
+                const [y, m, d] = toStandardYMD(ev.date).split("-").map(Number);
+                const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
+                const dateStr = `${m}/${d}(${weekDay})`;
+
+                const statusText = status ? status : "【消去】";
+                lineMessages.push(`・${dateStr} ${ev.title}: ${statusText}${comment ? ' (' + comment + ')' : ''}`);
+            });
+
+            const payload = {
+                apiKey: API_KEY,
+                userId: currentUser.userId,
+                userName: currentUser.displayName,
+                answers: answers
+            };
+
+            try {
+                await fetch(GAS_API_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    body: JSON.stringify(payload)
+                });
+
+                // LINEトークへの一括送信（複数日程をまとめて投稿）
+                if (liff.isInClient() && lineMessages.length > 0) {
+                    await liff.sendMessages([
+                        {
+                            type: "text",
+                            text: `【出欠一括更新】\n` + lineMessages.join("\n")
+                        }
+                    ]).catch(() => { });
+                }
+
+                alert(`全${answers.length}件の回答を一括保存しました！`);
+
+                // 最新データを再取得して画面をリセット
+                await fetchData();
+                initEditState();
+                renderEventDetails();
+                updateSubmitButtonUI();
+
+            } catch (err) {
+                alert("送信エラー: " + err.message);
+                console.error(err);
+            } finally {
+                submitBtn.disabled = false;
+                updateSubmitButtonUI();
+            }
+        });
+
+        // 前月・次月ボタン
+        document.getElementById("prev-month").addEventListener("click", () => {
+            viewDate.setMonth(viewDate.getMonth() - 1);
+            renderCalendar();
+        });
+        document.getElementById("next-month").addEventListener("click", () => {
+            viewDate.setMonth(viewDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        // タイトルに応じたドット色判定
+        function getEventColor(title) {
+            if (!title) return "var(--dot-other)";
+            if (title.includes("正規練")) return "var(--dot-regular)";
+            if (title.includes("自主練")) return "var(--dot-free)";
+            if (title.includes("OBOG練") || title.includes("OB") || title.includes("OG")) return "var(--dot-obog)";
+            return "var(--dot-other)";
+        }
+
+        // 日付フォーマット
+        function toStandardYMD(dateVal) {
+            if (!dateVal) return "";
+            if (typeof dateVal === 'string' && dateVal.includes('T')) {
+                const d = new Date(dateVal);
+                return formatJSTDate(d);
+            }
+            const parts = String(dateVal).replace(/\//g, "-").split("-");
+            if (parts.length === 3) {
+                return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+            }
+            return formatJSTDate(new Date(dateVal));
+        }
+
+        function formatJSTDate(d) {
+            if (isNaN(d.getTime())) return "";
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function getTodayJSTStr() {
+            const now = new Date();
+            return formatJSTDate(now);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str).replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        init();
+    </script>
 </body>
+
 </html>
