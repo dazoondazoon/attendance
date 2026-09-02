@@ -1245,11 +1245,11 @@
 
                 filtered.forEach(ev => {
                     const evId = String(ev.eventId);
-                    if (!editState[evId]) editState[evId] = { comment: "" };
-                    editState[evId].status = targetStatus;
+                    const item = getEditItem(evId);
+                    item.status = targetStatus;
                     // 一括備考に入力があれば備考も上書き設定
                     if (batchComment !== "") {
-                        editState[evId].comment = batchComment;
+                        item.comment = batchComment;
                     }
                     checkModified(evId);
                 });
@@ -1276,8 +1276,8 @@
 
             filtered.forEach(ev => {
                 const evId = String(ev.eventId);
-                if (!editState[evId]) editState[evId] = { status: "" };
-                editState[evId].comment = batchComment;
+                const item = getEditItem(evId);
+                item.comment = batchComment;
                 checkModified(evId);
             });
 
@@ -1428,8 +1428,8 @@
                             nextStatus = btn.getAttribute("data-val");
                         }
 
-                        if (!editState[evId]) editState[evId] = { comment: "" };
-                        editState[evId].status = nextStatus;
+                        const item = getEditItem(evId);
+                        item.status = nextStatus;
                         checkModified(evId);
                         updateSubmitButtonUI();
                     });
@@ -1442,8 +1442,8 @@
                 const commentEl = document.getElementById(`list-comment-${evId}`);
                 if (commentEl) {
                     commentEl.addEventListener("input", (e) => {
-                        if (!editState[evId]) editState[evId] = { status: "" };
-                        editState[evId].comment = e.target.value;
+                        const item = getEditItem(evId);
+                        item.comment = e.target.value;
                         checkModified(evId);
                         updateSubmitButtonUI();
                     });
