@@ -3,286 +3,571 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>部活出欠回答</title>
+  <title>部活出欠カレンダー</title>
   <!-- LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     :root {
-      --primary-color: #06c755;
-      --bg-color: #f4f5f7;
+      --primary: #06c755;
+      --primary-dark: #05a847;
+      --primary-light: #eefbf3;
+      --bg: #f4f5f7;
       --card-bg: #ffffff;
-      --text-color: #333333;
-      --text-sub: #666666;
-      --border-color: #e2e8f0;
+      --text: #191919;
+      --text-sub: #777777;
+      --border: #e6e8eb;
+      --sunday: #e15241;
+      --saturday: #3b82f6;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      padding: 16px;
-      line-height: 1.5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 12px;
+      line-height: 1.4;
+      -webkit-tap-highlight-color: transparent;
     }
     .container {
       max-width: 480px;
       margin: 0 auto;
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-    h2 { font-size: 1.25rem; margin-bottom: 16px; text-align: center; }
-    .user-badge {
-      background: #eefbf3;
-      color: #059640;
-      padding: 8px 12px;
-      border-radius: 8px;
+
+    /* ユーザーバッジ */
+    .user-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 10px 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
       font-size: 0.85rem;
-      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .user-bar b { color: var(--primary-dark); }
+
+    /* カレンダーカード */
+    .calendar-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 14px;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 0 8px;
+    }
+    .month-title {
+      font-size: 1.15rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+    .nav-btn {
+      background: #f0f2f5;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text);
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
     }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: var(--text-sub); }
-    select, input, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
+    .nav-btn:active { background: #e2e5e9; }
+
+    /* カレンダーグリッド */
+    .week-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+    }
+    .week-header span:first-child { color: var(--sunday); }
+    .week-header span:last-child { color: var(--saturday); }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+    }
+    .day-cell {
+      position: relative;
+      height: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      cursor: pointer;
       font-size: 0.95rem;
-      outline: none;
+      font-weight: 500;
     }
-    select:focus, textarea:focus { border-color: var(--primary-color); }
+    .day-cell.other-month {
+      color: #ccc;
+      cursor: default;
+    }
+    .day-cell.sunday { color: var(--sunday); }
+    .day-cell.saturday { color: var(--saturday); }
     
+    /* 今日のマーク */
+    .day-cell.today .day-number {
+      border-bottom: 2px solid var(--primary);
+    }
+    
+    /* 選択中の日（LINE風サークル） */
+    .day-cell.selected {
+      background-color: var(--primary) !important;
+      color: #ffffff !important;
+      font-weight: bold;
+    }
+    .day-cell.selected .event-dot {
+      background-color: #ffffff !important;
+    }
+
+    /* 練習がある日の緑ドット */
+    .event-dot {
+      width: 5px;
+      height: 5px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      margin-top: 3px;
+    }
+
+    /* イベント詳細エリア */
+    .event-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 18px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 24px;
+    }
+    .event-title {
+      font-size: 1.15rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .event-meta {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .meta-item { display: flex; align-items: center; gap: 6px; }
+
+    /* 集計サマリーバー */
+    .summary-stats {
+      display: flex;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 16px;
+      justify-content: space-around;
+      font-size: 0.8rem;
+    }
+    .stat-item b { font-size: 0.95rem; color: var(--text); }
+    .stat-join b { color: var(--primary-dark); }
+    .stat-absent b { color: var(--sunday); }
+
     /* 出欠ボタングループ */
     .status-group {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
     }
     .status-group input[type="radio"] { display: none; }
-    .status-label {
+    .status-btn {
       text-align: center;
-      padding: 12px;
-      border: 2px solid var(--border-color);
+      padding: 10px 0;
+      border: 1.5px solid var(--border);
       border-radius: 8px;
       cursor: pointer;
+      font-size: 0.85rem;
       font-weight: bold;
-      transition: all 0.2s;
+      background: #fff;
+      color: var(--text-sub);
+      transition: all 0.15s;
     }
-    .status-group input[type="radio"]:checked + .status-label {
-      border-color: var(--primary-color);
-      background-color: #eefbf3;
-      color: var(--primary-color);
+    .status-group input[type="radio"]:checked + .status-btn {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
     }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+      resize: none;
+      margin-bottom: 12px;
+    }
+    textarea:focus { border-color: var(--primary); }
 
     .btn-submit {
       width: 100%;
-      background: var(--primary-color);
-      color: #ffffff;
+      background: var(--primary);
+      color: #fff;
       border: none;
-      padding: 14px;
-      border-radius: 8px;
-      font-size: 1rem;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 8px;
     }
-    .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
+    .btn-submit:disabled { background: #cbd5e1; }
 
-    /* 参加者一覧アコーディオン */
-    .summary-box {
-      margin-top: 24px;
-      border-top: 1px solid var(--border-color);
-      padding-top: 16px;
+    /* メンバー一覧アコーディオン */
+    .members-toggle {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      text-align: center;
+      margin-top: 14px;
+      cursor: pointer;
+      text-decoration: underline;
     }
-    .summary-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 8px; }
-    .attendance-list { font-size: 0.85rem; max-height: 150px; overflow-y: auto; }
-    .list-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed #f1f5f9; }
-    
-    #loading { text-align: center; padding: 40px 0; color: var(--text-sub); }
+    .members-list {
+      margin-top: 10px;
+      border-top: 1px dashed var(--border);
+      padding-top: 10px;
+      max-height: 160px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+    .member-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+
+    /* 空ステート */
+    .no-event {
+      text-align: center;
+      padding: 30px 10px;
+      color: var(--text-sub);
+      font-size: 0.9rem;
+    }
+
+    #loading { text-align: center; padding: 60px 0; color: var(--text-sub); }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <div id="loading">データを読み込み中...</div>
+    <div id="loading">カレンダーを読み込み中...</div>
 
     <div id="app" class="hidden">
-      <h2>練習 出欠回答</h2>
-
-      <div class="user-badge">
-        <span>回答者: <b id="user-name">取得中...</b></span>
-        <span style="font-size: 0.75rem; color: #888;">LINE連携済</span>
+      <!-- ユーザー名表示 -->
+      <div class="user-bar">
+        <span>部員: <b id="user-name">取得中...</b></span>
+        <span style="color: #06c755; font-size: 0.75rem;">● LINE連携中</span>
       </div>
 
-      <form id="attendance-form">
-        <!-- 練習日程選択 -->
-        <div class="form-group">
-          <label for="event-select">対象の練習日</label>
-          <select id="event-select" required></select>
+      <!-- 月間カレンダーカード -->
+      <div class="calendar-card">
+        <div class="calendar-header">
+          <button class="nav-btn" id="prev-month">‹</button>
+          <div class="month-title" id="month-display">2026年 9月</div>
+          <button class="nav-btn" id="next-month">›</button>
         </div>
 
-        <!-- 出欠ステータス選択 -->
-        <div class="form-group">
-          <label>出欠状況</label>
-          <div class="status-group">
-            <input type="radio" id="st-join" name="status" value="参加" checked>
-            <label class="status-label" for="st-join">参加</label>
-
-            <input type="radio" id="st-late" name="status" value="遅刻">
-            <label class="status-label" for="st-late">遅刻</label>
-
-            <input type="radio" id="st-early" name="status" value="早退">
-            <label class="status-label" for="st-early">早退</label>
-
-            <input type="radio" id="st-absent" name="status" value="不参加">
-            <label class="status-label" for="st-absent">不参加</label>
-          </div>
+        <div class="week-header">
+          <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
         </div>
 
-        <!-- 備考欄 -->
-        <div class="form-group">
-          <label for="comment">備考（遅刻・早退の時間や理由など）</label>
-          <textarea id="comment" rows="2" placeholder="例: 18:30合流予定、テスト期間のため欠席"></textarea>
+        <div class="days-grid" id="days-container">
+          <!-- JSで日付セルを描画 -->
         </div>
+      </div>
 
-        <button type="submit" id="submit-btn" class="btn-submit">回答を送信する</button>
-      </form>
-
-      <!-- 現在の回答状況一覧 -->
-      <div class="summary-box">
-        <div class="summary-title" id="summary-header">この日程の参加者一覧</div>
-        <div class="attendance-list" id="attendance-list">
-          <!-- JSで動的描画 -->
-        </div>
+      <!-- 選択日のイベント詳細カード -->
+      <div class="event-card" id="event-detail-area">
+        <!-- JSでイベント内容を動的描画 -->
       </div>
     </div>
   </div>
 
   <script>
     // ========================================================
-    // 設定項目（ご自身の値に書き換えてください）
+    // 設定項目
     // ========================================================
-    const LIFF_ID = "2011385981-NUAxdrph"; // ステップ3で取得したLIFF ID
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyIbNM8iZ7ciXvk-PPLY1CeT88AaGN79DLKs1GCVtENdlXZkYCvMSWKaP3X3rySJ7Rq/exec"; // ステップ2で取得したGASのURL (末尾 /exec)
+    const LIFF_ID = "2011385981-NUAxdrph";
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyIbNM8iZ7ciXvk-PPLY1CeT88AaGN79DLKs1GCVtENdlXZkYCvMSWKaP3X3rySJ7Rq/exec";
     const API_KEY = "akHF3ikejc4Doa75kdjh6go";
-    
+
     let currentUser = { userId: "", displayName: "" };
     let cachedEvents = [];
     let cachedAttendances = [];
+    
+    // カレンダー管理用
+    let viewDate = new Date(); // 表示中の年月
+    let selectedDateStr = "";   // 選択中の日付 (YYYY-MM-DD)
+    let selectedEvent = null;   // 選択中のイベントオブジェクト
 
-    // 初期化処理
+    // 初期化（並行処理で高速化）
     async function init() {
       try {
-        await liff.init({ liffId: LIFF_ID });
+        const fetchPromise = fetchData();
 
-        // LINE外部ブラウザで開かれた場合の自動ログイン処理
+        await liff.init({ liffId: LIFF_ID });
         if (!liff.isInClient() && !liff.isLoggedIn()) {
           liff.login();
           return;
         }
 
-        // プロファイル取得
         const profile = await liff.getProfile();
         currentUser.userId = profile.userId;
         currentUser.displayName = profile.displayName;
         document.getElementById("user-name").textContent = currentUser.displayName;
 
-        // データ取得（GASへGET通信）
-        await fetchData();
+        await fetchPromise;
+
+        // デフォルト選択日：今日以降で最も直近の練習日を探す
+        setDefaultSelectedDate();
+
+        renderCalendar();
+        renderEventDetail();
 
         document.getElementById("loading").classList.add("hidden");
         document.getElementById("app").classList.remove("hidden");
       } catch (err) {
-        alert("初期化エラーが発生しました: " + err);
+        alert("初期化エラー: " + err.message);
         console.error(err);
       }
     }
 
-    // GASから日程と出欠状況を取得
+    // GASからデータ取得
     async function fetchData() {
-      // ★URLの末尾に「?key=合言葉」を付けてリクエストする
       const res = await fetch(`${GAS_API_URL}?key=${API_KEY}`);
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
 
       cachedEvents = data.events;
       cachedAttendances = data.attendances;
-
-      renderEventOptions();
-      renderAttendanceList();
     }
 
-    // 日程プルダウンを生成
-    function renderEventOptions() {
-      const select = document.getElementById("event-select");
-      select.innerHTML = "";
-      cachedEvents.forEach(ev => {
-        const opt = document.createElement("option");
-        opt.value = ev.eventId;
-        opt.textContent = `${ev.date} ${ev.time} (${ev.place}) ${ev.title}`;
-        select.appendChild(opt);
-      });
+    // デフォルト選択日をセット（直近の練習日 or 今日）
+    function setDefaultSelectedDate() {
+      const todayStr = formatLocalDate(new Date());
+      // 今日以降のイベントを検索
+      const upcoming = cachedEvents
+        .filter(ev => normalizeDateStr(ev.date) >= todayStr)
+        .sort((a, b) => normalizeDateStr(a.date).localeCompare(normalizeDateStr(b.date)));
 
-      select.addEventListener("change", renderAttendanceList);
+      if (upcoming.length > 0) {
+        selectedDateStr = normalizeDateStr(upcoming[0].date);
+        const [y, m] = selectedDateStr.split("-");
+        viewDate = new Date(parseInt(y), parseInt(m) - 1, 1);
+      } else if (cachedEvents.length > 0) {
+        selectedDateStr = normalizeDateStr(cachedEvents[0].date);
+      } else {
+        selectedDateStr = todayStr;
+      }
     }
 
-    // 選択された日程の回答一覧を描画
-    function renderAttendanceList() {
-      const selectedEventId = document.getElementById("event-select").value;
-      const listEl = document.getElementById("attendance-list");
-      listEl.innerHTML = "";
+    // カレンダー描画
+    function renderCalendar() {
+      const year = viewDate.getFullYear();
+      const month = viewDate.getMonth();
 
-      const filtered = cachedAttendances.filter(a => a.eventId === selectedEventId);
-      
-      if (filtered.length === 0) {
-        listEl.innerHTML = '<div style="color:#888; text-align:center; padding:8px 0;">まだ回答はありません</div>';
+      document.getElementById("month-display").textContent = `${year}年 ${month + 1}月`;
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const lastDate = new Date(year, month + 1, 0).getDate();
+      const prevLastDate = new Date(year, month, 0).getDate();
+
+      const container = document.getElementById("days-container");
+      container.innerHTML = "";
+
+      const todayStr = formatLocalDate(new Date());
+
+      // 1. 前月の余白
+      for (let i = firstDayIndex - 1; i >= 0; i--) {
+        const cell = document.createElement("div");
+        cell.className = "day-cell other-month";
+        cell.innerHTML = `<span class="day-number">${prevLastDate - i}</span>`;
+        container.appendChild(cell);
+      }
+
+      // 2. 当月の日付
+      for (let day = 1; day <= lastDate; day++) {
+        const cell = document.createElement("div");
+        const dayOfWeek = (firstDayIndex + day - 1) % 7;
+        const currentStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        cell.className = "day-cell";
+        if (dayOfWeek === 0) cell.classList.add("sunday");
+        if (dayOfWeek === 6) cell.classList.add("saturday");
+        if (currentStr === todayStr) cell.classList.add("today");
+        if (currentStr === selectedDateStr) cell.classList.add("selected");
+
+        // この日に練習予定があるかチェック
+        const hasEvent = cachedEvents.some(ev => normalizeDateStr(ev.date) === currentStr);
+
+        let html = `<span class="day-number">${day}</span>`;
+        if (hasEvent) {
+          html += `<div class="event-dot"></div>`;
+        }
+        cell.innerHTML = html;
+
+        // タップで日付選択
+        cell.addEventListener("click", () => {
+          selectedDateStr = currentStr;
+          renderCalendar();
+          renderEventDetail();
+        });
+
+        container.appendChild(cell);
+      }
+
+      // 3. 翌月の余白（7の倍数まで埋める）
+      const totalCells = firstDayIndex + lastDate;
+      const nextDays = (7 - (totalCells % 7)) % 7;
+      for (let i = 1; i <= nextDays; i++) {
+        const cell = document.createElement("div");
+        cell.className = "day-cell other-month";
+        cell.innerHTML = `<span class="day-number">${i}</span>`;
+        container.appendChild(cell);
+      }
+    }
+
+    // 選択された日のイベント詳細エリアを描画
+    function renderEventDetail() {
+      const area = document.getElementById("event-detail-area");
+      const matchedEvents = cachedEvents.filter(ev => normalizeDateStr(ev.date) === selectedDateStr);
+
+      if (matchedEvents.length === 0) {
+        const [y, m, d] = selectedDateStr.split("-");
+        area.innerHTML = `
+          <div class="no-event">
+            <p style="font-size: 1.1rem; font-weight: bold; margin-bottom: 6px;">${parseInt(m)}月${parseInt(d)}日</p>
+            <p>この日の練習予定はありません ☕</p>
+          </div>
+        `;
         return;
       }
 
-      filtered.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "list-item";
-        div.innerHTML = `
-          <span><b>${escapeHtml(item.userName)}</b>: ${escapeHtml(item.status)}</span>
-          <span style="color:#888;">${item.comment ? escapeHtml(item.comment) : ""}</span>
-        `;
-        listEl.appendChild(div);
-      });
-    }
-// 送信処理（完全対応版）
-    document.getElementById("attendance-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
+      // 該当イベント（最初の1件を表示）
+      selectedEvent = matchedEvents[0];
 
+      // 回答集計
+      const attendees = cachedAttendances.filter(a => a.eventId === selectedEvent.eventId);
+      const countJoin = attendees.filter(a => a.status === "参加").length;
+      const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
+      const countAbsent = attendees.filter(a => a.status === "不参加").length;
+
+      // 自分の回答状況
+      const myRecord = attendees.find(a => a.userId === currentUser.userId);
+      const myStatus = myRecord ? myRecord.status : "参加";
+      const myComment = myRecord ? myRecord.comment : "";
+
+      area.innerHTML = `
+        <div class="event-title">🏀 ${escapeHtml(selectedEvent.title)}</div>
+        <div class="event-meta">
+          <div class="meta-item">📅 ${selectedEvent.date}</div>
+          <div class="meta-item">🕒 時間: ${escapeHtml(selectedEvent.time)}</div>
+          <div class="meta-item">📍 場所: ${escapeHtml(selectedEvent.place)}</div>
+        </div>
+
+        <!-- 集計サマリー -->
+        <div class="summary-stats">
+          <div class="stat-item stat-join">参加: <b>${countJoin}人</b></div>
+          <div class="stat-item">遅刻/早退: <b>${countLate}人</b></div>
+          <div class="stat-item stat-absent">不参加: <b>${countAbsent}人</b></div>
+        </div>
+
+        <!-- 回答フォーム -->
+        <form id="event-attendance-form">
+          <div class="status-group">
+            <input type="radio" id="st-join" name="status" value="参加" ${myStatus === "参加" ? "checked" : ""}>
+            <label class="status-btn" for="st-join">参加</label>
+
+            <input type="radio" id="st-late" name="status" value="遅刻" ${myStatus === "遅刻" ? "checked" : ""}>
+            <label class="status-btn" for="st-late">遅刻</label>
+
+            <input type="radio" id="st-early" name="status" value="早退" ${myStatus === "早退" ? "checked" : ""}>
+            <label class="status-btn" for="st-early">早退</label>
+
+            <input type="radio" id="st-absent" name="status" value="不参加" ${myStatus === "不参加" ? "checked" : ""}>
+            <label class="status-btn" for="st-absent">不参加</label>
+          </div>
+
+          <textarea id="comment" rows="2" placeholder="備考（遅刻・早退の時間や欠席理由など）">${escapeHtml(myComment)}</textarea>
+
+          <button type="submit" id="submit-btn" class="btn-submit">
+            ${myRecord ? "回答を変更する" : "回答を送信する"}
+          </button>
+        </form>
+
+        <!-- 参加者リストの展開 -->
+        <div class="members-toggle" id="members-toggle">回答メンバー一覧を表示 ▼</div>
+        <div class="members-list hidden" id="members-list">
+          ${attendees.length === 0 ? '<div style="color:#888; text-align:center;">まだ回答がありません</div>' : 
+            attendees.map(a => `
+              <div class="member-row">
+                <span><b>${escapeHtml(a.userName)}</b>（${escapeHtml(a.status)}）</span>
+                <span style="color:#777;">${escapeHtml(a.comment || "")}</span>
+              </div>
+            `).join('')
+          }
+        </div>
+      `;
+
+      // アコーディオン開閉
+      document.getElementById("members-toggle").addEventListener("click", () => {
+        const listEl = document.getElementById("members-list");
+        const toggleEl = document.getElementById("members-toggle");
+        if (listEl.classList.contains("hidden")) {
+          listEl.classList.remove("hidden");
+          toggleEl.textContent = "回答メンバー一覧を閉じる ▲";
+        } else {
+          listEl.classList.add("hidden");
+          toggleEl.textContent = "回答メンバー一覧を表示 ▼";
+        }
+      });
+
+      // 送信ハンドラ
+      document.getElementById("event-attendance-form").addEventListener("submit", handleFormSubmit);
+    }
+
+    // 送信処理
+    async function handleFormSubmit(e) {
+      e.preventDefault();
       const submitBtn = document.getElementById("submit-btn");
       submitBtn.disabled = true;
       submitBtn.textContent = "送信中...";
 
       try {
-        const eventSelect = document.getElementById("event-select");
-        const eventId = eventSelect.value;
-        const selectedEventText = eventSelect.selectedOptions[0] ? eventSelect.selectedOptions[0].text : "";
-
-        const statusRadio = document.querySelector('input[name="status"]:checked');
-        if (!statusRadio) {
-          throw new Error("出欠ステータスが選択されていません");
-        }
-        const status = statusRadio.value;
+        const status = document.querySelector('input[name="status"]:checked').value;
         const comment = document.getElementById("comment").value;
 
         const payload = {
           apiKey: API_KEY,
-          eventId: eventId,
+          eventId: selectedEvent.eventId,
           userId: currentUser.userId,
           userName: currentUser.displayName,
           status: status,
           comment: comment
         };
 
-        // mode: "no-cors" で事前確認エラーを回避して送信
+        // GASへのPOST通信 (no-cors)
         await fetch(GAS_API_URL, {
           method: "POST",
           mode: "no-cors",
@@ -295,7 +580,7 @@
             await liff.sendMessages([
               {
                 type: "text",
-                text: `【出欠回答】\n${selectedEventText}\nステータス: ${status}${comment ? '\n備考: ' + comment : ''}`
+                text: `【出欠回答】\n${selectedEvent.date} ${selectedEvent.title}\nステータス: ${status}${comment ? '\n備考: ' + comment : ''}`
               }
             ]);
           } catch (lineErr) {
@@ -303,24 +588,51 @@
           }
         }
 
-        alert("出欠を送信しました！");
+        alert("出欠を正常に保存しました！");
 
+        // 再取得してUIを更新
         await fetchData();
-
-        if (liff.isInClient()) {
-          liff.closeWindow();
-        }
+        renderEventDetail();
 
       } catch (err) {
-        alert("エラー詳細: " + err.message);
+        alert("送信エラー: " + err.message);
         console.error(err);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = "回答を送信する";
       }
+    }
+
+    // 前月・次月ボタン
+    document.getElementById("prev-month").addEventListener("click", () => {
+      viewDate.setMonth(viewDate.getMonth() - 1);
+      renderCalendar();
+    });
+    document.getElementById("next-month").addEventListener("click", () => {
+      viewDate.setMonth(viewDate.getMonth() + 1);
+      renderCalendar();
     });
 
-    // XSS対策用エスケープ
+    // ユーティリティ：日付文字列の正規化 (2026/9/5 -> 2026-09-05)
+    function normalizeDateStr(dateVal) {
+      if (!dateVal) return "";
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) {
+        const parts = String(dateVal).replace(/\//g, "-").split("-");
+        if (parts.length === 3) {
+          return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        }
+        return String(dateVal);
+      }
+      return formatLocalDate(d);
+    }
+
+    function formatLocalDate(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     function escapeHtml(str) {
       if (!str) return "";
       return String(str).replace(/[&<>"']/g, m => ({
