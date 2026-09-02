@@ -33,11 +33,11 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      padding: 12px;
+      padding: 12px 12px 100px 12px; /* ボタンと被らないよう下部に余裕を持たせる */
       line-height: 1.4;
       -webkit-tap-highlight-color: transparent;
     }
-    .container { max-width: 480px; margin: 0 auto; }
+    .container { max-width: 480px; margin: 0 auto; position: relative; }
 
     /* ユーザーバッジ */
     .user-bar {
@@ -151,7 +151,7 @@
       border-radius: 50%;
     }
     .day-cell.selected .event-dot {
-      background-color: #ffffff !important; /* 選択時は白で見やすく */
+      background-color: #ffffff !important;
     }
 
     /* 選択日の日付ヘッダー */
@@ -262,27 +262,39 @@
     }
     textarea:focus { border-color: var(--primary); }
 
-    /* 統一送信ボタンエリア */
+    /* 統一送信ボタンエリア（少し上に浮かせて押しやすく配置） */
     .action-area {
-      position: sticky;
-      bottom: 12px;
-      margin-top: 16px;
-      margin-bottom: 24px;
-      z-index: 10;
+      position: fixed;
+      bottom: calc(28px + env(safe-area-inset-bottom, 0px)); /* 下から少し上に動かした位置 */
+      left: 0;
+      right: 0;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 16px;
+      z-index: 99;
     }
     .btn-submit-all {
       width: 100%;
       background: var(--primary);
       color: #fff;
       border: none;
-      padding: 14px;
-      border-radius: 12px;
+      padding: 15px;
+      border-radius: 14px;
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(6, 199, 85, 0.3);
+      box-shadow: 0 6px 18px rgba(6, 199, 85, 0.38);
+      transition: transform 0.1s, background-color 0.2s;
     }
-    .btn-submit-all:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
+    .btn-submit-all:active {
+      transform: scale(0.98);
+    }
+    .btn-submit-all:disabled {
+      background: #cbd5e1;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
 
     /* メンバー一覧アコーディオン */
     .members-toggle {
@@ -358,9 +370,9 @@
       <!-- イベント詳細エリア -->
       <div id="event-detail-area"></div>
 
-      <!-- 統一送信ボタン（練習がある日のみ表示） -->
-      <div class="action-area hidden" id="submit-all-area">
-        <button type="button" class="btn-submit-all" id="btn-submit-all">この日の回答を一括保存する</button>
+      <!-- 統一送信ボタン（常に押しやすい高さに配置） -->
+      <div class="action-area" id="submit-all-area">
+        <button type="button" class="btn-submit-all" id="btn-submit-all">回答を一括保存する</button>
       </div>
     </div>
   </div>
@@ -374,6 +386,9 @@
     let cachedEvents = [];
     let cachedAttendances = [];
     
+    // 全イベントに対するローカルの回答編集状態を管理（日付をまたいでも消えない）
+    let editState = {}; // { [eventId]: { status: string, comment: string, isModified: boolean } }
+
     let viewDate = new Date();
     let selectedDateStr = ""; // YYYY-MM-DD
 
@@ -396,9 +411,11 @@
 
         await fetchPromise;
 
+        initEditState();
         setDefaultSelectedDate();
         renderCalendar();
         renderEventDetails();
+        updateSubmitButtonUI();
 
         document.getElementById("loading").classList.add("hidden");
         document.getElementById("app").classList.remove("hidden");
@@ -415,6 +432,22 @@
 
       cachedEvents = data.events;
       cachedAttendances = data.attendances;
+    }
+
+    // スプレッドシートの既存回答を editState に初期設定
+    function initEditState() {
+      editState = {};
+      cachedEvents.forEach(ev => {
+        const evId = String(ev.eventId);
+        const myRecord = cachedAttendances.find(a => String(a.eventId) === evId && String(a.userId) === String(currentUser.userId));
+        editState[evId] = {
+          status: myRecord ? myRecord.status : "",
+          comment: myRecord ? myRecord.comment : "",
+          originalStatus: myRecord ? myRecord.status : "",
+          originalComment: myRecord ? myRecord.comment : "",
+          isModified: false
+        };
+      });
     }
 
     // デフォルト選択日：今日以降で最も直近の練習日
@@ -471,7 +504,6 @@
         if (currentStr === todayStr) cell.classList.add("today");
         if (currentStr === selectedDateStr) cell.classList.add("selected");
 
-        // その日のイベント群を取得
         const dayEvents = cachedEvents.filter(ev => toStandardYMD(ev.date) === currentStr);
 
         let html = `<span class="day-number">${day}</span>`;
@@ -509,12 +541,10 @@
     function renderEventDetails() {
       const area = document.getElementById("event-detail-area");
       const dateHeaderEl = document.getElementById("date-display-header");
-      const submitAllArea = document.getElementById("submit-all-area");
 
       const [y, m, d] = selectedDateStr.split("-").map(Number);
       const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
       
-      // 日付ヘッダーを「2026/09/02 (水)」形式で表示
       dateHeaderEl.textContent = `📅 ${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')} (${weekDay})`;
 
       const matchedEvents = cachedEvents.filter(ev => toStandardYMD(ev.date) === selectedDateStr);
@@ -526,27 +556,24 @@
             <p>ゆっくり休養するか、自主練を企画しましょう！</p>
           </div>
         `;
-        submitAllArea.classList.add("hidden");
         return;
       }
 
-      submitAllArea.classList.remove("hidden");
-
       let html = "";
       matchedEvents.forEach((eventItem) => {
-        const evId = escapeHtml(eventItem.eventId);
+        const evId = String(eventItem.eventId);
         const color = getEventColor(eventItem.title);
 
-        const attendees = cachedAttendances.filter(a => String(a.eventId) === String(eventItem.eventId));
+        const attendees = cachedAttendances.filter(a => String(a.eventId) === evId);
         const countJoin = attendees.filter(a => a.status === "参加").length;
         const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
         const countPending = attendees.filter(a => a.status === "未定").length;
         const countAbsent = attendees.filter(a => a.status === "不参加").length;
 
-        // 自分の現在の回答
-        const myRecord = attendees.find(a => String(a.userId) === String(currentUser.userId));
-        const myStatus = myRecord ? myRecord.status : "";
-        const myComment = myRecord ? myRecord.comment : "";
+        // editState（未保存の入力状態）から現在の値を取り出す
+        const currentData = editState[evId] || { status: "", comment: "" };
+        const myStatus = currentData.status;
+        const myComment = currentData.comment;
 
         html += `
           <div class="event-card" id="card-${evId}" data-event-id="${evId}">
@@ -556,7 +583,7 @@
             </div>
             <div class="event-meta">
               <div>🕒 時間: ${escapeHtml(eventItem.time)}</div>
-              <div>📍 場所: ${escapeHtml(eventItem.place)}</div>
+              <div>🏸 場所: ${escapeHtml(eventItem.place)}</div>
             </div>
 
             <!-- 集計バー -->
@@ -567,7 +594,7 @@
               <div class="stat-item stat-absent">不参加<b>${countAbsent}人</b></div>
             </div>
 
-            <!-- 出欠ボタン（5択 & 再タップで消去可能） -->
+            <!-- 出欠ボタン（5択 & トグル消去対応） -->
             <div class="status-group" data-event-id="${evId}">
               <div class="status-btn ${myStatus === '参加' ? 'active' : ''}" data-val="参加">参加</div>
               <div class="status-btn ${myStatus === '遅刻' ? 'active' : ''}" data-val="遅刻">遅刻</div>
@@ -597,24 +624,47 @@
 
       area.innerHTML = html;
 
-      // ボタンのトグル動作（再タップで解除）を登録
+      // ボタンのトグル動作＆editStateへの保存
       document.querySelectorAll(".status-group").forEach(group => {
+        const evId = group.getAttribute("data-event-id");
         const buttons = group.querySelectorAll(".status-btn");
+
         buttons.forEach(btn => {
           btn.addEventListener("click", () => {
+            let nextStatus = "";
             if (btn.classList.contains("active")) {
-              // 既に選択されていれば解除（消去）
               btn.classList.remove("active");
+              nextStatus = ""; // 消去
             } else {
-              // 他を解除して自分だけactive
               buttons.forEach(b => b.classList.remove("active"));
               btn.classList.add("active");
+              nextStatus = btn.getAttribute("data-val");
             }
+
+            // 状態を記録
+            if (!editState[evId]) editState[evId] = { comment: "" };
+            editState[evId].status = nextStatus;
+            checkModified(evId);
+            updateSubmitButtonUI();
           });
         });
       });
 
-      // アコーディオン開閉
+      // テキストエリア入力監視＆editStateへの保存
+      matchedEvents.forEach(ev => {
+        const evId = String(ev.eventId);
+        const commentEl = document.getElementById(`comment-${evId}`);
+        if (commentEl) {
+          commentEl.addEventListener("input", (e) => {
+            if (!editState[evId]) editState[evId] = { status: "" };
+            editState[evId].comment = e.target.value;
+            checkModified(evId);
+            updateSubmitButtonUI();
+          });
+        }
+      });
+
+      // メンバー一覧アコーディオン開閉
       document.querySelectorAll(".members-toggle").forEach(btn => {
         btn.addEventListener("click", () => {
           const targetId = btn.getAttribute("data-target");
@@ -630,31 +680,74 @@
       });
     }
 
-    // 一括送信ボタンの処理
+    // 変更の有無をチェック
+    function checkModified(evId) {
+      const item = editState[evId];
+      if (!item) return;
+      item.isModified = (item.status !== item.originalStatus) || (item.comment !== item.originalComment);
+    }
+
+    // 保存ボタンのテキストと状態を更新
+    function updateSubmitButtonUI() {
+      const submitBtn = document.getElementById("btn-submit-all");
+      const modifiedCount = Object.values(editState).filter(item => item.isModified).length;
+
+      if (modifiedCount > 0) {
+        submitBtn.textContent = `回答を一括保存する (${modifiedCount}件の変更)`;
+        submitBtn.style.background = "var(--primary)";
+      } else {
+        submitBtn.textContent = "回答を一括保存する";
+        submitBtn.style.background = "var(--primary)";
+      }
+    }
+
+    // 一括送信ボタンの処理（日付をまたいで変更された全日程を送信）
     document.getElementById("btn-submit-all").addEventListener("click", async () => {
       const submitBtn = document.getElementById("btn-submit-all");
-      submitBtn.disabled = true;
-      submitBtn.textContent = "保存中...";
+      
+      // 変更があったイベント（または現在ステータスが入っている全イベント）を抽出
+      const changedEvents = Object.keys(editState).filter(evId => editState[evId].isModified);
 
-      const matchedEvents = cachedEvents.filter(ev => toStandardYMD(ev.date) === selectedDateStr);
+      if (changedEvents.length === 0) {
+        alert("変更された回答はありません。");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "一括保存中...";
+
       const answers = [];
       const lineMessages = [];
 
-      matchedEvents.forEach(ev => {
-        const evId = ev.eventId;
-        const activeBtn = document.querySelector(`.status-group[data-event-id="${evId}"] .status-btn.active`);
-        const comment = document.getElementById(`comment-${evId}`).value;
-        const status = activeBtn ? activeBtn.getAttribute("data-val") : "";
+      // 日付順にソートしてメッセージとペイロードを作成
+      const sortedEventIds = changedEvents.sort((a, b) => {
+        const evA = cachedEvents.find(e => String(e.eventId) === a);
+        const evB = cachedEvents.find(e => String(e.eventId) === b);
+        return toStandardYMD(evA ? evA.date : "").localeCompare(toStandardYMD(evB ? evB.date : ""));
+      });
+
+      sortedEventIds.forEach(evId => {
+        const ev = cachedEvents.find(e => String(e.eventId) === evId);
+        if (!ev) return;
+
+        const data = editState[evId];
+        const status = data.status;
+        const comment = data.comment || "";
 
         answers.push({
           eventId: evId,
           status: status,
           comment: comment,
-          isDelete: !status // statusが空なら消去扱い
+          isDelete: !status // statusが空ならスプレッドシート上から消去
         });
 
-        const statusText = status ? status : "【回答消去】";
-        lineMessages.push(`・${ev.title}: ${statusText}${comment ? ' (' + comment + ')' : ''}`);
+        // 日付・曜日フォーマット
+        const [y, m, d] = toStandardYMD(ev.date).split("-").map(Number);
+        const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
+        const dateStr = `${m}/${d}(${weekDay})`;
+
+        const statusText = status ? status : "【消去】";
+        lineMessages.push(`・${dateStr} ${ev.title}: ${statusText}${comment ? ' (' + comment + ')' : ''}`);
       });
 
       const payload = {
@@ -671,31 +764,30 @@
           body: JSON.stringify(payload)
         });
 
-        // LINEトークへの一括送信
+        // LINEトークへの一括送信（複数日程をまとめて投稿）
         if (liff.isInClient() && lineMessages.length > 0) {
-          const [y, m, d] = selectedDateStr.split("-").map(Number);
-          const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
-          const dateTitle = `${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')} (${weekDay})`;
-
           await liff.sendMessages([
             {
               type: "text",
-              text: `【出欠更新】${dateTitle}\n` + lineMessages.join("\n")
+              text: `【出欠一括更新】\n` + lineMessages.join("\n")
             }
           ]).catch(() => {});
         }
 
-        alert("この日の回答を一括保存しました！");
+        alert(`全${answers.length}件の回答を一括保存しました！`);
 
+        // 最新データを再取得して画面をリセット
         await fetchData();
+        initEditState();
         renderEventDetails();
+        updateSubmitButtonUI();
 
       } catch (err) {
         alert("送信エラー: " + err.message);
         console.error(err);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = "この日の回答を一括保存する";
+        updateSubmitButtonUI();
       }
     });
 
@@ -712,13 +804,13 @@
     // タイトルに応じたドット色判定
     function getEventColor(title) {
       if (!title) return "var(--dot-other)";
-      if (title.includes("正規練")) return "var(--dot-regular)"; // 緑
-      if (title.includes("自主練")) return "var(--dot-free)";    // 青
-      if (title.includes("OBOG練") || title.includes("OB") || title.includes("OG")) return "var(--dot-obog)"; // オレンジ
-      return "var(--dot-other)"; // 赤
+      if (title.includes("正規練")) return "var(--dot-regular)";
+      if (title.includes("自主練")) return "var(--dot-free)";
+      if (title.includes("OBOG練") || title.includes("OB") || title.includes("OG")) return "var(--dot-obog)";
+      return "var(--dot-other)";
     }
 
-    // 日付文字列を確実に YYYY-MM-DD に統一
+    // 日付フォーマット
     function toStandardYMD(dateVal) {
       if (!dateVal) return "";
       if (typeof dateVal === 'string' && dateVal.includes('T')) {
