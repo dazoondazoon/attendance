@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>部活出欠回答</title>
+  <!-- LIFF SDK -->
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    :root {
+      --primary-color: #06c755;
+      --bg-color: #f4f5f7;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --text-sub: #666666;
+      --border-color: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    h2 { font-size: 1.25rem; margin-bottom: 16px; text-align: center; }
+    .user-badge {
+      background: #eefbf3;
+      color: #059640;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: var(--text-sub); }
+    select, input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    select:focus, textarea:focus { border-color: var(--primary-color); }
+    
+    /* 出欠ボタングループ */
+    .status-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .status-group input[type="radio"] { display: none; }
+    .status-label {
+      text-align: center;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .status-group input[type="radio"]:checked + .status-label {
+      border-color: var(--primary-color);
+      background-color: #eefbf3;
+      color: var(--primary-color);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+    /* 参加者一覧アコーディオン */
+    .summary-box {
+      margin-top: 24px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 16px;
+    }
+    .summary-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 8px; }
+    .attendance-list { font-size: 0.85rem; max-height: 150px; overflow-y: auto; }
+    .list-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed #f1f5f9; }
+    
+    #loading { text-align: center; padding: 40px 0; color: var(--text-sub); }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="loading">データを読み込み中...</div>
+
+    <div id="app" class="hidden">
+      <h2>練習 出欠回答</h2>
+
+      <div class="user-badge">
+        <span>回答者: <b id="user-name">取得中...</b></span>
+        <span style="font-size: 0.75rem; color: #888;">LINE連携済</span>
+      </div>
+
+      <form id="attendance-form">
+        <!-- 練習日程選択 -->
+        <div class="form-group">
+          <label for="event-select">対象の練習日</label>
+          <select id="event-select" required></select>
+        </div>
+
+        <!-- 出欠ステータス選択 -->
+        <div class="form-group">
+          <label>出欠状況</label>
+          <div class="status-group">
+            <input type="radio" id="st-join" name="status" value="参加" checked>
+            <label class="status-label" for="st-join">参加</label>
+
+            <input type="radio" id="st-late" name="status" value="遅刻">
+            <label class="status-label" for="st-late">遅刻</label>
+
+            <input type="radio" id="st-early" name="status" value="早退">
+            <label class="status-label" for="st-early">早退</label>
+
+            <input type="radio" id="st-absent" name="status" value="不参加">
+            <label class="status-label" for="st-absent">不参加</label>
+          </div>
+        </div>
+
+        <!-- 備考欄 -->
+        <div class="form-group">
+          <label for="comment">備考（遅刻・早退の時間や理由など）</label>
+          <textarea id="comment" rows="2" placeholder="例: 18:30合流予定、テスト期間のため欠席"></textarea>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-submit">回答を送信する</button>
+      </form>
+
+      <!-- 現在の回答状況一覧 -->
+      <div class="summary-box">
+        <div class="summary-title" id="summary-header">この日程の参加者一覧</div>
+        <div class="attendance-list" id="attendance-list">
+          <!-- JSで動的描画 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========================================================
+    // 設定項目（ご自身の値に書き換えてください）
+    // ========================================================
+    const LIFF_ID = "2011385981-NUAxdrph"; // ステップ3で取得したLIFF ID
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyIbNM8iZ7ciXvk-PPLY1CeT88AaGN79DLKs1GCVtENdlXZkYCvMSWKaP3X3rySJ7Rq/exec"; // ステップ2で取得したGASのURL (末尾 /exec)
+    const API_KEY = "akHF3ikejc4Doa75kdjh6go";
+    
+    let currentUser = { userId: "", displayName: "" };
+    let cachedEvents = [];
+    let cachedAttendances = [];
+
+    // 初期化処理
+    async function init() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+
+        // LINE外部ブラウザで開かれた場合の自動ログイン処理
+        if (!liff.isInClient() && !liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        // プロファイル取得
+        const profile = await liff.getProfile();
+        currentUser.userId = profile.userId;
+        currentUser.displayName = profile.displayName;
+        document.getElementById("user-name").textContent = currentUser.displayName;
+
+        // データ取得（GASへGET通信）
+        await fetchData();
+
+        document.getElementById("loading").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+      } catch (err) {
+        alert("初期化エラーが発生しました: " + err);
+        console.error(err);
+      }
+    }
+
+    // GASから日程と出欠状況を取得
+    async function fetchData() {
+      // ★URLの末尾に「?key=合言葉」を付けてリクエストする
+      const res = await fetch(`${GAS_API_URL}?key=${API_KEY}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+
+      cachedEvents = data.events;
+      cachedAttendances = data.attendances;
+
+      renderEventOptions();
+      renderAttendanceList();
+    }
+
+    // 日程プルダウンを生成
+    function renderEventOptions() {
+      const select = document.getElementById("event-select");
+      select.innerHTML = "";
+      cachedEvents.forEach(ev => {
+        const opt = document.createElement("option");
+        opt.value = ev.eventId;
+        opt.textContent = `${ev.date} ${ev.time} (${ev.place}) ${ev.title}`;
+        select.appendChild(opt);
+      });
+
+      select.addEventListener("change", renderAttendanceList);
+    }
+
+    // 選択された日程の回答一覧を描画
+    function renderAttendanceList() {
+      const selectedEventId = document.getElementById("event-select").value;
+      const listEl = document.getElementById("attendance-list");
+      listEl.innerHTML = "";
+
+      const filtered = cachedAttendances.filter(a => a.eventId === selectedEventId);
+      
+      if (filtered.length === 0) {
+        listEl.innerHTML = '<div style="color:#888; text-align:center; padding:8px 0;">まだ回答はありません</div>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "list-item";
+        div.innerHTML = `
+          <span><b>${escapeHtml(item.userName)}</b>: ${escapeHtml(item.status)}</span>
+          <span style="color:#888;">${item.comment ? escapeHtml(item.comment) : ""}</span>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    // 送信処理
+    // 2. 送信処理（POST通信）の修正
+    document.getElementById("attendance-form").addEventListener("submit", async (e) => {
+      // ...（中略）...
+
+      const payload = {
+        apiKey: API_KEY, // ★送信データの中に合言葉を含める
+        eventId: eventId,
+        userId: currentUser.userId,
+        userName: currentUser.displayName,
+        status: status,
+        comment: comment
+      };
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (!result.success) throw new Error(result.message);
+
+        // トークルームへの自動通知（LINEアプリ内から開いた場合のみ）
+        if (liff.isInClient()) {
+          const selectedEventText = document.getElementById("event-select").selectedOptions[0].text;
+          await liff.sendMessages([
+            {
+              type: "text",
+              text: `【出欠回答】\n${selectedEventText}\nステータス: ${status}${comment ? '\n備考: ' + comment : ''}`
+            }
+          ]).catch(() => {}); // メッセージ送信権限がない場合のエラー抑止
+        }
+
+        alert("出欠を正常に送信・更新しました！");
+
+        // 画面を最新状態に更新
+        await fetchData();
+
+        // LINEアプリ内なら自動で画面を閉じる
+        if (liff.isInClient()) {
+          liff.closeWindow();
+        }
+
+      } catch (err) {
+        alert("送信に失敗しました: " + err);
+        console.error(err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "回答を送信する";
+      }
+    });
+
+    // XSS対策用エスケープ
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    // 起動
+    init();
+  </script>
+</body>
+</html>
