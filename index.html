@@ -18,6 +18,7 @@
       --border: #e6e8eb;
       --sunday: #e15241;
       --saturday: #3b82f6;
+      --pending: #f59e0b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -120,12 +121,10 @@
     .day-cell.sunday { color: var(--sunday); }
     .day-cell.saturday { color: var(--saturday); }
     
-    /* 今日のマーク */
     .day-cell.today .day-number {
       border-bottom: 2px solid var(--primary);
     }
     
-    /* 選択中の日（LINE風サークル） */
     .day-cell.selected {
       background-color: var(--primary) !important;
       color: #ffffff !important;
@@ -135,7 +134,6 @@
       background-color: #ffffff !important;
     }
 
-    /* 練習がある日の緑ドット */
     .event-dot {
       width: 5px;
       height: 5px;
@@ -144,16 +142,24 @@
       margin-top: 3px;
     }
 
-    /* イベント詳細エリア */
+    /* イベント詳細エリアコンテナ */
+    #event-detail-area {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    /* 各イベントカード */
     .event-card {
       background: var(--card-bg);
       border-radius: 16px;
       padding: 18px 16px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      margin-bottom: 24px;
+      border: 1px solid var(--border);
     }
     .event-title {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: bold;
       margin-bottom: 8px;
     }
@@ -167,36 +173,39 @@
     }
     .meta-item { display: flex; align-items: center; gap: 6px; }
 
-    /* 集計サマリーバー */
+    /* 集計サマリーバー (5ステータス対応) */
     .summary-stats {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 8px 12px;
-      margin-bottom: 16px;
-      justify-content: space-around;
-      font-size: 0.8rem;
+      padding: 8px 4px;
+      margin-bottom: 14px;
+      text-align: center;
+      font-size: 0.75rem;
+      gap: 2px;
     }
-    .stat-item b { font-size: 0.95rem; color: var(--text); }
+    .stat-item b { display: block; font-size: 0.95rem; color: var(--text); }
     .stat-join b { color: var(--primary-dark); }
+    .stat-pending b { color: var(--pending); }
     .stat-absent b { color: var(--sunday); }
 
-    /* 出欠ボタングループ */
+    /* 出欠ボタングループ (5択) */
     .status-group {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
       margin-bottom: 12px;
     }
     .status-group input[type="radio"] { display: none; }
     .status-btn {
       text-align: center;
-      padding: 10px 0;
+      padding: 8px 0;
       border: 1.5px solid var(--border);
       border-radius: 8px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       font-weight: bold;
       background: #fff;
       color: var(--text-sub);
@@ -225,41 +234,44 @@
       background: var(--primary);
       color: #fff;
       border: none;
-      padding: 12px;
+      padding: 11px;
       border-radius: 10px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: bold;
       cursor: pointer;
     }
-    .btn-submit:disabled { background: #cbd5e1; }
+    .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
 
     /* メンバー一覧アコーディオン */
     .members-toggle {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-sub);
       text-align: center;
-      margin-top: 14px;
+      margin-top: 12px;
       cursor: pointer;
       text-decoration: underline;
     }
     .members-list {
-      margin-top: 10px;
+      margin-top: 8px;
       border-top: 1px dashed var(--border);
-      padding-top: 10px;
-      max-height: 160px;
+      padding-top: 8px;
+      max-height: 150px;
       overflow-y: auto;
       font-size: 0.8rem;
     }
     .member-row {
       display: flex;
       justify-content: space-between;
-      padding: 4px 0;
+      padding: 3px 0;
     }
 
     /* 空ステート */
     .no-event {
-      text-align: center;
+      background: var(--card-bg);
+      border-radius: 16px;
       padding: 30px 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
       color: var(--text-sub);
       font-size: 0.9rem;
     }
@@ -297,9 +309,9 @@
         </div>
       </div>
 
-      <!-- 選択日のイベント詳細カード -->
-      <div class="event-card" id="event-detail-area">
-        <!-- JSでイベント内容を動的描画 -->
+      <!-- 選択日のイベント詳細エリア（複数ある場合は縦並び） -->
+      <div id="event-detail-area">
+        <!-- JSでイベントカードを動的描画 -->
       </div>
     </div>
   </div>
@@ -317,9 +329,8 @@
     let cachedAttendances = [];
     
     // カレンダー管理用
-    let viewDate = new Date(); // 表示中の年月
-    let selectedDateStr = "";   // 選択中の日付 (YYYY-MM-DD)
-    let selectedEvent = null;   // 選択中のイベントオブジェクト
+    let viewDate = new Date();
+    let selectedDateStr = "";
 
     // 初期化（並行処理で高速化）
     async function init() {
@@ -339,11 +350,10 @@
 
         await fetchPromise;
 
-        // デフォルト選択日：今日以降で最も直近の練習日を探す
         setDefaultSelectedDate();
 
         renderCalendar();
-        renderEventDetail();
+        renderEventDetails();
 
         document.getElementById("loading").classList.add("hidden");
         document.getElementById("app").classList.remove("hidden");
@@ -366,7 +376,6 @@
     // デフォルト選択日をセット（直近の練習日 or 今日）
     function setDefaultSelectedDate() {
       const todayStr = formatLocalDate(new Date());
-      // 今日以降のイベントを検索
       const upcoming = cachedEvents
         .filter(ev => normalizeDateStr(ev.date) >= todayStr)
         .sort((a, b) => normalizeDateStr(a.date).localeCompare(normalizeDateStr(b.date)));
@@ -398,7 +407,7 @@
 
       const todayStr = formatLocalDate(new Date());
 
-      // 1. 前月の余白
+      // 前月の余白
       for (let i = firstDayIndex - 1; i >= 0; i--) {
         const cell = document.createElement("div");
         cell.className = "day-cell other-month";
@@ -406,7 +415,7 @@
         container.appendChild(cell);
       }
 
-      // 2. 当月の日付
+      // 当月の日付
       for (let day = 1; day <= lastDate; day++) {
         const cell = document.createElement("div");
         const dayOfWeek = (firstDayIndex + day - 1) % 7;
@@ -418,7 +427,6 @@
         if (currentStr === todayStr) cell.classList.add("today");
         if (currentStr === selectedDateStr) cell.classList.add("selected");
 
-        // この日に練習予定があるかチェック
         const hasEvent = cachedEvents.some(ev => normalizeDateStr(ev.date) === currentStr);
 
         let html = `<span class="day-number">${day}</span>`;
@@ -427,17 +435,16 @@
         }
         cell.innerHTML = html;
 
-        // タップで日付選択
         cell.addEventListener("click", () => {
           selectedDateStr = currentStr;
           renderCalendar();
-          renderEventDetail();
+          renderEventDetails();
         });
 
         container.appendChild(cell);
       }
 
-      // 3. 翌月の余白（7の倍数まで埋める）
+      // 翌月の余白
       const totalCells = firstDayIndex + lastDate;
       const nextDays = (7 - (totalCells % 7)) % 7;
       for (let i = 1; i <= nextDays; i++) {
@@ -448,11 +455,12 @@
       }
     }
 
-    // 選択された日のイベント詳細エリアを描画
-    function renderEventDetail() {
+    // 選択された日のイベント詳細エリアを描画（複数対応）
+    function renderEventDetails() {
       const area = document.getElementById("event-detail-area");
       const matchedEvents = cachedEvents.filter(ev => normalizeDateStr(ev.date) === selectedDateStr);
 
+      // イベントがない場合
       if (matchedEvents.length === 0) {
         const [y, m, d] = selectedDateStr.split("-");
         area.innerHTML = `
@@ -464,103 +472,119 @@
         return;
       }
 
-      // 該当イベント（最初の1件を表示）
-      selectedEvent = matchedEvents[0];
+      // 該当イベントを縦に並べて生成
+      let html = "";
+      matchedEvents.forEach((eventItem) => {
+        const evId = escapeHtml(eventItem.eventId);
+        const attendees = cachedAttendances.filter(a => a.eventId === eventItem.eventId);
+        const countJoin = attendees.filter(a => a.status === "参加").length;
+        const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
+        const countPending = attendees.filter(a => a.status === "未定").length;
+        const countAbsent = attendees.filter(a => a.status === "不参加").length;
 
-      // 回答集計
-      const attendees = cachedAttendances.filter(a => a.eventId === selectedEvent.eventId);
-      const countJoin = attendees.filter(a => a.status === "参加").length;
-      const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
-      const countAbsent = attendees.filter(a => a.status === "不参加").length;
+        const myRecord = attendees.find(a => a.userId === currentUser.userId);
+        const myStatus = myRecord ? myRecord.status : "参加";
+        const myComment = myRecord ? myRecord.comment : "";
 
-      // 自分の回答状況
-      const myRecord = attendees.find(a => a.userId === currentUser.userId);
-      const myStatus = myRecord ? myRecord.status : "参加";
-      const myComment = myRecord ? myRecord.comment : "";
+        html += `
+          <div class="event-card" id="card-${evId}">
+            <div class="event-title">🏀 ${escapeHtml(eventItem.title)}</div>
+            <div class="event-meta">
+              <div class="meta-item">📅 日付: ${escapeHtml(eventItem.date)}</div>
+              <div class="meta-item">🕒 時間: ${escapeHtml(eventItem.time)}</div>
+              <div class="meta-item">📍 場所: ${escapeHtml(eventItem.place)}</div>
+            </div>
 
-      area.innerHTML = `
-        <div class="event-title">🏀 ${escapeHtml(selectedEvent.title)}</div>
-        <div class="event-meta">
-          <div class="meta-item">📅 ${selectedEvent.date}</div>
-          <div class="meta-item">🕒 時間: ${escapeHtml(selectedEvent.time)}</div>
-          <div class="meta-item">📍 場所: ${escapeHtml(selectedEvent.place)}</div>
-        </div>
+            <!-- 5項目集計サマリー -->
+            <div class="summary-stats">
+              <div class="stat-item stat-join">参加<b>${countJoin}人</b></div>
+              <div class="stat-item">遅刻/早退<b>${countLate}人</b></div>
+              <div class="stat-item stat-pending">未定<b>${countPending}人</b></div>
+              <div class="stat-item stat-absent">不参加<b>${countAbsent}人</b></div>
+            </div>
 
-        <!-- 集計サマリー -->
-        <div class="summary-stats">
-          <div class="stat-item stat-join">参加: <b>${countJoin}人</b></div>
-          <div class="stat-item">遅刻/早退: <b>${countLate}人</b></div>
-          <div class="stat-item stat-absent">不参加: <b>${countAbsent}人</b></div>
-        </div>
+            <!-- 回答フォーム -->
+            <form class="attendance-form" data-event-id="${evId}">
+              <div class="status-group">
+                <input type="radio" id="st-join-${evId}" name="status-${evId}" value="参加" ${myStatus === "参加" ? "checked" : ""}>
+                <label class="status-btn" for="st-join-${evId}">参加</label>
 
-        <!-- 回答フォーム -->
-        <form id="event-attendance-form">
-          <div class="status-group">
-            <input type="radio" id="st-join" name="status" value="参加" ${myStatus === "参加" ? "checked" : ""}>
-            <label class="status-btn" for="st-join">参加</label>
+                <input type="radio" id="st-late-${evId}" name="status-${evId}" value="遅刻" ${myStatus === "遅刻" ? "checked" : ""}>
+                <label class="status-btn" for="st-late-${evId}">遅刻</label>
 
-            <input type="radio" id="st-late" name="status" value="遅刻" ${myStatus === "遅刻" ? "checked" : ""}>
-            <label class="status-btn" for="st-late">遅刻</label>
+                <input type="radio" id="st-early-${evId}" name="status-${evId}" value="早退" ${myStatus === "早退" ? "checked" : ""}>
+                <label class="status-btn" for="st-early-${evId}">早退</label>
 
-            <input type="radio" id="st-early" name="status" value="早退" ${myStatus === "早退" ? "checked" : ""}>
-            <label class="status-btn" for="st-early">早退</label>
+                <input type="radio" id="st-pending-${evId}" name="status-${evId}" value="未定" ${myStatus === "未定" ? "checked" : ""}>
+                <label class="status-btn" for="st-pending-${evId}">未定</label>
 
-            <input type="radio" id="st-absent" name="status" value="不参加" ${myStatus === "不参加" ? "checked" : ""}>
-            <label class="status-btn" for="st-absent">不参加</label>
-          </div>
-
-          <textarea id="comment" rows="2" placeholder="備考（遅刻・早退の時間や欠席理由など）">${escapeHtml(myComment)}</textarea>
-
-          <button type="submit" id="submit-btn" class="btn-submit">
-            ${myRecord ? "回答を変更する" : "回答を送信する"}
-          </button>
-        </form>
-
-        <!-- 参加者リストの展開 -->
-        <div class="members-toggle" id="members-toggle">回答メンバー一覧を表示 ▼</div>
-        <div class="members-list hidden" id="members-list">
-          ${attendees.length === 0 ? '<div style="color:#888; text-align:center;">まだ回答がありません</div>' : 
-            attendees.map(a => `
-              <div class="member-row">
-                <span><b>${escapeHtml(a.userName)}</b>（${escapeHtml(a.status)}）</span>
-                <span style="color:#777;">${escapeHtml(a.comment || "")}</span>
+                <input type="radio" id="st-absent-${evId}" name="status-${evId}" value="不参加" ${myStatus === "不参加" ? "checked" : ""}>
+                <label class="status-btn" for="st-absent-${evId}">不参加</label>
               </div>
-            `).join('')
-          }
-        </div>
-      `;
 
-      // アコーディオン開閉
-      document.getElementById("members-toggle").addEventListener("click", () => {
-        const listEl = document.getElementById("members-list");
-        const toggleEl = document.getElementById("members-toggle");
-        if (listEl.classList.contains("hidden")) {
-          listEl.classList.remove("hidden");
-          toggleEl.textContent = "回答メンバー一覧を閉じる ▲";
-        } else {
-          listEl.classList.add("hidden");
-          toggleEl.textContent = "回答メンバー一覧を表示 ▼";
-        }
+              <textarea id="comment-${evId}" rows="2" placeholder="備考（遅刻時間や未定の理由など）">${escapeHtml(myComment)}</textarea>
+
+              <button type="submit" class="btn-submit" id="btn-${evId}">
+                ${myRecord ? "回答を変更する" : "回答を送信する"}
+              </button>
+            </form>
+
+            <!-- 回答者一覧アコーディオン -->
+            <div class="members-toggle" data-target="list-${evId}">回答メンバー一覧を表示 ▼</div>
+            <div class="members-list hidden" id="list-${evId}">
+              ${attendees.length === 0 ? '<div style="color:#888; text-align:center;">まだ回答がありません</div>' : 
+                attendees.map(a => `
+                  <div class="member-row">
+                    <span><b>${escapeHtml(a.userName)}</b>（${escapeHtml(a.status)}）</span>
+                    <span style="color:#777;">${escapeHtml(a.comment || "")}</span>
+                  </div>
+                `).join('')
+              }
+            </div>
+          </div>
+        `;
       });
 
-      // 送信ハンドラ
-      document.getElementById("event-attendance-form").addEventListener("submit", handleFormSubmit);
+      area.innerHTML = html;
+
+      // アコーディオンのイベント登録
+      document.querySelectorAll(".members-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const targetId = btn.getAttribute("data-target");
+          const targetEl = document.getElementById(targetId);
+          if (targetEl.classList.contains("hidden")) {
+            targetEl.classList.remove("hidden");
+            btn.textContent = "回答メンバー一覧を閉じる ▲";
+          } else {
+            targetEl.classList.add("hidden");
+            btn.textContent = "回答メンバー一覧を表示 ▼";
+          }
+        });
+      });
+
+      // 各フォームの送信イベント登録
+      document.querySelectorAll(".attendance-form").forEach(form => {
+        form.addEventListener("submit", handleFormSubmit);
+      });
     }
 
-    // 送信処理
+    // 送信処理（イベントごと）
     async function handleFormSubmit(e) {
       e.preventDefault();
-      const submitBtn = document.getElementById("submit-btn");
+      const form = e.target;
+      const eventId = form.getAttribute("data-event-id");
+      const submitBtn = document.getElementById(`btn-${eventId}`);
       submitBtn.disabled = true;
       submitBtn.textContent = "送信中...";
 
       try {
-        const status = document.querySelector('input[name="status"]:checked').value;
-        const comment = document.getElementById("comment").value;
+        const status = form.querySelector(`input[name="status-${eventId}"]:checked`).value;
+        const comment = document.getElementById(`comment-${eventId}`).value;
+        const targetEvent = cachedEvents.find(ev => ev.eventId === eventId);
 
         const payload = {
           apiKey: API_KEY,
-          eventId: selectedEvent.eventId,
+          eventId: eventId,
           userId: currentUser.userId,
           userName: currentUser.displayName,
           status: status,
@@ -575,12 +599,12 @@
         });
 
         // トークルームへの自動通知
-        if (liff.isInClient()) {
+        if (liff.isInClient() && targetEvent) {
           try {
             await liff.sendMessages([
               {
                 type: "text",
-                text: `【出欠回答】\n${selectedEvent.date} ${selectedEvent.title}\nステータス: ${status}${comment ? '\n備考: ' + comment : ''}`
+                text: `【出欠回答】\n${targetEvent.date} ${targetEvent.title}\nステータス: ${status}${comment ? '\n備考: ' + comment : ''}`
               }
             ]);
           } catch (lineErr) {
@@ -588,11 +612,11 @@
           }
         }
 
-        alert("出欠を正常に保存しました！");
+        alert("出欠を保存しました！");
 
-        // 再取得してUIを更新
+        // データ再取得してUIを更新
         await fetchData();
-        renderEventDetail();
+        renderEventDetails();
 
       } catch (err) {
         alert("送信エラー: " + err.message);
@@ -612,7 +636,7 @@
       renderCalendar();
     });
 
-    // ユーティリティ：日付文字列の正規化 (2026/9/5 -> 2026-09-05)
+    // ユーティリティ
     function normalizeDateStr(dateVal) {
       if (!dateVal) return "";
       const d = new Date(dateVal);
