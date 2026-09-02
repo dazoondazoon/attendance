@@ -102,6 +102,8 @@
             padding: 16px 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             margin-bottom: 14px;
+            touch-action: pan-y;
+            user-select: none;
         }
 
         .calendar-header {
@@ -894,15 +896,73 @@
             }
         });
 
-        // 前月・次月ボタン
-        document.getElementById("prev-month").addEventListener("click", () => {
+        // 前月・次月移動
+        function goToPrevMonth() {
             viewDate.setMonth(viewDate.getMonth() - 1);
             renderCalendar();
-        });
-        document.getElementById("next-month").addEventListener("click", () => {
+        }
+
+        function goToNextMonth() {
             viewDate.setMonth(viewDate.getMonth() + 1);
             renderCalendar();
+        }
+
+        // 前月・次月ボタン
+        document.getElementById("prev-month").addEventListener("click", goToPrevMonth);
+        document.getElementById("next-month").addEventListener("click", goToNextMonth);
+
+        // カレンダーのスワイプ（左右スライド）対応
+        const calendarEl = document.querySelector(".calendar-card");
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        calendarEl.addEventListener("touchstart", (e) => {
+            touchStartX = e.changedTouches[0].clientX;
+            touchStartY = e.changedTouches[0].clientY;
+        }, { passive: true });
+
+        calendarEl.addEventListener("touchend", (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
+        }, { passive: true });
+
+        // PCマウスドラッグにも対応
+        let isMouseDown = false;
+        let mouseStartX = 0;
+        let mouseStartY = 0;
+
+        calendarEl.addEventListener("mousedown", (e) => {
+            isMouseDown = true;
+            mouseStartX = e.clientX;
+            mouseStartY = e.clientY;
         });
+
+        calendarEl.addEventListener("mouseup", (e) => {
+            if (!isMouseDown) return;
+            isMouseDown = false;
+            handleSwipe(mouseStartX, mouseStartY, e.clientX, e.clientY);
+        });
+
+        calendarEl.addEventListener("mouseleave", () => {
+            isMouseDown = false;
+        });
+
+        function handleSwipe(startX, startY, endX, endY) {
+            const diffX = endX - startX;
+            const diffY = endY - startY;
+
+            // 水平方向の移動が40px以上かつ縦方向より横方向の移動が大きい場合
+            if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX < 0) {
+                    // 左スワイプ -> 翌月へ
+                    goToNextMonth();
+                } else {
+                    // 右スワイプ -> 前月へ
+                    goToPrevMonth();
+                }
+            }
+        }
 
         // タイトルに応じたドット色判定
         function getEventColor(title) {
