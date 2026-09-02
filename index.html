@@ -428,6 +428,210 @@
             color: var(--text-sub);
         }
 
+        /* タブナビゲーション */
+        .tab-nav {
+            display: flex;
+            background: #e8ecf1;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 8px;
+            border-radius: 9px;
+            font-size: 0.88rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--primary-dark);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        /* フィルターカード */
+        .filter-card, .batch-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 14px 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+        }
+
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-title {
+            font-size: 0.76rem;
+            font-weight: bold;
+            color: var(--text-sub);
+        }
+
+        .chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .chip {
+            background: #f1f4f8;
+            border: 1px solid transparent;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .chip:active {
+            transform: scale(0.96);
+        }
+
+        .chip.active {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary-dark);
+        }
+
+        /* 一括設定カード */
+        .batch-header {
+            font-size: 0.82rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .batch-btn-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .batch-btn {
+            padding: 9px 0;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: #fff;
+            transition: transform 0.1s, opacity 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .batch-btn:active {
+            transform: scale(0.96);
+        }
+
+        .batch-join {
+            background: #eefbf3;
+            border-color: #06c755;
+            color: #05a847;
+        }
+
+        .batch-late {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #2563eb;
+        }
+
+        .batch-early {
+            background: #f5f3ff;
+            border-color: #8b5cf6;
+            color: #7c3aed;
+        }
+
+        .batch-pending {
+            background: #fffbeb;
+            border-color: #f59e0b;
+            color: #d97706;
+        }
+
+        .batch-absent {
+            background: #fef2f2;
+            border-color: #e15241;
+            color: #dc2626;
+        }
+
+        .batch-clear {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .batch-comment-row {
+            margin-top: 8px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .batch-comment-input {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        .batch-comment-input:focus {
+            border-color: var(--primary);
+        }
+
+        .batch-comment-btn {
+            background: #f0f2f5;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            color: var(--text);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .batch-comment-btn:active {
+            background: #e2e5e9;
+        }
+
+        /* リスト一覧 */
+        #list-events-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .list-date-badge {
+            font-size: 0.95rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
         .hidden {
             display: none !important;
         }
@@ -446,35 +650,95 @@
                 <span style="color: #06c755; font-size: 0.75rem;">● LINE連携中</span>
             </div>
 
-            <!-- 凡例 -->
-            <div class="legend-bar">
-                <div class="legend-item"><span class="legend-dot" style="background:var(--dot-regular);"></span>正規練
-                </div>
-                <div class="legend-item"><span class="legend-dot" style="background:var(--dot-free);"></span>自主練</div>
-                <div class="legend-item"><span class="legend-dot" style="background:var(--dot-obog);"></span>OBOG練</div>
-                <div class="legend-item"><span class="legend-dot" style="background:var(--dot-other);"></span>その他</div>
+            <!-- ナビゲーションタブ -->
+            <div class="tab-nav">
+                <button type="button" class="tab-btn active" id="btn-tab-calendar">📅 カレンダー</button>
+                <button type="button" class="tab-btn" id="btn-tab-list">📋 リスト一覧（クイック回答）</button>
             </div>
 
-            <!-- 月間カレンダー -->
-            <div class="calendar-card">
-                <div class="calendar-header">
-                    <button class="nav-btn" id="prev-month">‹</button>
-                    <div class="month-title" id="month-display">2026年 9月</div>
-                    <button class="nav-btn" id="next-month">›</button>
+            <!-- カレンダービュー -->
+            <div id="view-calendar">
+                <!-- 凡例 -->
+                <div class="legend-bar">
+                    <div class="legend-item"><span class="legend-dot" style="background:var(--dot-regular);"></span>正規練</div>
+                    <div class="legend-item"><span class="legend-dot" style="background:var(--dot-free);"></span>自主練</div>
+                    <div class="legend-item"><span class="legend-dot" style="background:var(--dot-obog);"></span>OBOG練</div>
+                    <div class="legend-item"><span class="legend-dot" style="background:var(--dot-other);"></span>その他</div>
                 </div>
 
-                <div class="week-header">
-                    <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+                <!-- 月間カレンダー -->
+                <div class="calendar-card">
+                    <div class="calendar-header">
+                        <button class="nav-btn" id="prev-month">‹</button>
+                        <div class="month-title" id="month-display">2026年 9月</div>
+                        <button class="nav-btn" id="next-month">›</button>
+                    </div>
+
+                    <div class="week-header">
+                        <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+                    </div>
+
+                    <div class="days-grid" id="days-container"></div>
                 </div>
 
-                <div class="days-grid" id="days-container"></div>
+                <!-- 選択日の日付ヘッダー -->
+                <div class="date-header" id="date-display-header"></div>
+
+                <!-- イベント詳細エリア -->
+                <div id="event-detail-area"></div>
             </div>
 
-            <!-- 選択日の日付ヘッダー -->
-            <div class="date-header" id="date-display-header"></div>
+            <!-- リスト一覧（クイック回答）ビュー -->
+            <div id="view-list" class="hidden">
+                <!-- フィルターカード -->
+                <div class="filter-card">
+                    <div class="filter-section">
+                        <div class="filter-title">🏸 練習種別</div>
+                        <div class="chip-group" id="filter-type-group">
+                            <button type="button" class="chip active" data-type="all">すべて</button>
+                            <button type="button" class="chip" data-type="正規練">正規練</button>
+                            <button type="button" class="chip" data-type="自主練">自主練</button>
+                            <button type="button" class="chip" data-type="OBOG練">OBOG</button>
+                            <button type="button" class="chip" data-type="その他">その他</button>
+                        </div>
+                    </div>
+                    <div class="filter-section" style="margin-top: 10px;">
+                        <div class="filter-title">📆 曜日</div>
+                        <div class="chip-group" id="filter-day-group">
+                            <button type="button" class="chip active" data-day="all">全曜日</button>
+                            <button type="button" class="chip" data-day="0">日</button>
+                            <button type="button" class="chip" data-day="1">月</button>
+                            <button type="button" class="chip" data-day="2">火</button>
+                            <button type="button" class="chip" data-day="3">水</button>
+                            <button type="button" class="chip" data-day="4">木</button>
+                            <button type="button" class="chip" data-day="5">金</button>
+                            <button type="button" class="chip" data-day="6">土</button>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- イベント詳細エリア -->
-            <div id="event-detail-area"></div>
+                <!-- 一括設定カード -->
+                <div class="batch-card">
+                    <div class="batch-header">
+                        <span>⚡ 表示中 (<b id="filtered-count" style="color:var(--primary-dark);">0</b>件) を一括設定:</span>
+                    </div>
+                    <div class="batch-btn-grid">
+                        <button type="button" class="batch-btn batch-join" data-batch-status="参加">一括 参加</button>
+                        <button type="button" class="batch-btn batch-late" data-batch-status="遅刻">一括 遅刻</button>
+                        <button type="button" class="batch-btn batch-early" data-batch-status="早退">一括 早退</button>
+                        <button type="button" class="batch-btn batch-pending" data-batch-status="未定">一括 未定</button>
+                        <button type="button" class="batch-btn batch-absent" data-batch-status="不参加">一括 不参加</button>
+                        <button type="button" class="batch-btn batch-clear" data-batch-status="">クリア</button>
+                    </div>
+                    <div class="batch-comment-row">
+                        <input type="text" id="batch-comment-input" class="batch-comment-input" placeholder="一括備考（例: 19時合流、就活のため等）">
+                        <button type="button" id="btn-batch-apply-comment" class="batch-comment-btn">備考のみ適用</button>
+                    </div>
+                </div>
+
+                <!-- リスト一覧コンテナ -->
+                <div id="list-events-container"></div>
+            </div>
 
             <!-- 統一送信ボタン（常に押しやすい高さに配置） -->
             <div class="action-area" id="submit-all-area">
@@ -746,9 +1010,8 @@
                             nextStatus = btn.getAttribute("data-val");
                         }
 
-                        // 状態を記録
-                        if (!editState[evId]) editState[evId] = { comment: "" };
-                        editState[evId].status = nextStatus;
+                        const item = getEditItem(evId);
+                        item.status = nextStatus;
                         checkModified(evId);
                         updateSubmitButtonUI();
                     });
@@ -761,8 +1024,8 @@
                 const commentEl = document.getElementById(`comment-${evId}`);
                 if (commentEl) {
                     commentEl.addEventListener("input", (e) => {
-                        if (!editState[evId]) editState[evId] = { status: "" };
-                        editState[evId].comment = e.target.value;
+                        const item = getEditItem(evId);
+                        item.comment = e.target.value;
                         checkModified(evId);
                         updateSubmitButtonUI();
                     });
@@ -785,11 +1048,31 @@
             });
         }
 
+        // editState アイテムを取得（存在しない場合は初期状態を生成）
+        function getEditItem(evId) {
+            const idStr = String(evId);
+            if (!editState[idStr]) {
+                const myRecord = cachedAttendances.find(a => String(a.eventId) === idStr && String(a.userId) === String(currentUser.userId));
+                editState[idStr] = {
+                    status: myRecord ? (myRecord.status || "") : "",
+                    comment: myRecord ? (myRecord.comment || "") : "",
+                    originalStatus: myRecord ? (myRecord.status || "") : "",
+                    originalComment: myRecord ? (myRecord.comment || "") : "",
+                    isModified: false
+                };
+            }
+            return editState[idStr];
+        }
+
         // 変更の有無をチェック
         function checkModified(evId) {
-            const item = editState[evId];
-            if (!item) return;
-            item.isModified = (item.status !== item.originalStatus) || (item.comment !== item.originalComment);
+            const item = getEditItem(evId);
+            const curStatus = item.status || "";
+            const origStatus = item.originalStatus || "";
+            const curComment = item.comment || "";
+            const origComment = item.originalComment || "";
+
+            item.isModified = (curStatus !== origStatus) || (curComment !== origComment);
         }
 
         // 保存ボタンのテキストと状態を更新
@@ -896,6 +1179,293 @@
             }
         });
 
+        // タブ切り替えとフィルター状態
+        let currentTab = "calendar";
+        let currentTypeFilter = "all";
+        let currentDayFilter = "all";
+
+        // タブ切り替え
+        document.getElementById("btn-tab-calendar").addEventListener("click", () => switchTab("calendar"));
+        document.getElementById("btn-tab-list").addEventListener("click", () => switchTab("list"));
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const btnCal = document.getElementById("btn-tab-calendar");
+            const btnList = document.getElementById("btn-tab-list");
+            const viewCal = document.getElementById("view-calendar");
+            const viewList = document.getElementById("view-list");
+
+            if (tab === "calendar") {
+                btnCal.classList.add("active");
+                btnList.classList.remove("active");
+                viewCal.classList.remove("hidden");
+                viewList.classList.add("hidden");
+                renderCalendar();
+                renderEventDetails();
+            } else {
+                btnCal.classList.remove("active");
+                btnList.classList.add("active");
+                viewCal.classList.add("hidden");
+                viewList.classList.remove("hidden");
+                renderListView();
+            }
+        }
+
+        // フィルターチップのイベントリスナー
+        document.querySelectorAll("#filter-type-group .chip").forEach(chip => {
+            chip.addEventListener("click", () => {
+                document.querySelectorAll("#filter-type-group .chip").forEach(c => c.classList.remove("active"));
+                chip.classList.add("active");
+                currentTypeFilter = chip.getAttribute("data-type");
+                renderListView();
+            });
+        });
+
+        document.querySelectorAll("#filter-day-group .chip").forEach(chip => {
+            chip.addEventListener("click", () => {
+                document.querySelectorAll("#filter-day-group .chip").forEach(c => c.classList.remove("active"));
+                chip.classList.add("active");
+                currentDayFilter = chip.getAttribute("data-day");
+                renderListView();
+            });
+        });
+
+        // 表示中の日程を一括設定するボタンのイベントリスナー
+        document.querySelectorAll(".batch-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const targetStatus = btn.getAttribute("data-batch-status");
+                const filtered = getFilteredEvents();
+
+                if (filtered.length === 0) {
+                    alert("設定対象の日程がありません。");
+                    return;
+                }
+
+                const batchComment = document.getElementById("batch-comment-input").value.trim();
+
+                filtered.forEach(ev => {
+                    const evId = String(ev.eventId);
+                    if (!editState[evId]) editState[evId] = { comment: "" };
+                    editState[evId].status = targetStatus;
+                    // 一括備考に入力があれば備考も上書き設定
+                    if (batchComment !== "") {
+                        editState[evId].comment = batchComment;
+                    }
+                    checkModified(evId);
+                });
+
+                renderListView();
+                updateSubmitButtonUI();
+            });
+        });
+
+        // 備考のみ一括適用ボタンのイベントリスナー
+        document.getElementById("btn-batch-apply-comment").addEventListener("click", () => {
+            const batchComment = document.getElementById("batch-comment-input").value.trim();
+            const filtered = getFilteredEvents();
+
+            if (filtered.length === 0) {
+                alert("設定対象の日程がありません。");
+                return;
+            }
+
+            if (batchComment === "") {
+                const ok = confirm("一括備考欄が空です。表示中の全日程の備考をクリア（空）にしますか？");
+                if (!ok) return;
+            }
+
+            filtered.forEach(ev => {
+                const evId = String(ev.eventId);
+                if (!editState[evId]) editState[evId] = { status: "" };
+                editState[evId].comment = batchComment;
+                checkModified(evId);
+            });
+
+            renderListView();
+            updateSubmitButtonUI();
+        });
+
+        // フィルター条件に一致するイベント一覧を取得（今日以降優先でソート）
+        function getFilteredEvents() {
+            return cachedEvents
+                .slice()
+                .sort((a, b) => toStandardYMD(a.date).localeCompare(toStandardYMD(b.date)))
+                .filter(ev => {
+                    const ymd = toStandardYMD(ev.date);
+                    if (!ymd) return false;
+
+                    // 種別フィルター
+                    if (currentTypeFilter !== "all") {
+                        if (currentTypeFilter === "その他") {
+                            if (ev.title.includes("正規練") || ev.title.includes("自主練") || ev.title.includes("OBOG練") || ev.title.includes("OB") || ev.title.includes("OG")) {
+                                return false;
+                            }
+                        } else if (!ev.title.includes(currentTypeFilter)) {
+                            return false;
+                        }
+                    }
+
+                    // 曜日フィルター
+                    if (currentDayFilter !== "all") {
+                        const [y, m, d] = ymd.split("-").map(Number);
+                        const dayOfWeek = new Date(y, m - 1, d).getDay();
+                        if (dayOfWeek !== Number(currentDayFilter)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
+        }
+
+        // リスト一覧（クイック回答）を描画
+        function renderListView() {
+            const container = document.getElementById("list-events-container");
+            const countBadge = document.getElementById("filtered-count");
+            const filtered = getFilteredEvents();
+
+            countBadge.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                  <div class="no-event">
+                    <p style="font-size: 1rem; font-weight: bold; margin-bottom: 4px;">該当する練習はありません 🔍</p>
+                    <p style="font-size: 0.82rem;">フィルター条件を変更してお試しください。</p>
+                  </div>
+                `;
+                return;
+            }
+
+            let html = "";
+            filtered.forEach(eventItem => {
+                const evId = String(eventItem.eventId);
+                const color = getEventColor(eventItem.title);
+
+                const ymd = toStandardYMD(eventItem.date);
+                const [y, m, d] = ymd.split("-").map(Number);
+                const dayIndex = new Date(y, m - 1, d).getDay();
+                const weekDay = WEEK_NAMES[dayIndex];
+
+                let dayColorStyle = "";
+                if (dayIndex === 0) dayColorStyle = "color: var(--sunday);";
+                if (dayIndex === 6) dayColorStyle = "color: var(--saturday);";
+
+                const attendees = cachedAttendances.filter(a => String(a.eventId) === evId);
+                const countJoin = attendees.filter(a => a.status === "参加").length;
+                const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
+                const countPending = attendees.filter(a => a.status === "未定").length;
+                const countAbsent = attendees.filter(a => a.status === "不参加").length;
+
+                const currentData = editState[evId] || { status: "", comment: "" };
+                const myStatus = currentData.status;
+                const myComment = currentData.comment;
+
+                html += `
+                  <div class="event-card" id="list-card-${evId}" data-event-id="${evId}">
+                    <div class="list-date-badge">
+                      <span style="${dayColorStyle}">📅 ${m}/${d} (${weekDay})</span>
+                      <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-sub);">🕒 ${escapeHtml(eventItem.time)}</span>
+                    </div>
+                    <div class="event-title">
+                      <span class="title-badge" style="background-color: ${color};"></span>
+                      ${escapeHtml(eventItem.title)}
+                    </div>
+                    <div class="event-meta" style="margin-bottom: 8px;">
+                      <div>🏸 場所: ${escapeHtml(eventItem.place)}</div>
+                    </div>
+
+                    <!-- 出欠ボタン（5択 & トグル消去対応） -->
+                    <div class="status-group" data-event-id="${evId}">
+                      <div class="status-btn ${myStatus === '参加' ? 'active' : ''}" data-val="参加">参加</div>
+                      <div class="status-btn ${myStatus === '遅刻' ? 'active' : ''}" data-val="遅刻">遅刻</div>
+                      <div class="status-btn ${myStatus === '早退' ? 'active' : ''}" data-val="早退">早退</div>
+                      <div class="status-btn ${myStatus === '未定' ? 'active' : ''}" data-val="未定">未定</div>
+                      <div class="status-btn ${myStatus === '不参加' ? 'active' : ''}" data-val="不参加">不参加</div>
+                    </div>
+
+                    <textarea id="list-comment-${evId}" rows="1" placeholder="備考（遅刻理由など）">${escapeHtml(myComment)}</textarea>
+
+                    <!-- 集計バー -->
+                    <div class="summary-stats" style="margin-bottom: 4px;">
+                      <div class="stat-item stat-join">参加<b>${countJoin}人</b></div>
+                      <div class="stat-item">遅刻/早退<b>${countLate}人</b></div>
+                      <div class="stat-item stat-pending">未定<b>${countPending}人</b></div>
+                      <div class="stat-item stat-absent">不参加<b>${countAbsent}人</b></div>
+                    </div>
+
+                    <!-- メンバー一覧 -->
+                    <div class="members-toggle" data-target="list-att-${evId}">回答メンバー一覧を表示 ▼</div>
+                    <div class="members-list hidden" id="list-att-${evId}">
+                      ${attendees.length === 0 ? '<div style="color:#888; text-align:center;">まだ回答はありません</div>' :
+                        attendees.map(a => `
+                          <div class="member-row">
+                            <span><b>${escapeHtml(a.userName)}</b>（${escapeHtml(a.status)}）</span>
+                            <span style="color:#777;">${escapeHtml(a.comment || "")}</span>
+                          </div>
+                        `).join('')
+                    }
+                    </div>
+                  </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            // リスト内ボタンのトグル動作＆editStateへの保存
+            container.querySelectorAll(".status-group").forEach(group => {
+                const evId = group.getAttribute("data-event-id");
+                const buttons = group.querySelectorAll(".status-btn");
+
+                buttons.forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        let nextStatus = "";
+                        if (btn.classList.contains("active")) {
+                            btn.classList.remove("active");
+                            nextStatus = "";
+                        } else {
+                            buttons.forEach(b => b.classList.remove("active"));
+                            btn.classList.add("active");
+                            nextStatus = btn.getAttribute("data-val");
+                        }
+
+                        if (!editState[evId]) editState[evId] = { comment: "" };
+                        editState[evId].status = nextStatus;
+                        checkModified(evId);
+                        updateSubmitButtonUI();
+                    });
+                });
+            });
+
+            // リスト内テキストエリア入力監視
+            filtered.forEach(ev => {
+                const evId = String(ev.eventId);
+                const commentEl = document.getElementById(`list-comment-${evId}`);
+                if (commentEl) {
+                    commentEl.addEventListener("input", (e) => {
+                        if (!editState[evId]) editState[evId] = { status: "" };
+                        editState[evId].comment = e.target.value;
+                        checkModified(evId);
+                        updateSubmitButtonUI();
+                    });
+                }
+            });
+
+            // メンバー一覧開閉
+            container.querySelectorAll(".members-toggle").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const targetId = btn.getAttribute("data-target");
+                    const listEl = document.getElementById(targetId);
+                    if (listEl.classList.contains("hidden")) {
+                        listEl.classList.remove("hidden");
+                        btn.textContent = "回答メンバー一覧を閉じる ▲";
+                    } else {
+                        listEl.classList.add("hidden");
+                        btn.textContent = "回答メンバー一覧を表示 ▼";
+                    }
+                });
+            });
+        }
+
         // 前月・次月移動
         function goToPrevMonth() {
             viewDate.setMonth(viewDate.getMonth() - 1);
@@ -952,13 +1522,10 @@
             const diffX = endX - startX;
             const diffY = endY - startY;
 
-            // 水平方向の移動が40px以上かつ縦方向より横方向の移動が大きい場合
             if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
                 if (diffX < 0) {
-                    // 左スワイプ -> 翌月へ
                     goToNextMonth();
                 } else {
-                    // 右スワイプ -> 前月へ
                     goToPrevMonth();
                 }
             }
