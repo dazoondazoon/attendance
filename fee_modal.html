@@ -1,138 +1,104 @@
-<!-- 初回部員情報登録フォーム（オンデマンドロード用・カレンダーUIテイストのポップアップ） -->
-<div id="register-overlay" class="register-overlay">
-    <div class="register-modal">
+<!-- 部費・会計情報 ポップアップモーダル（オンデマンド読み込み用） -->
+<div id="fee-overlay" class="fee-overlay">
+    <div class="fee-modal-content">
+        <!-- 上部バー（ハンドル ＆ 閉じるボタン） -->
         <div class="modal-top-bar">
             <div class="modal-handle"></div>
-            <button type="button" class="btn-modal-close hidden" id="btn-close-register">✕</button>
+            <button type="button" id="btn-close-fee-modal" class="btn-modal-close" aria-label="閉じる">✕</button>
         </div>
 
-        <div class="register-header">
-            <div class="register-badge" id="reg-badge">🏸 はじめに</div>
-            <h2 class="register-title" id="reg-title">部員プロフィール登録</h2>
-            <p class="register-desc" id="reg-desc">出欠管理カレンダーを利用するため、初回のみお名前・所属をご登録ください。</p>
+        <div class="fee-header">
+            <span class="fee-badge">💰 会計・部費明細</span>
+            <h2 class="fee-title" id="fee-modal-user-name">部費・請求内訳</h2>
         </div>
 
-        <div class="line-profile-preview">
-            <div class="line-icon-badge">LINE</div>
-            <div class="line-info">
-                <span class="line-label">連携中のLINEアカウント:</span>
-                <span class="line-name" id="reg-line-name">取得中...</span>
+        <!-- 合計金額 ＆ 支払いステータス -->
+        <div class="fee-summary-box">
+            <div>
+                <div class="fee-total-label">ご請求合計金額</div>
+                <div class="fee-total-num" id="fee-modal-total-amount">¥0</div>
+            </div>
+            <div id="fee-modal-status-container">
+                <span class="fee-status-badge fee-status-unpaid" id="fee-modal-status-badge">未払い</span>
             </div>
         </div>
 
-        <form id="register-form" novalidate>
-            <!-- 氏名 -->
-            <div class="form-group">
-                <label class="form-label">お名前（漢字） <span class="req">*</span></label>
-                <div class="form-row-2">
-                    <input type="text" id="reg-last-name" class="form-input" placeholder="例: 山田" required>
-                    <input type="text" id="reg-first-name" class="form-input" placeholder="例: 太郎" required>
-                </div>
-            </div>
+        <!-- 月別部費内訳 -->
+        <div class="fee-section-title">📅 月別部費</div>
+        <table class="fee-table">
+            <thead>
+                <tr><th>月</th><th style="text-align:right;">金額</th></tr>
+            </thead>
+            <tbody id="fee-modal-monthly-tbody"></tbody>
+        </table>
 
-            <!-- ふりがな -->
-            <div class="form-group">
-                <label class="form-label">ふりがな <span class="req">*</span></label>
-                <div class="form-row-2">
-                    <input type="text" id="reg-kana-last" class="form-input" placeholder="例: ヤマダ" required>
-                    <input type="text" id="reg-kana-first" class="form-input" placeholder="例: タロウ" required>
-                </div>
-            </div>
+        <!-- イベント・遠征等費用内訳 -->
+        <div class="fee-section-title">🏸 イベント・合宿・備品代</div>
+        <table class="fee-table">
+            <thead>
+                <tr><th>項目名</th><th style="text-align:center;">数量/回数</th><th style="text-align:right;">小計</th></tr>
+            </thead>
+            <tbody id="fee-modal-event-tbody"></tbody>
+        </table>
 
-            <!-- 学年 -->
-            <div class="form-group">
-                <label class="form-label">学年 <span class="req">*</span></label>
-                <div class="chip-group" id="grade-chip-group">
-                    <button type="button" class="reg-chip" data-val="1年">1年</button>
-                    <button type="button" class="reg-chip" data-val="2年">2年</button>
-                    <button type="button" class="reg-chip" data-val="3年">3年</button>
-                    <button type="button" class="reg-chip" data-val="4年">4年</button>
-                    <button type="button" class="reg-chip" data-val="5年">5年</button>
-                    <button type="button" class="reg-chip" data-val="6年">6年</button>
-                    <button type="button" class="reg-chip" data-val="大学院">大学院</button>
-                    <button type="button" class="reg-chip" data-val="OBOG">OBOG</button>
-                    <button type="button" class="reg-chip" data-val="その他">その他</button>
-                </div>
-                <div id="grade-detail-container" class="hidden" style="margin-top: 8px;">
-                    <input type="text" id="reg-grade-detail" class="form-input" placeholder="">
-                </div>
-                <input type="hidden" id="reg-grade" required>
-            </div>
+        <!-- 部費ルール・注意事項 -->
+        <div class="fee-rule-card">
+            <div style="font-weight:bold; margin-bottom:4px; color:#1e293b;">📌 部費の算定ルール</div>
+            <div>練習参加回数は、ひと月あたり <b>0回→0円</b>、<b>1回→1,000円</b>、<b>2回→2,000円</b>、<b>3回以上→2,500円</b> となっています。</div>
+            <div style="margin-top:2px;">※1年生は <b>4〜7月</b> までの練習参加回数による部費は <b>0円</b> です。</div>
+            <div style="margin-top:6px; color:#059669; font-weight:bold;">間違っている部分や疑問点などがあったら松下までご連絡ください！お願いいたします🙇‍♂️</div>
+        </div>
 
-            <!-- 大学名 -->
-            <div class="form-group">
-                <label class="form-label">大学名 <span class="req">*</span></label>
-                <div class="chip-group" id="univ-chip-group">
-                    <button type="button" class="reg-chip" data-val="東京大学">東京大学</button>
-                    <button type="button" class="reg-chip" data-val="日本赤十字看護大学">日本赤十字看護大学</button>
-                    <button type="button" class="reg-chip" data-val="その他">その他</button>
-                </div>
-                <div id="univ-other-container" class="univ-other-container hidden" style="margin-top: 8px;">
-                    <input type="text" id="reg-univ-other" class="form-input" placeholder="例: 早稲田大学">
-                </div>
-                <input type="hidden" id="reg-univ" required>
-            </div>
-
-            <!-- 性別 -->
-            <div class="form-group">
-                <label class="form-label">性別 <span class="req">*</span></label>
-                <div class="chip-group" id="sex-chip-group">
-                    <button type="button" class="reg-chip" data-val="男性">男性</button>
-                    <button type="button" class="reg-chip" data-val="女性">女性</button>
-                    <button type="button" class="reg-chip" data-val="その他">その他</button>
-                </div>
-                <input type="hidden" id="reg-sex" required>
-            </div>
-
-            <div id="reg-error-msg" class="reg-error hidden"></div>
-
-            <button type="submit" id="btn-submit-register" class="btn-submit-register">
-                登録してカレンダーを開始
+        <!-- 振込先口座案内 -->
+        <div class="bank-info-box">
+            <div style="font-size:0.84rem; font-weight:bold; color:#1e293b; margin-bottom:6px;">🏦 お振込先口座</div>
+            <div class="bank-info-row"><span class="bank-info-label">金融機関:</span><span class="bank-info-val">みずほ銀行</span></div>
+            <div class="bank-info-row"><span class="bank-info-label">支店名:</span><span class="bank-info-val">本郷支店（店番号 075）</span></div>
+            <div class="bank-info-row"><span class="bank-info-label">口座種別:</span><span class="bank-info-val">普通預金</span></div>
+            <div class="bank-info-row"><span class="bank-info-label">口座番号:</span><span class="bank-info-val">1372826</span></div>
+            <div class="bank-info-row"><span class="bank-info-label">口座名義:</span><span class="bank-info-val" style="font-size:0.75rem;">トウキョウダイガクイガクブテツモンウキュウブ</span></div>
+            
+            <button type="button" class="btn-copy-account" id="btn-copy-account-info">
+                <span>📋 口座情報をコピー</span>
             </button>
-        </form>
+        </div>
     </div>
 </div>
 
-    <style>
-    /* カレンダーアプリとテイストを統一したポップアップモーダルスタイル */
-    .register-overlay {
+<style>
+    .fee-overlay {
         position: fixed;
         top: 0;
         left: 0;
-        right: 0;
-        bottom: 0;
+        width: 100%;
+        height: 100%;
         background: rgba(15, 23, 42, 0.45);
         backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);
-        z-index: 9999;
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 9999;
         padding: 16px;
-        animation: regFadeIn 0.25s ease-out;
+        box-sizing: border-box;
     }
 
-    @keyframes regFadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    .register-modal {
+    .fee-modal-content {
         background: #ffffff;
         width: 100%;
         max-width: 440px;
-        max-height: 88vh;
+        max-height: 90vh;
         overflow-y: auto;
         border-radius: 20px;
         padding: 18px 20px 24px;
         box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
         border: 1px solid rgba(226, 232, 240, 0.9);
-        animation: regPopUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: feePopUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         -webkit-overflow-scrolling: touch;
         box-sizing: border-box;
     }
 
-    @keyframes regPopUp {
+    @keyframes feePopUp {
         from { transform: scale(0.94) translateY(12px); opacity: 0; }
         to { transform: scale(1) translateY(0); opacity: 1; }
     }
@@ -175,12 +141,12 @@
         color: #1e293b;
     }
 
-    .register-header {
+    .fee-header {
         text-align: center;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
 
-    .register-badge {
+    .fee-badge {
         display: inline-block;
         background: rgba(6, 199, 85, 0.12);
         color: #049f43;
@@ -191,162 +157,146 @@
         margin-bottom: 6px;
     }
 
-    .register-title {
-        font-size: 1.25rem;
+    .fee-title {
+        font-size: 1.22rem;
         font-weight: 800;
         color: #1e293b;
-        margin-bottom: 4px;
-        letter-spacing: -0.3px;
+        margin: 0;
     }
 
-    .register-desc {
-        font-size: 0.8rem;
-        color: #64748b;
-        line-height: 1.45;
-    }
-
-    .line-profile-preview {
+    .fee-summary-box {
+        background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+        border: 1px solid rgba(6, 199, 85, 0.2);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
         display: flex;
         align-items: center;
-        gap: 10px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        padding: 9px 12px;
-        border-radius: 12px;
-        margin-bottom: 16px;
+        justify-content: space-between;
     }
 
-    .line-icon-badge {
-        background: #06c755;
-        color: #fff;
-        font-size: 0.65rem;
+    .fee-total-label {
+        font-size: 0.78rem;
+        color: #065f46;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+
+    .fee-total-num {
+        font-size: 1.55rem;
         font-weight: 900;
-        padding: 3px 6px;
-        border-radius: 6px;
-        letter-spacing: 0.5px;
+        color: #064e3b;
     }
 
-    .line-info {
-        display: flex;
-        flex-direction: column;
-        font-size: 0.8rem;
-    }
-
-    .line-label {
-        font-size: 0.68rem;
-        color: #94a3b8;
-    }
-
-    .line-name {
-        font-weight: bold;
-        color: #334155;
-    }
-
-    .form-group {
-        margin-bottom: 14px;
-    }
-
-    .form-label {
-        display: block;
+    .fee-status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
         font-size: 0.82rem;
-        font-weight: bold;
-        color: #334155;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+    }
+
+    .fee-status-paid {
+        background: #059669;
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+    }
+
+    .fee-status-unpaid {
+        background: #ea580c;
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(234, 88, 12, 0.3);
+    }
+
+    .fee-section-title {
+        font-size: 0.86rem;
+        font-weight: 800;
+        color: #1e293b;
         margin-bottom: 6px;
     }
 
-    .form-label .req {
-        color: #ef4444;
-        margin-left: 2px;
-    }
-
-    .form-row-2 {
-        display: flex;
-        gap: 8px;
-    }
-
-    .form-input {
+    .fee-table {
         width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #cbd5e1;
-        border-radius: 10px;
-        font-size: 0.88rem;
-        outline: none;
-        transition: all 0.2s;
-        box-sizing: border-box;
-        font-family: inherit;
-        background: #ffffff;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+        margin-bottom: 14px;
     }
 
-    .form-input:focus {
-        border-color: #06c755;
-        box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.15);
+    .fee-table th {
+        text-align: left;
+        background: #f8fafc;
+        color: #64748b;
+        padding: 8px 10px;
+        font-weight: 700;
+        border-bottom: 1px solid #e2e8f0;
     }
 
-    .chip-group {
+    .fee-table td {
+        padding: 9px 10px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    .fee-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .fee-rule-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 0.78rem;
+        color: #475569;
+        line-height: 1.55;
+        margin-bottom: 14px;
+    }
+
+    .bank-info-box {
+        background: #fff;
+        border: 1.5px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 14px;
+    }
+
+    .bank-info-row {
         display: flex;
-        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        padding: 4px 0;
+    }
+
+    .bank-info-label {
+        color: #64748b;
+    }
+
+    .bank-info-val {
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .btn-copy-account {
+        width: 100%;
+        background: #334155;
+        color: #ffffff;
+        border: none;
+        padding: 11px;
+        border-radius: 10px;
+        font-size: 0.86rem;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         gap: 6px;
     }
 
-    /* カレンダータブのチップと同一スタイル */
-    .reg-chip {
-        padding: 7px 12px;
-        background: #f1f5f9;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 0.82rem;
-        font-weight: bold;
-        color: #475569;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    .reg-chip:active {
-        transform: scale(0.96);
-    }
-
-    .reg-chip.active {
-        background: #06c755;
-        border-color: #06c755;
-        color: #ffffff;
-        box-shadow: 0 2px 6px rgba(6, 199, 85, 0.28);
-    }
-
-    .reg-error {
-        background: #fef2f2;
-        border: 1px solid #fca5a5;
-        color: #b91c1c;
-        padding: 8px 12px;
-        border-radius: 10px;
-        font-size: 0.8rem;
-        margin-bottom: 12px;
-        text-align: center;
-    }
-
-    /* 保存ボタンと同一テイストの登録ボタン */
-    .btn-submit-register {
-        width: 100%;
-        background: #06c755;
-        color: #ffffff;
-        border: none;
-        padding: 14px;
-        border-radius: 14px;
-        font-size: 0.98rem;
-        font-weight: bold;
-        cursor: pointer;
-        box-shadow: 0 4px 14px rgba(6, 199, 85, 0.35);
-        transition: all 0.2s;
-        margin-top: 10px;
-    }
-
-    .btn-submit-register:active {
+    .btn-copy-account:active {
+        background: #1e293b;
         transform: scale(0.98);
-    }
-
-    .btn-submit-register:disabled {
-        background: #94a3b8;
-        box-shadow: none;
-        cursor: not-allowed;
     }
 </style>
