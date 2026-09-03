@@ -7,11 +7,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>部活出欠カレンダー</title>
-    <!-- LINEのCDNへの接続を事前に確立してLIFF SDK読み込みを高速化 -->
+    <!-- LIFF SDK -->
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link rel="preconnect" href="https://static.line-scdn.net">
-    <link rel="dns-prefetch" href="//static.line-scdn.net">
     <link rel="dns-prefetch" href="//script.google.com">
-    <!-- LIFF SDK はレンダリングをブロックしないよう動的に読み込む (loadLatestDataAsync 内) -->
     <style>
         :root {
             --primary: #06c755;
@@ -1186,42 +1185,59 @@
             loadLatestDataAsync(false);
         }
 
+        function withTimeout(promise, ms, timeoutErrorMsg) {
+            return Promise.race([
+                promise,
+                new Promise((_, reject) => setTimeout(() => reject(new Error(timeoutErrorMsg || `タイムアウト (${ms/1000}秒)`)), ms))
+            ]);
+        }
+
         async function loadLatestDataAsync(isManualRetry = false) {
             try {
-                // LIFF SDKをブロッキングなしで動的に読み込む（初回のみ）
-                if (typeof liff === 'undefined') {
-                    await new Promise((resolve, reject) => {
-                        const s = document.createElement('script');
-                        s.charset = 'utf-8';
-                        s.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
-                        s.onload = resolve;
-                        s.onerror = () => reject(new Error('LIFF SDKの読み込みに失敗しました'));
-                        document.head.appendChild(s);
-                    });
+                // 1. LIFF SDKの初期化（タイムアウト8秒）
+                if (typeof liff !== "undefined") {
+                    await withTimeout(
+                        liff.init({ liffId: LIFF_ID }),
+                        8000,
+                        "LINE認証の初期化がタイムアウトしました"
+                    );
+
+                    if (!liff.isInClient() && !liff.isLoggedIn()) {
+                        liff.login();
+                        return;
+                    }
+
+                    try {
+                        const profile = await liff.getProfile();
+                        if (profile) {
+                            currentUser.userId = profile.userId || "";
+                            if (!currentUser.displayName) {
+                                currentUser.displayName = profile.displayName || "";
+                            }
+                            const userNameEl = document.getElementById("user-name");
+                            if (userNameEl && currentUser.displayName) {
+                                userNameEl.textContent = currentUser.displayName;
+                            }
+                        }
+                    } catch (pErr) {
+                        console.warn("プロフィール取得スキップ:", pErr);
+                    }
                 }
 
-                await liff.init({ liffId: LIFF_ID });
-                if (!liff.isInClient() && !liff.isLoggedIn()) {
-                    liff.login();
-                    return;
-                }
-
-                const profile = await liff.getProfile();
-                currentUser.userId = profile.userId;
-                if (!currentUser.displayName) {
-                    currentUser.displayName = profile.displayName;
-                }
-                const userNameEl = document.getElementById("user-name");
-                if (userNameEl) userNameEl.textContent = currentUser.displayName;
-
-                // 最新のイベント日程 ＋ 自分の出欠データを超軽量取得
-                const initData = await fetchData(currentUser.userId);
+                // 2. 最新のイベント日程 ＋ 出欠データの取得（タイムアウト12秒）
+                const initData = await withTimeout(
+                    fetchData(currentUser.userId),
+                    12000,
+                    "サーバーからのデータ取得がタイムアウトしました"
+                );
                 isEventsLoading = false;
 
                 if (initData && initData.userProfile) {
                     currentUserProfile = initData.userProfile;
                     if (initData.userProfile.name) {
                         currentUser.displayName = initData.userProfile.name;
+                        const userNameEl = document.getElementById("user-name");
+                        if (userNameEl) userNameEl.textContent = currentUser.displayName;
                     }
                     try {
                         localStorage.setItem("badminton_user_profile", JSON.stringify(currentUserProfile));
@@ -1246,16 +1262,19 @@
                 }
             } catch (err) {
                 console.error("データ同期エラー:", err);
+                isEventsLoading = false;
+                updateSubmitButtonUI();
+
                 if (cachedEvents.length === 0) {
                     document.getElementById("loading-spinner").classList.add("hidden");
                     const errEl = document.getElementById("loading-error");
                     if (errEl) errEl.classList.remove("hidden");
                     const errMsg = document.getElementById("loading-error-msg");
-                    if (errMsg) errMsg.textContent = `通信エラーが発生しました: ${err.message || "電波環境をご確認ください"}`;
+                    if (errMsg) errMsg.textContent = `通信エラー: ${err.message || "電波環境をご確認ください"}`;
                     document.getElementById("loading").classList.remove("hidden");
                     document.getElementById("app").classList.add("hidden");
-                } else if (isManualRetry) {
-                    showToast("再試行に失敗しました。電波環境をお確かめください。");
+                } else {
+                    showToast(isManualRetry ? "再試行に失敗しました。電波環境をお確かめください。" : "最新データの取得に失敗しました（保存済みデータを表示中）");
                 }
             }
         }
@@ -1405,7 +1424,6 @@
 
                     // フォーム送信処理
                     const form = document.getElementById("register-form");
-                    const submitBtn = document.getElementById("btn-submit-register");
                     const errorMsg = document.getElementById("reg-error-msg");
 
                     form.addEventListener("submit", async (e) => {
@@ -2823,7 +2841,12 @@
             }
         });
 
-        init();
+        // DOM構築完了後に確実に初期化を実行
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", init);
+        } else {
+            init();
+        }
     </script>
 </body>
 
