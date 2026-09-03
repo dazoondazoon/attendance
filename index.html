@@ -49,6 +49,12 @@
             padding: 8px 12px 100px 12px;
             line-height: 1.4;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 未保存の変更がある場合の全体背景色（保存忘れ防止・白カードがくっきり浮き立つアンバー） */
+        body.has-unsaved-changes {
+            background-color: #fef3c7 !important; /* 落ち着いたハニーアンバー色で白カードが綺麗に浮き立つ */
         }
 
         .container {
@@ -123,21 +129,36 @@
             background: #e2e5e9;
         }
 
-        .btn-today-return {
-            background: rgba(6, 199, 85, 0.12);
-            color: var(--primary-dark);
-            border: 1px solid rgba(6, 199, 85, 0.3);
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 0.72rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.15s;
+        /* 今月に戻るアクションバー */
+        .calendar-today-banner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
         }
 
-        .btn-today-return:active {
-            background: rgba(6, 199, 85, 0.25);
-            transform: scale(0.96);
+        .btn-today-return-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #ffffff;
+            color: var(--primary-dark);
+            border: 1.5px solid rgba(6, 199, 85, 0.4);
+            border-radius: 16px;
+            padding: 3px 12px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            transition: all 0.15s ease;
+        }
+
+        .btn-today-return-action:hover, .btn-today-return-action:active {
+            background: #ecfdf5;
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
         }
 
         /* カレンダーグリッド */
@@ -176,6 +197,8 @@
             cursor: pointer;
             font-size: 0.95rem;
             font-weight: 500;
+            box-sizing: border-box;
+            transition: background 0.12s;
         }
 
         .day-cell.other-month {
@@ -191,14 +214,34 @@
             color: var(--saturday);
         }
 
+        /* 「今日」のセル表示（未選択時：淡い緑背景 ＆ 明確なグリーン枠線） */
+        .day-cell.today {
+            background-color: #f0fdf4;
+            border: 1.5px solid var(--primary) !important;
+            font-weight: 700;
+        }
+
         .day-cell.today .day-number {
-            border-bottom: 2px solid var(--primary);
+            color: var(--primary-dark);
+            font-weight: 800;
         }
 
         .day-cell.selected {
             background-color: var(--primary) !important;
             color: #ffffff !important;
             font-weight: bold;
+        }
+
+        /* 「今日」が選択された場合 */
+        .day-cell.today.selected {
+            background-color: var(--primary) !important;
+            color: #ffffff !important;
+            border: 1.5px solid #047857 !important;
+            box-shadow: 0 2px 6px rgba(6, 199, 85, 0.35);
+        }
+
+        .day-cell.today.selected .day-number {
+            color: #ffffff !important;
         }
 
         /* 複数ドットのコンテナ */
@@ -242,6 +285,33 @@
             padding: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border);
+            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        /* 未保存の変更があるカード（白背景を保ち、太いアクセントライン＆アンバー枠線でクッキリ強調） */
+        .event-card.is-modified {
+            background: #ffffff !important; /* 背景色と溶け合わないピュアホワイト */
+            border: 2px solid #f59e0b !important; /* 目を引くアンバー枠線 */
+            border-left: 6px solid #d97706 !important; /* 左端に太い未保存アクセントバー */
+            box-shadow: 0 4px 16px rgba(217, 119, 6, 0.22) !important;
+        }
+
+        .event-card.is-modified::before {
+            content: "● 未保存";
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: #b45309;
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            padding: 2px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.2px;
+            pointer-events: none;
+            z-index: 2;
         }
 
         .event-title {
@@ -327,6 +397,43 @@
             background-color: var(--primary-light);
             color: var(--primary-dark);
         }
+
+        /* 一括設定ボタンと揃えたステータス別配色 */
+        .status-btn[data-val="参加"].active {
+            background-color: #eefbf3 !important;
+            border-color: #06c755 !important;
+            color: #05a847 !important;
+        }
+
+        .status-btn[data-val="遅刻"].active {
+            background-color: #eff6ff !important;
+            border-color: #3b82f6 !important;
+            color: #2563eb !important;
+        }
+
+        .status-btn[data-val="早退"].active {
+            background-color: #f5f3ff !important;
+            border-color: #8b5cf6 !important;
+            color: #7c3aed !important;
+        }
+
+        .status-btn[data-val="未定"].active {
+            background-color: #fffbeb !important;
+            border-color: #f59e0b !important;
+            color: #d97706 !important;
+        }
+
+        .status-btn[data-val="不参加"].active {
+            background-color: #fef2f2 !important;
+            border-color: #e15241 !important;
+            color: #dc2626 !important;
+        }
+
+        .status-btn[data-val="参加"]:hover:not(.active) { background: #f7fdf9; }
+        .status-btn[data-val="遅刻"]:hover:not(.active) { background: #f8faff; }
+        .status-btn[data-val="早退"]:hover:not(.active) { background: #faf8ff; }
+        .status-btn[data-val="未定"]:hover:not(.active) { background: #fffdf5; }
+        .status-btn[data-val="不参加"]:hover:not(.active) { background: #fef8f8; }
 
         .status-hint {
             font-size: 0.72rem;
@@ -1329,12 +1436,16 @@
 
                 <!-- 月間カレンダー -->
                 <div class="calendar-card">
+                    <!-- 今月以外の月を表示中に表示される「今月に戻る」アクションバー -->
+                    <div id="calendar-return-banner" class="calendar-today-banner hidden">
+                        <button type="button" id="btn-today-return" class="btn-today-return-action" title="今月に戻る">
+                            <span>今月 (9月) に戻る</span>
+                        </button>
+                    </div>
+
                     <div class="calendar-header">
                         <button class="nav-btn" id="prev-month" aria-label="前月">‹</button>
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <div class="month-title" id="month-display" title="タップで今月に戻る" style="cursor:pointer;">2026年 9月</div>
-                            <button type="button" id="btn-today-return" class="btn-today-return hidden" title="今月に戻る">今月</button>
-                        </div>
+                        <div class="month-title" id="month-display">2026年 9月</div>
                         <button class="nav-btn" id="next-month" aria-label="次月">›</button>
                     </div>
 
@@ -2378,12 +2489,19 @@
 
             document.getElementById("month-display").textContent = `${year}年 ${month + 1}月`;
 
-            // 今月以外の月を表示している時は「今月」ボタンを表示
+            // 今月以外の月を表示している時は「今月 (○月) に戻る」バナーを表示
             const now = new Date();
+            const currentMonthNum = now.getMonth() + 1;
             const isCurrentMonth = (now.getFullYear() === year && now.getMonth() === month);
+            const returnBanner = document.getElementById("calendar-return-banner");
             const returnBtn = document.getElementById("btn-today-return");
-            if (returnBtn) {
-                returnBtn.classList.toggle("hidden", isCurrentMonth);
+            if (returnBanner && returnBtn) {
+                if (!isCurrentMonth) {
+                    returnBtn.innerHTML = `<span>今月 (${currentMonthNum}月) に戻る</span>`;
+                    returnBanner.classList.remove("hidden");
+                } else {
+                    returnBanner.classList.add("hidden");
+                }
             }
 
             const firstDayIndex = new Date(year, month, 1).getDay();
@@ -2485,12 +2603,13 @@
                 const currentData = editState[evId] || { status: "", comment: "" };
                 const myStatus = currentData.status;
                 const myComment = currentData.comment;
+                const isMod = editState[evId] ? !!editState[evId].isModified : false;
 
                 // 前日より前（一昨日以前）は修正不可
                 const isPast = isEventPast(eventItem.date);
 
                 html += `
-          <div class="event-card" id="card-${evId}" data-event-id="${evId}">
+          <div class="event-card ${isMod ? 'is-modified' : ''}" id="card-${evId}" data-event-id="${evId}">
             <div class="event-title">
               <span class="title-badge" style="background-color: ${color};"></span>
               ${escapeHtml(eventItem.title)}
@@ -2595,6 +2714,21 @@
             const origComment = (item.originalComment || "").trim();
 
             item.isModified = (curStatus !== origStatus) || (curComment !== origComment);
+            updateCardModifiedUI(evId);
+        }
+
+        // 未保存の変更があるカードのUI（背景色変化＆未保存バッジ）および全体の背景色を更新
+        function updateCardModifiedUI(evId) {
+            const idStr = String(evId);
+            const isMod = editState[idStr] ? !!editState[idStr].isModified : false;
+            const cardCal = document.getElementById(`card-${idStr}`);
+            if (cardCal) cardCal.classList.toggle("is-modified", isMod);
+            const cardList = document.getElementById(`list-card-${idStr}`);
+            if (cardList) cardList.classList.toggle("is-modified", isMod);
+
+            // 全体で未保存の変更があるかどうかでbodyの背景色を変化
+            const hasAnyMod = Object.keys(editState).some(id => editState[id] && editState[id].isModified);
+            document.body.classList.toggle("has-unsaved-changes", hasAnyMod);
         }
 
         // 保存ボタンのテキストと状態を更新（全イベントの状態を常に再走査して正確に集計）
@@ -2627,9 +2761,11 @@
             if (modifiedCount > 0) {
                 submitBtn.textContent = `回答を一括保存する (${modifiedCount}件の変更)`;
                 submitBtn.style.background = "var(--primary)";
+                document.body.classList.add("has-unsaved-changes");
             } else {
                 submitBtn.textContent = "回答を一括保存する";
                 submitBtn.style.background = "var(--primary)";
+                document.body.classList.remove("has-unsaved-changes");
             }
         }
 
@@ -3521,12 +3657,13 @@
                 const currentData = editState[evId] || { status: "", comment: "" };
                 const myStatus = currentData.status;
                 const myComment = currentData.comment;
+                const isMod = editState[evId] ? !!editState[evId].isModified : false;
 
                 // 前日より前（一昨日以前）は修正不可
                 const isPast = isEventPast(eventItem.date);
 
                 html += `
-                  <div class="event-card" id="list-card-${evId}" data-event-id="${evId}">
+                  <div class="event-card ${isMod ? 'is-modified' : ''}" id="list-card-${evId}" data-event-id="${evId}">
                     <div class="list-date-badge">
                       <span style="${dayColorStyle}">📅 ${m}/${d} (${weekDay})</span>
                       <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-sub);">🕒 ${escapeHtml(eventItem.time)}</span>
