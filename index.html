@@ -909,7 +909,57 @@
             to { opacity: 1; transform: translate(-50%, 0); }
         }
 
-        /* --- 管理者タブ用スタイル --- */
+        /* --- 更新ボタン & 同期中インジケータースタイル --- */
+        @keyframes spinAnim {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spin-icon {
+            display: inline-block;
+            animation: spinAnim 0.8s linear infinite;
+        }
+
+        .btn-tab-refresh {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 5px 11px;
+            border-radius: 18px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-tab-refresh:active {
+            background: #e2e8f0;
+            transform: scale(0.96);
+        }
+
+        .sync-badge-floating {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.92);
+            color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+
+        /* --- 管理者タブ用スタイル（全体配色と調和） --- */
         .admin-subnav {
             display: flex;
             background: #e2e8f0;
@@ -935,7 +985,7 @@
 
         .admin-subnav-btn.active {
             background: #ffffff;
-            color: #0f172a;
+            color: var(--primary);
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
@@ -956,16 +1006,17 @@
 
         .admin-primary-btn {
             flex: 1;
-            background: #0f172a;
+            background: var(--primary);
             color: #ffffff;
             border: none;
-            padding: 11px 16px;
+            padding: 10px 16px;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.86rem;
             font-weight: 700;
             cursor: pointer;
             transition: opacity 0.2s;
             text-align: center;
+            box-shadow: 0 2px 6px rgba(6, 199, 85, 0.25);
         }
 
         .admin-primary-btn:active {
@@ -976,7 +1027,7 @@
             background: #ffffff;
             color: #1e293b;
             border: 1px solid #cbd5e1;
-            padding: 8px 14px;
+            padding: 7px 13px;
             border-radius: 8px;
             font-size: 0.82rem;
             font-weight: 600;
@@ -1046,8 +1097,8 @@
         }
 
         .admin-chip-btn.active {
-            background: #0f172a;
-            border-color: #0f172a;
+            background: var(--primary);
+            border-color: var(--primary);
             color: #ffffff;
         }
 
@@ -1112,7 +1163,7 @@
             color: #ef4444;
         }
 
-        /* 普通の白黒テーブル（プレビュー & キャンバス出力用） */
+        /* 普通の白黒テーブル（文字大きめ・余白狭め） */
         .admin-table-preview-container {
             width: 100%;
             overflow-x: auto;
@@ -1120,7 +1171,7 @@
             border: 1px solid #cbd5e1;
             border-radius: 8px;
             background: #ffffff;
-            padding: 10px;
+            padding: 8px;
             box-sizing: border-box;
         }
 
@@ -1134,18 +1185,34 @@
 
         .admin-plain-table th, .admin-plain-table td {
             border: 1px solid #000000;
-            padding: 8px 10px;
+            padding: 5px 6px;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.94rem;
+            font-weight: 700;
+            line-height: 1.25;
         }
 
         .admin-plain-table th {
             background: #f8fafc;
+            font-size: 0.84rem;
             font-weight: bold;
         }
 
         .admin-plain-table tr:nth-child(even) td {
             background: #ffffff;
+        }
+
+        /* カレンダー内日程管理セル */
+        .admin-cal-event-pill {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 1px 3px;
+            border-radius: 3px;
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
         }
 
         /* 共通モーダル（確認・編集・一括） */
@@ -1213,22 +1280,34 @@
         </div>
 
         <div id="app" class="hidden">
-            <!-- ナビゲーションタブ -->
-            <div class="tab-nav">
-                <button type="button" class="tab-btn active" id="btn-tab-calendar">カレンダー</button>
-                <button type="button" class="tab-btn" id="btn-tab-list">リスト</button>
-                <button type="button" class="tab-btn" id="btn-tab-other">その他</button>
-                <button type="button" class="tab-btn hidden" id="btn-tab-admin">管理者</button>
+            <!-- データ同期中フローティングインジケーター -->
+            <div id="sync-indicator" class="sync-badge-floating hidden">
+                <span class="spin-icon">🔄</span> データを同期中...
+            </div>
+
+            <!-- ナビゲーションタブ ＆ 更新ボタン -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px;">
+                <div class="tab-nav" style="margin-bottom:0; flex:1;">
+                    <button type="button" class="tab-btn active" id="btn-tab-calendar">カレンダー</button>
+                    <button type="button" class="tab-btn" id="btn-tab-list">リスト</button>
+                    <button type="button" class="tab-btn" id="btn-tab-other">その他</button>
+                    <button type="button" class="tab-btn hidden" id="btn-tab-admin">管理者</button>
+                </div>
+                <button type="button" class="btn-tab-refresh tab-refresh-trigger" title="最新データに更新">
+                    <span class="refresh-icon">🔄</span> 更新
+                </button>
             </div>
 
             <!-- カレンダービュー -->
             <div id="view-calendar">
-                <!-- 凡例 -->
-                <div class="legend-bar">
-                    <div class="legend-item"><span class="legend-dot" style="background:var(--dot-regular);"></span>正規練</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:var(--dot-free);"></span>自主練</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:var(--dot-obog);"></span>OBOG練</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:var(--dot-other);"></span>その他</div>
+                <!-- 凡例 ＆ タブ内更新ボタン -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div class="legend-bar" style="margin-bottom:0; flex:1;">
+                        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-regular);"></span>正規練</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-free);"></span>自主練</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-obog);"></span>OBOG練</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-other);"></span>その他</div>
+                    </div>
                 </div>
 
                 <!-- 月間カレンダー -->
@@ -1525,22 +1604,39 @@
                 <div id="admin-sec-members" class="hidden">
                     <div class="admin-card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                            <button type="button" id="btn-admin-open-add-member" class="admin-primary-btn" style="flex:none; padding:8px 14px; font-size:0.8rem;">＋ 新規部員の追加</button>
-                            <button type="button" id="btn-admin-promote-grade" class="admin-danger-btn" style="padding:8px 14px; font-size:0.8rem;">全員の学年を1つ進級</button>
+                            <button type="button" id="btn-admin-open-add-member" class="admin-primary-btn" style="flex:none; padding:7px 13px; font-size:0.8rem;">＋ 新規部員の追加</button>
+                            <button type="button" id="btn-admin-promote-grade" class="admin-danger-btn" style="padding:7px 13px; font-size:0.8rem;">全員の学年を1つ進級</button>
                         </div>
                         <input type="text" id="admin-member-search-input" class="admin-input" placeholder="名前・フリガナ・学年で検索..." style="margin-bottom:12px;">
                         <div id="admin-members-list-container" style="max-height:480px; overflow-y:auto;"></div>
                     </div>
                 </div>
 
-                <!-- 4. 日程管理セクション -->
+                <!-- 4. 日程管理セクション（カレンダーUI） -->
                 <div id="admin-sec-schedule" class="hidden">
                     <div class="admin-card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                            <button type="button" id="btn-admin-open-add-event" class="admin-primary-btn" style="flex:none; padding:8px 14px; font-size:0.8rem;">＋ 練習日程を追加</button>
-                            <button type="button" id="btn-admin-open-batch-events" class="admin-secondary-btn" style="padding:8px 14px; font-size:0.8rem;">曜日一括登録</button>
+                            <div style="display:flex; gap:6px;">
+                                <button type="button" id="btn-admin-open-add-event" class="admin-primary-btn" style="flex:none; padding:7px 13px; font-size:0.8rem;">＋ 練習を追加</button>
+                                <button type="button" id="btn-admin-open-batch-events" class="admin-secondary-btn" style="padding:7px 13px; font-size:0.8rem;">曜日一括登録</button>
+                            </div>
                         </div>
-                        <div id="admin-events-list-container" style="max-height:480px; overflow-y:auto;"></div>
+
+                        <!-- 日程管理カレンダー -->
+                        <div class="calendar-card" style="box-shadow:none; border:1px solid #cbd5e1; margin-bottom:12px;">
+                            <div class="calendar-header">
+                                <button type="button" class="nav-btn" id="admin-sched-prev-month">‹</button>
+                                <div class="month-title" id="admin-sched-month-display" style="cursor:pointer;" title="タップで今月に戻る">2026年 9月</div>
+                                <button type="button" class="nav-btn" id="admin-sched-next-month">›</button>
+                            </div>
+                            <div class="week-header">
+                                <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+                            </div>
+                            <div class="days-grid" id="admin-sched-days-container"></div>
+                        </div>
+
+                        <!-- 選択日の詳細 ＆ アクション -->
+                        <div id="admin-sched-selected-day-box" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;"></div>
                     </div>
                 </div>
             </div>
@@ -1623,36 +1719,44 @@
         </div>
     </div>
 
-    <!-- 3. 代理出欠変更モーダル -->
-    <div id="admin-proxy-att-modal" class="admin-modal-overlay hidden">
-        <div class="admin-modal-box">
-            <div class="admin-modal-title">出欠の代理変更</div>
-            <div id="admin-proxy-att-info" style="font-size:0.85rem; color:#475569; margin-bottom:12px;"></div>
-            <form id="admin-proxy-att-form">
-                <input type="hidden" id="admin-proxy-userid">
-                <div class="admin-control-group">
-                    <label class="admin-control-label">対象の練習日程</label>
-                    <select id="admin-proxy-event-select" class="admin-select"></select>
+    <!-- 3. 部員出欠カレンダーモーダル（カレンダー形式で複数日の出欠を変更・保存） -->
+    <div id="admin-member-att-modal" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box" style="max-width:520px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:8px; margin-bottom:12px;">
+                <div class="admin-modal-title" id="admin-member-att-cal-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">出欠の代理変更</div>
+                <button type="button" id="btn-admin-member-att-close" class="btn-modal-close" style="font-size:1.2rem; cursor:pointer; background:none; border:none;" aria-label="閉じる">✕</button>
+            </div>
+            <!-- 出欠月間カレンダー -->
+            <div class="calendar-card" style="box-shadow:none; border:1px solid #cbd5e1; margin-bottom:10px;">
+                <div class="calendar-header">
+                    <button type="button" class="nav-btn" id="admin-proxy-cal-prev">‹</button>
+                    <div class="month-title" id="admin-proxy-cal-month" style="font-size:0.95rem;">2026年 9月</div>
+                    <button type="button" class="nav-btn" id="admin-proxy-cal-next">›</button>
                 </div>
-                <div class="admin-control-group">
-                    <label class="admin-control-label">出欠ステータス</label>
-                    <div class="admin-btn-chips" id="admin-proxy-status-chips">
-                        <button type="button" class="admin-chip-btn active" data-status="参加">参加</button>
-                        <button type="button" class="admin-chip-btn" data-status="遅刻">遅刻</button>
-                        <button type="button" class="admin-chip-btn" data-status="早退">早退</button>
-                        <button type="button" class="admin-chip-btn" data-status="未定">未定</button>
-                        <button type="button" class="admin-chip-btn" data-status="不参加">不参加</button>
-                    </div>
+                <div class="week-header">
+                    <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
                 </div>
-                <div class="admin-control-group">
-                    <label class="admin-control-label">備考</label>
-                    <input type="text" id="admin-proxy-comment" class="admin-input" placeholder="遅刻理由など">
+                <div class="days-grid" id="admin-proxy-cal-days"></div>
+            </div>
+
+            <!-- 選択日の出欠編集エリア -->
+            <div id="admin-proxy-day-edit-area" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-bottom:14px;">
+                <div id="admin-proxy-selected-date-info" style="font-size:0.85rem; font-weight:bold; margin-bottom:8px; color:#1e293b;">日付をタップして出欠を変更できます</div>
+                <div class="admin-btn-chips" id="admin-proxy-cal-chips" style="margin-bottom:8px;">
+                    <button type="button" class="admin-chip-btn" data-status="参加">参加</button>
+                    <button type="button" class="admin-chip-btn" data-status="遅刻">遅刻</button>
+                    <button type="button" class="admin-chip-btn" data-status="早退">早退</button>
+                    <button type="button" class="admin-chip-btn" data-status="未定">未定</button>
+                    <button type="button" class="admin-chip-btn" data-status="不参加">不参加</button>
                 </div>
-                <div class="admin-modal-actions" style="margin-top:20px;">
-                    <button type="button" class="admin-secondary-btn" id="btn-admin-proxy-cancel">キャンセル</button>
-                    <button type="submit" class="admin-primary-btn" id="btn-admin-proxy-save" style="flex:none; padding:8px 20px;">保存する</button>
-                </div>
-            </form>
+                <input type="text" id="admin-proxy-cal-comment" class="admin-input" placeholder="備考 (遅刻理由など)" style="font-size:0.8rem; padding:6px 8px;">
+            </div>
+
+            <!-- 変更後保存するボタン -->
+            <div class="admin-modal-actions">
+                <button type="button" class="admin-secondary-btn" id="btn-admin-proxy-cal-cancel">閉じる</button>
+                <button type="button" class="admin-primary-btn" id="btn-admin-proxy-cal-save" style="flex:none; padding:8px 18px;" disabled>変更を保存する (0件)</button>
+            </div>
         </div>
     </div>
 
@@ -1726,6 +1830,21 @@
                 <button type="button" class="admin-secondary-btn" id="btn-admin-batch-cancel">キャンセル</button>
                 <button type="button" class="admin-secondary-btn" id="btn-admin-batch-preview">日程プレビュー</button>
                 <button type="button" class="admin-primary-btn" id="btn-admin-batch-execute" style="flex:none; padding:8px 20px;" disabled>一括登録する</button>
+            </div>
+        </div>
+    <!-- 6. 画像プレビューモーダル（iPhone写真フォルダー保存案内） -->
+    <div id="image-preview-modal" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box" style="text-align:center; max-width:440px;">
+            <div class="admin-modal-title" id="image-preview-title" style="border-bottom:none; margin-bottom:6px;">画像保存</div>
+            <div style="font-size:0.8rem; color:#475569; margin-bottom:12px; line-height:1.4; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px 10px;">
+                💡 <b>iPhoneの写真アプリに保存する場合:</b><br>下の画像を<b>長押しして「写真に追加」</b>（または「画像を保存」）を選択してください。
+            </div>
+            <div style="margin-bottom:14px; max-height:55vh; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; padding:6px;">
+                <img id="image-preview-img" src="" alt="表画像プレビュー" style="max-width:100%; height:auto; display:block; margin:0 auto; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+            </div>
+            <div class="admin-modal-actions" style="justify-content:center; gap:8px;">
+                <button type="button" class="admin-secondary-btn" id="btn-image-preview-close">閉じる</button>
+                <button type="button" class="admin-primary-btn" id="btn-image-preview-share" style="flex:none; padding:8px 16px;">共有メニューで保存</button>
             </div>
         </div>
     </div>
@@ -2686,53 +2805,126 @@
                 answers: answers
             };
 
-            try {
-                await fetch(GAS_API_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "text/plain" },
-                    body: JSON.stringify(payload)
-                });
-
-                // LINEトークへの一括送信（複数日程をまとめて投稿）
-                if (liff.isInClient() && lineMessages.length > 0) {
-                    await liff.sendMessages([
-                        {
-                            type: "text",
-                            text: `【出欠一括更新】\n` + lineMessages.join("\n")
-                        }
-                    ]).catch(() => { });
-                }
-
-                // 最新データを再取得して画面をリセット
-                eventAttendeesCache = {}; // メンバー一覧キャッシュを破棄
-                await fetchData(currentUser.userId);
-                initEditState();
-                renderEventDetails();
-                if (currentTab === "list") renderListView();
-                if (currentTab === "other") renderOtherView();
-                updateSubmitButtonUI();
-
-                // LINEアプリ内で開いている場合は画面を閉じるか確認
-                if (typeof liff !== "undefined" && liff.isInClient()) {
-                    const shouldClose = confirm(`全${answers.length}件の回答を一括保存しました！\n\nLINEトーク画面に戻りますか？`);
-                    if (shouldClose) {
-                        liff.closeWindow();
-                    }
+            // ★ Optimistic UI: 0秒で手元の cachedAttendances と editState を確定更新
+            answers.forEach(ans => {
+                const existingIdx = cachedAttendances.findIndex(a => String(a.eventId) === String(ans.eventId));
+                if (ans.isDelete) {
+                    if (existingIdx !== -1) cachedAttendances.splice(existingIdx, 1);
                 } else {
-                    alert(`全${answers.length}件の回答を一括保存しました！`);
+                    if (existingIdx !== -1) {
+                        cachedAttendances[existingIdx].status = ans.status;
+                        cachedAttendances[existingIdx].comment = ans.comment;
+                    } else {
+                        cachedAttendances.push({
+                            eventId: String(ans.eventId),
+                            userId: currentUser.userId,
+                            name: currentUser.displayName,
+                            status: ans.status,
+                            comment: ans.comment,
+                            updatedAt: new Date().toISOString()
+                        });
+                    }
                 }
+                const item = editState[ans.eventId];
+                if (item) {
+                    item.originalStatus = ans.status;
+                    item.originalComment = ans.comment;
+                    item.isModified = false;
+                }
+            });
 
-            } catch (err) {
-                alert("送信エラー: " + err.message);
-                console.error(err);
-            } finally {
-                submitBtn.disabled = false;
-                updateSubmitButtonUI();
+            // 0秒で手元の画面を即座に再描画（待たせない）
+            updateSubmitButtonUI();
+            renderEventDetails();
+            if (currentTab === "calendar") renderCalendar();
+            if (currentTab === "list") renderListView();
+            if (currentTab === "other") renderOtherView();
+
+            // 0秒でユーザーへ保存完了を通知
+            if (typeof liff !== "undefined" && liff.isInClient()) {
+                const shouldClose = confirm(`全${answers.length}件の回答を一括保存しました！\n\nLINEトーク画面に戻りますか？`);
+                if (shouldClose) {
+                    liff.closeWindow();
+                }
+            } else {
+                showToast(`✅ 全${answers.length}件の回答を一括保存しました！`);
             }
+
+            // バックグラウンドでGAS送信 ＆ 裏でこっそりfetchData（答え合わせ）
+            (async () => {
+                try {
+                    showSyncIndicator(true);
+                    await fetch(GAS_API_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "text/plain" },
+                        body: JSON.stringify(payload)
+                    });
+
+                    // LINEトークへの一括送信（複数日程をまとめて投稿）
+                    if (typeof liff !== "undefined" && liff.isInClient() && lineMessages.length > 0) {
+                        await liff.sendMessages([
+                            {
+                                type: "text",
+                                text: `【出欠一括更新】\n` + lineMessages.join("\n")
+                            }
+                        ]).catch(() => { });
+                    }
+
+                    // 裏でこっそりfetchDataして答え合わせ（整合性維持）
+                    eventAttendeesCache = {};
+                    await fetchData(currentUser.userId);
+                    updateSubmitButtonUI();
+                    renderEventDetails();
+                    if (currentTab === "calendar") renderCalendar();
+                    if (currentTab === "list") renderListView();
+                } catch (err) {
+                    console.error("バックグラウンド同期エラー:", err);
+                    showToast("⚠️ 一括保存のバックグラウンド送信で通信エラーが発生しました");
+                } finally {
+                    showSyncIndicator(false);
+                }
+            })();
         }); // end submitAllBtn click
 
+        // 全タブ共通の更新ボタンリスナー
+        document.querySelectorAll(".tab-refresh-trigger").forEach(btn => {
+            btn.addEventListener("click", refreshAllDataAsync);
+        });
+
         } // end setupEventListeners()
+
+        // データ同期中インジケーター表示制御
+        function showSyncIndicator(show) {
+            const ind = document.getElementById("sync-indicator");
+            if (ind) {
+                if (show) ind.classList.remove("hidden");
+                else ind.classList.add("hidden");
+            }
+            document.querySelectorAll(".tab-refresh-trigger .refresh-icon").forEach(icon => {
+                if (show) icon.classList.add("spin-icon");
+                else icon.classList.remove("spin-icon");
+            });
+        }
+
+        // 全タブ共通の最新データ更新関数
+        async function refreshAllDataAsync() {
+            showSyncIndicator(true);
+            try {
+                eventAttendeesCache = {};
+                await loadLatestDataAsync(true);
+                if (currentTab === "admin" && adminData.isLoaded) {
+                    await loadAdminDataAsync(true);
+                    renderAdminView();
+                }
+                showToast("最新データに更新しました");
+            } catch (err) {
+                console.error("更新エラー:", err);
+                showToast("更新に失敗しました: " + err.message);
+            } finally {
+                showSyncIndicator(false);
+            }
+        }
 
         // 回答メンバー一覧＆集計バーのオンデマンド取得・トグル共通関数
         async function handleMembersToggle(btn) {
@@ -3962,7 +4154,7 @@
 
             const startY = padding + headerHeight;
 
-            // テーブル外枠 & ヘッダー背景
+            // 面分け表通常テーブル外枠 & ヘッダー背景
             ctx.fillStyle = "#f8fafc";
             ctx.fillRect(padding, startY, colWidth * colCount, rowHeight);
 
@@ -3971,14 +4163,14 @@
 
             // ヘッダーテキスト
             ctx.fillStyle = "#000000";
-            ctx.font = "bold 13px sans-serif";
+            ctx.font = "bold 14px sans-serif";
             ctx.textAlign = "center";
             headers.forEach((h, c) => {
                 ctx.fillText(h, padding + c * colWidth + colWidth / 2, startY + rowHeight / 2);
             });
 
-            // データ行
-            ctx.font = "13px sans-serif";
+            // データ行（文字大きく、余白狭め）
+            ctx.font = "bold 15px sans-serif";
             rows.forEach((r, rIdx) => {
                 const y = startY + (rIdx + 1) * rowHeight;
                 r.forEach((cell, cIdx) => {
@@ -4007,6 +4199,128 @@
             return canvas;
         }
 
+        // 基礎打ち専用 Canvas 描画（項目名なし、奇数は最下行3分割横並び、文字大きく）
+        function createRallyCanvas(title, pairs) {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const scale = 2; // 高解像度
+
+            const padding = 16;
+            const titleHeight = 44;
+            const rowHeight = 34; // 余白狭めスリム
+            const tableWidth = 340; // 基礎打ち表の標準幅
+            const totalRows = pairs.length;
+            const totalHeight = titleHeight + totalRows * rowHeight + padding * 2;
+
+            canvas.width = (tableWidth + padding * 2) * scale;
+            canvas.height = totalHeight * scale;
+            ctx.scale(scale, scale);
+
+            // 背景（白）
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, tableWidth + padding * 2, totalHeight);
+
+            // タイトル
+            ctx.fillStyle = "#000000";
+            ctx.font = "bold 16px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(title, (tableWidth + padding * 2) / 2, padding + 18);
+
+            const startY = padding + titleHeight;
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 1;
+            ctx.font = "bold 15px sans-serif";
+
+            pairs.forEach((p, rIdx) => {
+                const y = startY + rIdx * rowHeight;
+                if (p.length === 3) {
+                    // 3分割で横並び
+                    const cellW = tableWidth / 3;
+                    for (let c = 0; c < 3; c++) {
+                        const x = padding + c * cellW;
+                        ctx.strokeRect(x, y, cellW, rowHeight);
+                        ctx.fillText(p[c].name || "", x + cellW / 2, y + rowHeight / 2);
+                    }
+                } else if (p.length === 2) {
+                    // 2分割で横並び
+                    const cellW = tableWidth / 2;
+                    for (let c = 0; c < 2; c++) {
+                        const x = padding + c * cellW;
+                        ctx.strokeRect(x, y, cellW, rowHeight);
+                        ctx.fillText(p[c].name || "", x + cellW / 2, y + rowHeight / 2);
+                    }
+                } else if (p.length === 1) {
+                    ctx.strokeRect(padding, y, tableWidth, rowHeight);
+                    ctx.fillText(p[0].name || "", padding + tableWidth / 2, y + rowHeight / 2);
+                }
+            });
+
+            return canvas;
+        }
+
+        // iPhone（iOS）写真フォルダ保存＆画像保存共通処理
+        async function triggerImageSaveOrShare(canvas, filename, title) {
+            canvas.toBlob(async blob => {
+                if (!blob) return;
+
+                // 1. Web Share API（iOS Safari / LINEブラウザで共有メニューから写真アプリに保存可能）
+                if (typeof navigator.share === "function" && typeof File !== "undefined") {
+                    try {
+                        const file = new File([blob], filename, { type: "image/png" });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                files: [file],
+                                title: title
+                            });
+                            showToast("共有メニューを開きました（写真に追加を選択できます）");
+                            return;
+                        }
+                    } catch (err) {
+                        if (err.name !== "AbortError") {
+                            console.warn("Share API error:", err);
+                        } else {
+                            return; // キャンセル時は終了
+                        }
+                    }
+                }
+
+                // 2. モーダルで画像をプレビュー（長押し「写真に追加」を案内）
+                const dataUrl = canvas.toDataURL("image/png");
+                const modal = document.getElementById("image-preview-modal");
+                const img = document.getElementById("image-preview-img");
+                const titleEl = document.getElementById("image-preview-title");
+                if (modal && img) {
+                    titleEl.textContent = title;
+                    img.src = dataUrl;
+                    modal.classList.remove("hidden");
+
+                    document.getElementById("btn-image-preview-close").onclick = () => {
+                        modal.classList.add("hidden");
+                    };
+                    document.getElementById("btn-image-preview-share").onclick = async () => {
+                        if (typeof navigator.share === "function" && typeof File !== "undefined") {
+                            try {
+                                const file = new File([blob], filename, { type: "image/png" });
+                                await navigator.share({ files: [file], title: title });
+                            } catch (e) {}
+                        } else {
+                            const a = document.createElement("a");
+                            a.href = dataUrl;
+                            a.download = filename;
+                            a.click();
+                        }
+                    };
+                } else {
+                    const a = document.createElement("a");
+                    a.href = dataUrl;
+                    a.download = filename;
+                    a.click();
+                    showToast("画像を保存しました");
+                }
+            });
+        }
+
         async function saveCourtSplitImage() {
             const ev = adminData.events.find(e => String(e.eventId) === String(courtState.eventId));
             const evTitle = ev ? `${ev.date} ${ev.title} 面分け表` : "面分け表";
@@ -4022,15 +4336,7 @@
             }
 
             const canvas = createTableCanvas(evTitle, headers, rows);
-            canvas.toBlob(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `court_split_${(ev ? ev.date : 'date').replace(/\//g, '')}.png`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showToast("画像を保存しました");
-            });
+            await triggerImageSaveOrShare(canvas, `court_split_${(ev ? ev.date : 'date').replace(/\//g, '')}.png`, evTitle);
         }
 
         async function copyCourtSplitImage() {
@@ -4056,12 +4362,10 @@
                         ]);
                         showToast("画像をクリップボードにコピーしました");
                     } else {
-                        // クリップボードAPI非対応端末
                         saveCourtSplitImage();
                     }
                 } catch (e) {
                     console.warn(e);
-                    // フォールバックで保存
                     saveCourtSplitImage();
                 }
             });
@@ -4201,7 +4505,6 @@
                     right--;
                 }
                 if (left === right) {
-                    // 奇数の真ん中 ➡ 最後のペアに合流して3人組にする
                     if (pairs.length > 0) {
                         pairs[pairs.length - 1].push(pool[left]);
                     } else {
@@ -4238,16 +4541,27 @@
             // ペアリング実行
             const pairs = doRallyPairing(members, rallyState.mode);
 
-            // コート番号・ペア番号は表示しない普通の白黒表
+            // コート番号・ペア番号・項目名は表示しない。奇数の最下行は3分割横並び。
             const previewBox = document.getElementById("admin-rally-preview-box");
-            let tableHtml = '<table class="admin-plain-table"><thead><tr><th>選手 1</th><th>選手 2</th></tr></thead><tbody>';
+            let tableHtml = '<table class="admin-plain-table"><tbody>';
             pairs.forEach(p => {
                 if (p.length === 3) {
-                    tableHtml += `<tr><td>${escapeHtml(p[0].name)}</td><td>${escapeHtml(p[1].name)} / ${escapeHtml(p[2].name)}</td></tr>`;
+                    tableHtml += `
+                        <tr>
+                            <td style="width:33.33%;">${escapeHtml(p[0].name)}</td>
+                            <td style="width:33.33%;">${escapeHtml(p[1].name)}</td>
+                            <td style="width:33.33%;">${escapeHtml(p[2].name)}</td>
+                        </tr>
+                    `;
                 } else if (p.length === 2) {
-                    tableHtml += `<tr><td>${escapeHtml(p[0].name)}</td><td>${escapeHtml(p[1].name)}</td></tr>`;
+                    tableHtml += `
+                        <tr>
+                            <td style="width:50%;">${escapeHtml(p[0].name)}</td>
+                            <td style="width:50%;">${escapeHtml(p[1].name)}</td>
+                        </tr>
+                    `;
                 } else if (p.length === 1) {
-                    tableHtml += `<tr><td>${escapeHtml(p[0].name)}</td><td>-</td></tr>`;
+                    tableHtml += `<tr><td colspan="2" style="width:100%;">${escapeHtml(p[0].name)}</td></tr>`;
                 }
             });
             tableHtml += '</tbody></table>';
@@ -4260,23 +4574,8 @@
             const members = getActiveRallyMembers();
             const pairs = doRallyPairing(members, rallyState.mode);
 
-            const headers = ["選手 1", "選手 2"];
-            const rows = pairs.map(p => {
-                if (p.length === 3) return [p[0].name, `${p[1].name} / ${p[2].name}`];
-                if (p.length === 2) return [p[0].name, p[1].name];
-                return [p[0].name, "-"];
-            });
-
-            const canvas = createTableCanvas(evTitle, headers, rows);
-            canvas.toBlob(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `rally_${(ev ? ev.date : 'date').replace(/\//g, '')}.png`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showToast("画像を保存しました");
-            });
+            const canvas = createRallyCanvas(evTitle, pairs);
+            await triggerImageSaveOrShare(canvas, `rally_${(ev ? ev.date : 'date').replace(/\//g, '')}.png`, evTitle);
         }
 
         async function copyRallyImage() {
@@ -4285,14 +4584,7 @@
             const members = getActiveRallyMembers();
             const pairs = doRallyPairing(members, rallyState.mode);
 
-            const headers = ["選手 1", "選手 2"];
-            const rows = pairs.map(p => {
-                if (p.length === 3) return [p[0].name, `${p[1].name} / ${p[2].name}`];
-                if (p.length === 2) return [p[0].name, p[1].name];
-                return [p[0].name, "-"];
-            });
-
-            const canvas = createTableCanvas(evTitle, headers, rows);
+            const canvas = createRallyCanvas(evTitle, pairs);
             canvas.toBlob(async blob => {
                 try {
                     if (navigator.clipboard && navigator.clipboard.write) {
@@ -4347,7 +4639,7 @@
                             </div>
                         </div>
                         <div style="display:flex; gap:6px;">
-                            <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="openAdminProxyModal('${m.userId}')">出欠</button>
+                            <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="openAdminMemberAttCalendar('${m.userId}')">出欠</button>
                             <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="openAdminMemberModal('${m.userId}')">編集</button>
                         </div>
                     </div>
@@ -4461,132 +4753,440 @@
             };
         }
 
-        function openAdminProxyModal(userId) {
+        // ============================================================
+        // 3-B. 部員出欠カレンダーモーダル（カレンダー形式 ＆ 変更後保存するボタン）
+        // ============================================================
+        let proxyCalUserId = "";
+        let proxyCalDate = new Date();
+        let proxyCalEdits = {}; // { [eventId]: { status, comment, originalStatus, originalComment } }
+        let proxyCalSelectedEventId = null;
+
+        function openAdminMemberAttCalendar(userId) {
             const m = adminData.members.find(x => x.userId === userId);
             if (!m) return;
 
-            const modal = document.getElementById("admin-proxy-att-modal");
-            document.getElementById("admin-proxy-att-info").textContent = `対象部員: ${m.name} (${m.grade || '部員'})`;
-            document.getElementById("admin-proxy-userid").value = userId;
+            proxyCalUserId = userId;
+            proxyCalDate = new Date();
+            proxyCalEdits = {};
+            proxyCalSelectedEventId = null;
 
-            const evSelect = document.getElementById("admin-proxy-event-select");
-            evSelect.innerHTML = "";
-            adminData.events.forEach(ev => {
-                const opt = document.createElement("option");
-                opt.value = ev.eventId;
-                opt.textContent = `${ev.date} ${ev.title}`;
-                evSelect.appendChild(opt);
-            });
+            document.getElementById("admin-member-att-cal-title").textContent = `${m.name} さんの出欠管理`;
+            document.getElementById("admin-member-att-modal").classList.remove("hidden");
 
-            let currentStatus = "参加";
-            document.querySelectorAll("#admin-proxy-status-chips .admin-chip-btn").forEach(btn => {
+            renderProxyCalendar();
+            updateProxySaveButtonUI();
+
+            // 月送りボタン
+            document.getElementById("admin-proxy-cal-prev").onclick = () => {
+                proxyCalDate.setMonth(proxyCalDate.getMonth() - 1);
+                renderProxyCalendar();
+            };
+            document.getElementById("admin-proxy-cal-next").onclick = () => {
+                proxyCalDate.setMonth(proxyCalDate.getMonth() + 1);
+                renderProxyCalendar();
+            };
+            document.getElementById("btn-admin-member-att-close").onclick = () => closeProxyCalModal();
+            document.getElementById("btn-admin-proxy-cal-cancel").onclick = () => closeProxyCalModal();
+
+            // 保存ボタン
+            document.getElementById("btn-admin-proxy-cal-save").onclick = async () => {
+                await saveProxyCalChanges();
+            };
+
+            // 出欠チップ
+            document.querySelectorAll("#admin-proxy-cal-chips .admin-chip-btn").forEach(btn => {
                 btn.onclick = () => {
-                    document.querySelectorAll("#admin-proxy-status-chips .admin-chip-btn").forEach(b => b.classList.remove("active"));
-                    btn.classList.add("active");
-                    currentStatus = btn.getAttribute("data-status");
+                    if (!proxyCalSelectedEventId) {
+                        alert("カレンダーの日付を選択してください。");
+                        return;
+                    }
+                    const targetStatus = btn.getAttribute("data-status");
+                    setProxyAttendanceForSelectedEvent(targetStatus);
                 };
             });
 
-            // イベント選択変更時に既存の出欠を取得
-            const loadProxyState = () => {
-                const selEvId = evSelect.value;
-                const rec = adminData.attendances.find(a => String(a.eventId) === String(selEvId) && String(a.userId) === String(userId));
-                if (rec) {
-                    currentStatus = rec.status || "参加";
-                    document.getElementById("admin-proxy-comment").value = rec.comment || "";
+            // 備考欄入力
+            document.getElementById("admin-proxy-cal-comment").oninput = (e) => {
+                if (!proxyCalSelectedEventId) return;
+                const comment = e.target.value;
+                if (!proxyCalEdits[proxyCalSelectedEventId]) {
+                    const rec = adminData.attendances.find(a => String(a.eventId) === String(proxyCalSelectedEventId) && String(a.userId) === String(proxyCalUserId));
+                    proxyCalEdits[proxyCalSelectedEventId] = {
+                        status: rec ? (rec.status || "") : "",
+                        comment: comment,
+                        originalStatus: rec ? (rec.status || "") : "",
+                        originalComment: rec ? (rec.comment || "") : ""
+                    };
                 } else {
-                    currentStatus = "参加";
-                    document.getElementById("admin-proxy-comment").value = "";
+                    proxyCalEdits[proxyCalSelectedEventId].comment = comment;
                 }
-                document.querySelectorAll("#admin-proxy-status-chips .admin-chip-btn").forEach(b => {
-                    b.classList.toggle("active", b.getAttribute("data-status") === currentStatus);
-                });
+                updateProxySaveButtonUI();
             };
-            evSelect.onchange = loadProxyState;
-            loadProxyState();
+        }
 
-            modal.classList.remove("hidden");
-            document.getElementById("btn-admin-proxy-cancel").onclick = () => modal.classList.add("hidden");
+        function closeProxyCalModal() {
+            const count = Object.keys(proxyCalEdits).length;
+            if (count > 0) {
+                if (!confirm("未保存の変更があります。破棄して閉じますか？")) return;
+            }
+            document.getElementById("admin-member-att-modal").classList.add("hidden");
+        }
 
-            document.getElementById("admin-proxy-att-form").onsubmit = async (e) => {
-                e.preventDefault();
-                modal.classList.add("hidden");
+        function renderProxyCalendar() {
+            const year = proxyCalDate.getFullYear();
+            const month = proxyCalDate.getMonth() + 1;
+            document.getElementById("admin-proxy-cal-month").textContent = `${year}年 ${month}月`;
 
-                const targetEventId = evSelect.value;
-                const comment = document.getElementById("admin-proxy-comment").value.trim();
+            const container = document.getElementById("admin-proxy-cal-days");
+            container.innerHTML = "";
 
-                showToast("代理出欠を保存中...");
-                try {
-                    const res = await fetch(GAS_API_URL, {
+            const firstDayIndex = new Date(year, month - 1, 1).getDay();
+            const lastDate = new Date(year, month, 0).getDate();
+
+            // 空白セル
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement("div");
+                emptyCell.className = "calendar-day empty";
+                container.appendChild(emptyCell);
+            }
+
+            for (let d = 1; d <= lastDate; d++) {
+                const ymdStr = `${year}/${String(month).padStart(2, '0')}/${String(d).padStart(2, '0')}`;
+                const cell = document.createElement("div");
+                cell.className = "calendar-day";
+
+                // この日のイベント抽出
+                const dayEvents = adminData.events.filter(e => e.date === ymdStr);
+
+                let badgeHtml = "";
+                let hasModified = false;
+
+                if (dayEvents.length > 0) {
+                    dayEvents.forEach(ev => {
+                        const evId = String(ev.eventId);
+                        let status = "";
+                        if (proxyCalEdits[evId]) {
+                            status = proxyCalEdits[evId].status;
+                            hasModified = true;
+                        } else {
+                            const rec = adminData.attendances.find(a => String(a.eventId) === evId && String(a.userId) === String(proxyCalUserId));
+                            status = rec ? rec.status : "";
+                        }
+
+                        let dotColor = "#94a3b8";
+                        if (status === "参加") dotColor = "#06c755";
+                        else if (status === "遅刻") dotColor = "#f97316";
+                        else if (status === "早退") dotColor = "#eab308";
+                        else if (status === "未定") dotColor = "#8b5cf6";
+                        else if (status === "不参加") dotColor = "#ef4444";
+
+                        const label = status ? status.charAt(0) : "・";
+                        badgeHtml += `<span style="background:${dotColor}; color:#fff; font-size:0.65rem; padding:1px 3px; border-radius:3px; font-weight:bold; margin-top:2px; display:inline-block;">${label}</span>`;
+                    });
+                }
+
+                if (hasModified) {
+                    cell.style.outline = "2px solid var(--primary)";
+                }
+
+                if (dayEvents.some(e => String(e.eventId) === String(proxyCalSelectedEventId))) {
+                    cell.classList.add("selected");
+                }
+
+                cell.innerHTML = `
+                    <div class="day-number">${d}</div>
+                    <div style="display:flex; flex-direction:column; gap:2px; align-items:center;">${badgeHtml}</div>
+                `;
+
+                if (dayEvents.length > 0) {
+                    cell.style.cursor = "pointer";
+                    cell.onclick = () => {
+                        selectProxyDayEvent(dayEvents[0], ymdStr);
+                        renderProxyCalendar();
+                    };
+                }
+
+                container.appendChild(cell);
+            }
+        }
+
+        function selectProxyDayEvent(eventObj, ymdStr) {
+            proxyCalSelectedEventId = String(eventObj.eventId);
+            const [y, m, d] = ymdStr.split("/").map(Number);
+            const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
+            document.getElementById("admin-proxy-selected-date-info").innerHTML = `
+                📅 ${m}/${d} (${weekDay}) ${escapeHtml(eventObj.title)} (${escapeHtml(eventObj.time)})
+            `;
+
+            let currentStatus = "";
+            let currentComment = "";
+            if (proxyCalEdits[proxyCalSelectedEventId]) {
+                currentStatus = proxyCalEdits[proxyCalSelectedEventId].status;
+                currentComment = proxyCalEdits[proxyCalSelectedEventId].comment || "";
+            } else {
+                const rec = adminData.attendances.find(a => String(a.eventId) === proxyCalSelectedEventId && String(a.userId) === String(proxyCalUserId));
+                if (rec) {
+                    currentStatus = rec.status || "";
+                    currentComment = rec.comment || "";
+                }
+            }
+
+            document.querySelectorAll("#admin-proxy-cal-chips .admin-chip-btn").forEach(b => {
+                b.classList.toggle("active", b.getAttribute("data-status") === currentStatus);
+            });
+            document.getElementById("admin-proxy-cal-comment").value = currentComment;
+        }
+
+        function setProxyAttendanceForSelectedEvent(status) {
+            if (!proxyCalSelectedEventId) return;
+            const rec = adminData.attendances.find(a => String(a.eventId) === proxyCalSelectedEventId && String(a.userId) === String(proxyCalUserId));
+            const origStatus = rec ? (rec.status || "") : "";
+            const origComment = rec ? (rec.comment || "") : "";
+            const currentComment = document.getElementById("admin-proxy-cal-comment").value.trim();
+
+            proxyCalEdits[proxyCalSelectedEventId] = {
+                status: status,
+                comment: currentComment,
+                originalStatus: origStatus,
+                originalComment: origComment
+            };
+
+            document.querySelectorAll("#admin-proxy-cal-chips .admin-chip-btn").forEach(b => {
+                b.classList.toggle("active", b.getAttribute("data-status") === status);
+            });
+
+            updateProxySaveButtonUI();
+            renderProxyCalendar();
+        }
+
+        function updateProxySaveButtonUI() {
+            const count = Object.keys(proxyCalEdits).length;
+            const btn = document.getElementById("btn-admin-proxy-cal-save");
+            btn.textContent = `変更を保存する (${count}件)`;
+            btn.disabled = count === 0;
+        }
+
+        async function saveProxyCalChanges() {
+            const count = Object.keys(proxyCalEdits).length;
+            if (count === 0) return;
+
+            const m = adminData.members.find(x => x.userId === proxyCalUserId);
+            const targetName = m ? m.name : "";
+
+            const saveBtn = document.getElementById("btn-admin-proxy-cal-save");
+            saveBtn.disabled = true;
+            saveBtn.textContent = "保存中...";
+            showToast("代理出欠を一括保存中...");
+
+            try {
+                for (const evId of Object.keys(proxyCalEdits)) {
+                    const edit = proxyCalEdits[evId];
+                    await fetch(GAS_API_URL, {
                         method: "POST",
                         headers: { "Content-Type": "text/plain" },
                         body: JSON.stringify({
                             apiKey: API_KEY,
                             action: "adminUpdateAttendance",
                             adminUserId: currentUser.userId,
-                            targetUserId: userId,
-                            targetEventId: targetEventId,
-                            targetName: m.name,
-                            status: currentStatus,
-                            comment: comment
+                            targetUserId: proxyCalUserId,
+                            targetEventId: evId,
+                            targetName: targetName,
+                            status: edit.status,
+                            comment: edit.comment
                         })
                     });
-                    const json = await res.json();
-                    if (json.success) {
-                        showToast("出欠を更新しました");
-                        await loadAdminDataAsync(true);
+
+                    // ローカルキャッシュ更新
+                    const existingIdx = adminData.attendances.findIndex(a => String(a.eventId) === String(evId) && String(a.userId) === String(proxyCalUserId));
+                    if (existingIdx !== -1) {
+                        adminData.attendances[existingIdx].status = edit.status;
+                        adminData.attendances[existingIdx].comment = edit.comment;
                     } else {
-                        alert(json.message || "更新に失敗しました");
+                        adminData.attendances.push({
+                            eventId: String(evId),
+                            userId: proxyCalUserId,
+                            name: targetName,
+                            status: edit.status,
+                            comment: edit.comment
+                        });
                     }
-                } catch (err) {
-                    alert("通信エラー: " + err.message);
                 }
-            };
+
+                showToast(`✅ ${count}件の出欠を変更・保存しました`);
+                proxyCalEdits = {};
+                updateProxySaveButtonUI();
+                renderProxyCalendar();
+                document.getElementById("admin-member-att-modal").classList.add("hidden");
+
+                if (currentAdminSubView === "court") updateCourtSplitPreview();
+                if (currentAdminSubView === "rally") updateRallyPreview();
+
+            } catch (err) {
+                console.error(err);
+                alert("保存中にエラーが発生しました: " + err.message);
+                updateProxySaveButtonUI();
+            }
         }
 
-        // ------------------------------------------------------------
-        // 4. 日程管理ロジック
-        // ------------------------------------------------------------
-        function renderAdminEventsList() {
-            const container = document.getElementById("admin-events-list-container");
+        // ============================================================
+        // 4. 日程管理ロジック（カレンダーUI）
+        // ============================================================
+        let adminSchedDate = new Date();
+        let adminSchedSelectedYMD = "";
+
+        function renderAdminScheduleView() {
+            renderAdminScheduleCalendar();
+        }
+
+        function renderAdminScheduleCalendar() {
+            const year = adminSchedDate.getFullYear();
+            const month = adminSchedDate.getMonth() + 1;
+            document.getElementById("admin-sched-month-display").textContent = `${year}年 ${month}月`;
+
+            const container = document.getElementById("admin-sched-days-container");
             container.innerHTML = "";
 
-            const sorted = [...adminData.events].sort((a, b) => a.date.localeCompare(b.date));
+            const firstDayIndex = new Date(year, month - 1, 1).getDay();
+            const lastDate = new Date(year, month, 0).getDate();
 
-            let html = '';
-            sorted.forEach(ev => {
-                html += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9; gap:8px;">
-                        <div>
-                            <div style="font-weight:700; font-size:0.88rem; color:#0f172a;">
-                                ${ev.date} ${escapeHtml(ev.title)}
-                            </div>
-                            <div style="font-size:0.75rem; color:#64748b;">
-                                ${escapeHtml(ev.time)} @ ${escapeHtml(ev.place)}
-                            </div>
-                        </div>
-                        <div style="display:flex; gap:6px;">
-                            <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="openAdminEventModal('${ev.eventId}')">編集</button>
-                            <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="copyAdminEvent('${ev.eventId}')">複製</button>
-                            <button type="button" class="admin-danger-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteAdminEvent('${ev.eventId}')">削除</button>
-                        </div>
-                    </div>
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement("div");
+                emptyCell.className = "calendar-day empty";
+                container.appendChild(emptyCell);
+            }
+
+            const today = new Date();
+            const todayYMD = `${today.getFullYear()}/${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
+
+            if (!adminSchedSelectedYMD) {
+                adminSchedSelectedYMD = todayYMD;
+            }
+
+            for (let d = 1; d <= lastDate; d++) {
+                const ymdStr = `${year}/${String(month).padStart(2, '0')}/${String(d).padStart(2, '0')}`;
+                const cell = document.createElement("div");
+                cell.className = "calendar-day";
+
+                const isToday = (ymdStr === todayYMD);
+                const isSelected = (ymdStr === adminSchedSelectedYMD);
+                if (isToday) cell.classList.add("today");
+                if (isSelected) cell.classList.add("selected");
+
+                const dayEvents = adminData.events.filter(e => e.date === ymdStr);
+                let pillsHtml = "";
+                dayEvents.forEach(ev => {
+                    const color = getEventColor(ev.title);
+                    pillsHtml += `
+                        <span class="admin-cal-event-pill" style="background:${color}; color:#ffffff;" title="${escapeHtml(ev.title)}">
+                            ${escapeHtml(ev.title)}
+                        </span>
+                    `;
+                });
+
+                cell.innerHTML = `
+                    <div class="day-number">${d}</div>
+                    <div style="display:flex; flex-direction:column; gap:2px; margin-top:2px;">${pillsHtml}</div>
                 `;
-            });
-            container.innerHTML = html;
 
-            document.getElementById("btn-admin-open-add-event").onclick = () => openAdminEventModal("");
+                cell.onclick = () => {
+                    adminSchedSelectedYMD = ymdStr;
+                    renderAdminScheduleCalendar();
+                };
+
+                container.appendChild(cell);
+            }
+
+            renderAdminScheduleSelectedDay();
+
+            document.getElementById("admin-sched-prev-month").onclick = () => {
+                adminSchedDate.setMonth(adminSchedDate.getMonth() - 1);
+                renderAdminScheduleCalendar();
+            };
+            document.getElementById("admin-sched-next-month").onclick = () => {
+                adminSchedDate.setMonth(adminSchedDate.getMonth() + 1);
+                renderAdminScheduleCalendar();
+            };
+            document.getElementById("admin-sched-month-display").onclick = () => {
+                adminSchedDate = new Date();
+                adminSchedSelectedYMD = todayYMD;
+                renderAdminScheduleCalendar();
+            };
+
+            document.getElementById("btn-admin-open-add-event").onclick = () => openAdminEventModal("", adminSchedSelectedYMD);
             document.getElementById("btn-admin-open-batch-events").onclick = () => openBatchEventsModal();
         }
 
-        function openAdminEventModal(eventId) {
+        function renderAdminScheduleSelectedDay() {
+            const box = document.getElementById("admin-sched-selected-day-box");
+            if (!box) return;
+
+            const ymd = adminSchedSelectedYMD || "";
+            if (!ymd) {
+                box.innerHTML = '<div style="color:#64748b; font-size:0.85rem;">日付を選択してください</div>';
+                return;
+            }
+
+            const [y, m, d] = ymd.split("/").map(Number);
+            const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
+            const dayEvents = adminData.events.filter(e => e.date === ymd);
+
+            let html = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">
+                    <div style="font-weight:bold; font-size:0.92rem; color:#0f172a;">
+                        📅 ${m}月${d}日 (${weekDay}) の予定
+                    </div>
+                    <button type="button" class="admin-secondary-btn" style="padding:4px 10px; font-size:0.75rem;" onclick="openAdminEventModal('', '${ymd}')">
+                        ＋ この日に練習を追加
+                    </button>
+                </div>
+            `;
+
+            if (dayEvents.length === 0) {
+                html += `
+                    <div style="padding:16px 8px; text-align:center; color:#94a3b8; font-size:0.84rem;">
+                        この日の練習日程は登録されていません
+                    </div>
+                `;
+            } else {
+                dayEvents.forEach(ev => {
+                    const dotColor = getEventColor(ev.title);
+                    html += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:8px;">
+                            <div>
+                                <div style="font-weight:700; font-size:0.9rem; color:#0f172a; display:flex; align-items:center; gap:6px;">
+                                    <span style="width:10px; height:10px; border-radius:50%; background:${dotColor}; display:inline-block;"></span>
+                                    ${escapeHtml(ev.title)}
+                                </div>
+                                <div style="font-size:0.78rem; color:#64748b; margin-top:3px;">
+                                    ⏰ ${escapeHtml(ev.time)}　📍 ${escapeHtml(ev.place)}
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="openAdminEventModal('${ev.eventId}', '${ymd}')">編集</button>
+                                <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="copyAdminEvent('${ev.eventId}')">複製</button>
+                                <button type="button" class="admin-danger-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteAdminEvent('${ev.eventId}')">削除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            box.innerHTML = html;
+        }
+
+        function openAdminEventModal(eventId, defaultYmd = "") {
             const modal = document.getElementById("admin-event-modal");
             const titleEl = document.getElementById("admin-event-modal-title");
             const ev = adminData.events.find(x => String(x.eventId) === String(eventId)) || {};
 
             titleEl.textContent = eventId ? "練習日程の編集" : "練習日程の新規追加";
             document.getElementById("admin-ev-id").value = eventId || "";
-            document.getElementById("admin-ev-date").value = ev.date ? ev.date.replace(/\//g, "-") : "";
+
+            let initialDate = "";
+            if (ev.date) initialDate = ev.date.replace(/\//g, "-");
+            else if (defaultYmd) initialDate = defaultYmd.replace(/\//g, "-");
+
+            document.getElementById("admin-ev-date").value = initialDate;
             document.getElementById("admin-ev-time").value = ev.time || "18:00〜21:00";
             document.getElementById("admin-ev-place").value = ev.place || "2体半面";
             document.getElementById("admin-ev-title").value = ev.title || "正規練";
@@ -4626,7 +5226,8 @@
                     if (json.success) {
                         showToast("練習日程を保存しました");
                         await loadAdminDataAsync(true);
-                        renderAdminEventsList();
+                        adminSchedSelectedYMD = dateVal;
+                        renderAdminScheduleCalendar();
                     } else {
                         alert(json.message || "保存に失敗しました");
                     }
@@ -4639,7 +5240,7 @@
         function copyAdminEvent(eventId) {
             const ev = adminData.events.find(x => String(x.eventId) === String(eventId));
             if (!ev) return;
-            openAdminEventModal("");
+            openAdminEventModal("", ev.date);
             document.getElementById("admin-ev-time").value = ev.time || "";
             document.getElementById("admin-ev-place").value = ev.place || "";
             document.getElementById("admin-ev-title").value = ev.title || "";
@@ -4671,7 +5272,7 @@
                         if (json.success) {
                             showToast("日程を削除しました");
                             await loadAdminDataAsync(true);
-                            renderAdminEventsList();
+                            renderAdminScheduleCalendar();
                         } else {
                             alert(json.message || "削除に失敗しました");
                         }
@@ -4777,7 +5378,7 @@
                             if (json.success) {
                                 showToast("一括登録が完了しました");
                                 await loadAdminDataAsync(true);
-                                renderAdminEventsList();
+                                renderAdminScheduleCalendar();
                             } else {
                                 alert(json.message || "登録に失敗しました");
                             }
