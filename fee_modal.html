@@ -8,7 +8,10 @@
         </div>
 
         <div class="fee-header">
-            <span class="fee-badge">💰 会計・部費明細</span>
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+                <span class="fee-badge">💰 会計・部費明細</span>
+                <button type="button" id="btn-refresh-fee" class="btn-fee-refresh">🔄 最新に更新</button>
+            </div>
             <h2 class="fee-title" id="fee-modal-user-name">部費・請求内訳</h2>
         </div>
 
@@ -155,6 +158,27 @@
         padding: 4px 10px;
         border-radius: 20px;
         margin-bottom: 6px;
+    }
+
+    .btn-fee-refresh {
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #475569;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 6px;
+        transition: all 0.15s;
+    }
+
+    .btn-fee-refresh:active {
+        background: #e2e8f0;
+        transform: scale(0.96);
     }
 
     .fee-title {
