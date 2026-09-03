@@ -1,12 +1,15 @@
 <!-- 初回部員情報登録フォーム（オンデマンドロード用・カレンダーUIテイストのポップアップ） -->
 <div id="register-overlay" class="register-overlay">
     <div class="register-modal">
-        <div class="modal-handle"></div>
+        <div class="modal-top-bar">
+            <div class="modal-handle"></div>
+            <button type="button" class="btn-modal-close hidden" id="btn-close-register">✕</button>
+        </div>
 
         <div class="register-header">
-            <div class="register-badge">🏸 はじめに</div>
-            <h2 class="register-title">部員プロフィール登録</h2>
-            <p class="register-desc">出欠管理カレンダーを利用するため、初回のみお名前・所属をご登録ください。</p>
+            <div class="register-badge" id="reg-badge">🏸 はじめに</div>
+            <h2 class="register-title" id="reg-title">部員プロフィール登録</h2>
+            <p class="register-desc" id="reg-desc">出欠管理カレンダーを利用するため、初回のみお名前・所属をご登録ください。</p>
         </div>
 
         <div class="line-profile-preview">
@@ -134,12 +137,42 @@
         to { transform: scale(1) translateY(0); opacity: 1; }
     }
 
+    .modal-top-bar {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 8px;
+    }
+
     .modal-handle {
         width: 36px;
         height: 4px;
         background: #cbd5e1;
         border-radius: 2px;
-        margin: 0 auto 12px;
+    }
+
+    .btn-modal-close {
+        position: absolute;
+        right: -4px;
+        top: -4px;
+        background: #f1f5f9;
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        color: #64748b;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+    }
+
+    .btn-modal-close:hover {
+        background: #e2e8f0;
+        color: #1e293b;
     }
 
     .register-header {
