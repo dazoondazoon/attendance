@@ -729,7 +729,8 @@
 
         let currentUser = { userId: "", displayName: "" };
         let cachedEvents = [];
-        let cachedAttendances = [];
+        let cachedAttendances = []; // 初期ロード時は自分自身の回答レコードのみ保持
+        let eventAttendeesCache = {}; // 各イベントの回答メンバー一覧のオンデマンドキャッシュ { [eventId]: Array }
 
         // 全イベントに対するローカルの回答編集状態を管理（日付をまたいでも消えない）
         let editState = {}; // { [eventId]: { status: string, comment: string, isModified: boolean } }
@@ -741,8 +742,6 @@
 
         async function init() {
             try {
-                const fetchPromise = fetchData();
-
                 await liff.init({ liffId: LIFF_ID });
                 if (!liff.isInClient() && !liff.isLoggedIn()) {
                     liff.login();
@@ -755,8 +754,14 @@
                 const userNameEl = document.getElementById("user-name");
                 if (userNameEl) userNameEl.textContent = currentUser.displayName;
 
-                await fetchPromise;
+                // 初期アクセス時はイベント日程 ＋ 自分の出欠データのみ超軽量取得
+                const initData = await fetchData(currentUser.userId);
 
+                if (initData && initData.userProfile && initData.userProfile.name) {
+                    currentUser.displayName = initData.userProfile.name;
+                }
+
+                // まずカレンダー画面を完全に描画して表示
                 initEditState();
                 setDefaultSelectedDate();
                 renderCalendar();
@@ -765,19 +770,192 @@
 
                 document.getElementById("loading").classList.add("hidden");
                 document.getElementById("app").classList.remove("hidden");
+
+                // 初回アクセス（nameシートに未登録）の場合のみ、カレンダーの上にポップアップとして重ねて表示
+                if (initData && initData.isRegistered === false) {
+                    await loadAndShowRegisterModal(currentUser);
+                }
             } catch (err) {
                 alert("初期化エラー: " + err.message);
                 console.error(err);
             }
         }
 
-        async function fetchData() {
-            const res = await fetch(`${GAS_API_URL}?key=${API_KEY}`);
+        async function fetchData(userId) {
+            const url = `${GAS_API_URL}?key=${API_KEY}&userId=${encodeURIComponent(userId || "")}`;
+            const res = await fetch(url);
             const data = await res.json();
             if (!data.success) throw new Error(data.message);
 
-            cachedEvents = data.events;
-            cachedAttendances = data.attendances;
+            cachedEvents = data.events || [];
+            cachedAttendances = data.attendances || [];
+            return data;
+        }
+
+        // 初回部員登録モーダルをオンデマンド読み込み・表示（未登録時のみ読み込むため普段のロード時間は0ms）
+        function loadAndShowRegisterModal(user) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const formRes = await fetch("register_form.html");
+                    if (!formRes.ok) throw new Error("登録フォームの読み込みに失敗しました");
+                    const formHtml = await formRes.text();
+
+                    // DOMに追加（styleタグも確実に注入）
+                    document.body.insertAdjacentHTML("beforeend", formHtml);
+                    const overlay = document.getElementById("register-overlay");
+
+                    // LINE名表示
+                    const lineNameEl = document.getElementById("reg-line-name");
+                    if (lineNameEl) lineNameEl.textContent = user.displayName || "LINEユーザー";
+
+                    // 学年チップ選択（大学院・OBOG・その他は直下に詳細手動入力欄を表示）
+                    setupChipGroup("grade-chip-group", "reg-grade", (selectedVal) => {
+                        const detailContainer = document.getElementById("grade-detail-container");
+                        const detailInput = document.getElementById("reg-grade-detail");
+                        if (selectedVal === "大学院") {
+                            detailContainer.classList.remove("hidden");
+                            detailInput.placeholder = "例: 修士1年";
+                            detailInput.focus();
+                        } else if (selectedVal === "OBOG") {
+                            detailContainer.classList.remove("hidden");
+                            detailInput.placeholder = "例: 2024年卒";
+                            detailInput.focus();
+                        } else if (selectedVal === "その他") {
+                            detailContainer.classList.remove("hidden");
+                            detailInput.placeholder = "例: 教職員";
+                            detailInput.focus();
+                        } else {
+                            detailContainer.classList.add("hidden");
+                            detailInput.value = "";
+                        }
+                    });
+
+                    // 大学名チップ選択（「その他」選択時のみテキスト入力欄を表示）
+                    setupChipGroup("univ-chip-group", "reg-univ", (selectedVal) => {
+                        const otherContainer = document.getElementById("univ-other-container");
+                        const otherInput = document.getElementById("reg-univ-other");
+                        if (selectedVal === "その他") {
+                            otherContainer.classList.remove("hidden");
+                            otherInput.focus();
+                        } else {
+                            otherContainer.classList.add("hidden");
+                            otherInput.value = "";
+                        }
+                    });
+
+                    // 性別チップ選択
+                    setupChipGroup("sex-chip-group", "reg-sex");
+
+                    // フォーム送信処理
+                    const form = document.getElementById("register-form");
+                    const submitBtn = document.getElementById("btn-submit-register");
+                    const errorMsg = document.getElementById("reg-error-msg");
+
+                    form.addEventListener("submit", async (e) => {
+                        e.preventDefault();
+                        errorMsg.classList.add("hidden");
+
+                        const lastName = document.getElementById("reg-last-name").value.trim();
+                        const firstName = document.getElementById("reg-first-name").value.trim();
+                        const kanaLast = document.getElementById("reg-kana-last").value.trim();
+                        const kanaFirst = document.getElementById("reg-kana-first").value.trim();
+                        let grade = document.getElementById("reg-grade").value.trim();
+                        let univ = document.getElementById("reg-univ").value.trim();
+                        const sex = document.getElementById("reg-sex").value.trim();
+
+                        // 学年の詳細入力の反映
+                        if (grade === "大学院" || grade === "OBOG" || grade === "その他") {
+                            const gradeDetail = document.getElementById("reg-grade-detail").value.trim();
+                            if (gradeDetail) {
+                                grade = `${grade} (${gradeDetail})`;
+                            }
+                        }
+
+                        if (univ === "その他") {
+                            const otherVal = document.getElementById("reg-univ-other").value.trim();
+                            if (!otherVal) {
+                                showError("大学名を入力してください。");
+                                document.getElementById("reg-univ-other").focus();
+                                return;
+                            }
+                            univ = otherVal;
+                        }
+
+                        if (!lastName || !firstName || !kanaLast || !kanaFirst || !grade || !univ || !sex) {
+                            showError("すべての必須項目を入力・選択してください。");
+                            return;
+                        }
+
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = "登録中...";
+
+                        const payload = {
+                            apiKey: API_KEY,
+                            action: "registerUser",
+                            userId: user.userId,
+                            user: {
+                                lineId: user.userId,
+                                lineName: user.displayName,
+                                lastName: lastName,
+                                firstName: firstName,
+                                furiganaLastName: kanaLast,
+                                furiganaFirstName: kanaFirst,
+                                grade: grade,
+                                univ: univ,
+                                sex: sex
+                            }
+                        };
+
+                        try {
+                            await fetch(GAS_API_URL, {
+                                method: "POST",
+                                mode: "no-cors",
+                                body: JSON.stringify(payload)
+                            });
+
+                            currentUser.displayName = `${lastName} ${firstName}`;
+                            alert(`部員情報を登録しました！ようこそ、${currentUser.displayName}さん。`);
+
+                            // モーダルをフェードアウトして消去
+                            overlay.style.transition = "opacity 0.2s";
+                            overlay.style.opacity = "0";
+                            setTimeout(() => {
+                                overlay.remove();
+                                resolve();
+                            }, 200);
+
+                        } catch (err) {
+                            showError("登録エラーが発生しました: " + err.message);
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = "登録してカレンダーへ進む";
+                        }
+                    });
+
+                    function showError(msg) {
+                        errorMsg.textContent = msg;
+                        errorMsg.classList.remove("hidden");
+                    }
+
+                    function setupChipGroup(groupId, hiddenInputId, onSelect) {
+                        const group = document.getElementById(groupId);
+                        if (!group) return;
+                        const hiddenInput = document.getElementById(hiddenInputId);
+                        group.querySelectorAll(".reg-chip").forEach(chip => {
+                            chip.addEventListener("click", () => {
+                                group.querySelectorAll(".reg-chip").forEach(c => c.classList.remove("active"));
+                                chip.classList.add("active");
+                                const val = chip.getAttribute("data-val");
+                                hiddenInput.value = val;
+                                if (onSelect) onSelect(val);
+                            });
+                        });
+                    }
+
+                } catch (err) {
+                    alert("初回登録画面の読み込みに失敗しました: " + err.message);
+                    reject(err);
+                }
+            });
         }
 
         // スプレッドシートの既存回答を editState に初期設定
@@ -910,12 +1088,6 @@
                 const evId = String(eventItem.eventId);
                 const color = getEventColor(eventItem.title);
 
-                const attendees = cachedAttendances.filter(a => String(a.eventId) === evId);
-                const countJoin = attendees.filter(a => a.status === "参加").length;
-                const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
-                const countPending = attendees.filter(a => a.status === "未定").length;
-                const countAbsent = attendees.filter(a => a.status === "不参加").length;
-
                 // editState（未保存の入力状態）から現在の値を取り出す
                 const currentData = editState[evId] || { status: "", comment: "" };
                 const myStatus = currentData.status;
@@ -943,26 +1115,9 @@
 
             <textarea id="comment-${evId}" rows="2" placeholder="備考（遅刻理由や未定の詳細など）">${escapeHtml(myComment)}</textarea>
 
-            <!-- 集計バー -->
-            <div class="summary-stats">
-              <div class="stat-item stat-join">参加<b>${countJoin}人</b></div>
-              <div class="stat-item">遅刻/早退<b>${countLate}人</b></div>
-              <div class="stat-item stat-pending">未定<b>${countPending}人</b></div>
-              <div class="stat-item stat-absent">不参加<b>${countAbsent}人</b></div>
-            </div>
-
-            <!-- メンバー一覧 -->
-            <div class="members-toggle" data-target="list-${evId}">回答メンバー一覧を表示 ▼</div>
-            <div class="members-list hidden" id="list-${evId}">
-              ${attendees.length === 0 ? '<div style="color:#888; text-align:center;">まだ回答はありません</div>' :
-                        attendees.map(a => `
-                  <div class="member-row">
-                    <span><b>${escapeHtml(a.userName)}</b>（${escapeHtml(a.status)}）</span>
-                    <span style="color:#777;">${escapeHtml(a.comment || "")}</span>
-                  </div>
-                `).join('')
-                    }
-            </div>
+            <!-- 回答メンバー一覧トグルボタン（オンデマンド取得） -->
+            <div class="members-toggle" data-event-id="${evId}" data-target="expand-${evId}">回答メンバー一覧を表示 ▼</div>
+            <div class="members-expand-area hidden" id="expand-${evId}"></div>
           </div>
         `;
             });
@@ -970,7 +1125,7 @@
             area.innerHTML = html;
 
             // ボタンのトグル動作＆editStateへの保存
-            document.querySelectorAll(".status-group").forEach(group => {
+            document.querySelectorAll("#event-detail-area .status-group").forEach(group => {
                 const evId = group.getAttribute("data-event-id");
                 const buttons = group.querySelectorAll(".status-btn");
 
@@ -1008,19 +1163,9 @@
                 }
             });
 
-            // メンバー一覧アコーディオン開閉
-            document.querySelectorAll(".members-toggle").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const targetId = btn.getAttribute("data-target");
-                    const listEl = document.getElementById(targetId);
-                    if (listEl.classList.contains("hidden")) {
-                        listEl.classList.remove("hidden");
-                        btn.textContent = "回答メンバー一覧を閉じる ▲";
-                    } else {
-                        listEl.classList.add("hidden");
-                        btn.textContent = "回答メンバー一覧を表示 ▼";
-                    }
-                });
+            // メンバー一覧オンデマンド取得＆アコーディオン開閉
+            document.querySelectorAll("#event-detail-area .members-toggle").forEach(btn => {
+                btn.addEventListener("click", () => handleMembersToggle(btn));
             });
         }
 
@@ -1125,7 +1270,8 @@
             const payload = {
                 apiKey: API_KEY,
                 userId: currentUser.userId,
-                userName: currentUser.displayName,
+                name: currentUser.displayName, // 登録した部員氏名
+                userName: currentUser.displayName, // 互換用
                 answers: answers
             };
 
@@ -1149,9 +1295,11 @@
                 alert(`全${answers.length}件の回答を一括保存しました！`);
 
                 // 最新データを再取得して画面をリセット
-                await fetchData();
+                eventAttendeesCache = {}; // メンバー一覧キャッシュを破棄
+                await fetchData(currentUser.userId);
                 initEditState();
                 renderEventDetails();
+                if (currentTab === "list") renderListView();
                 updateSubmitButtonUI();
 
             } catch (err) {
@@ -1162,6 +1310,75 @@
                 updateSubmitButtonUI();
             }
         });
+
+        // 回答メンバー一覧＆集計バーのオンデマンド取得・トグル共通関数
+        async function handleMembersToggle(btn) {
+            const evId = btn.getAttribute("data-event-id");
+            const targetId = btn.getAttribute("data-target");
+            const expandEl = document.getElementById(targetId);
+            if (!expandEl) return;
+
+            // すでに開いている場合は閉じる
+            if (!expandEl.classList.contains("hidden")) {
+                expandEl.classList.add("hidden");
+                btn.textContent = "回答メンバー一覧を表示 ▼";
+                return;
+            }
+
+            // キャッシュがあれば即座に表示
+            if (eventAttendeesCache[evId]) {
+                renderExpandContent(expandEl, eventAttendeesCache[evId]);
+                expandEl.classList.remove("hidden");
+                btn.textContent = "回答メンバー一覧を閉じる ▲";
+                return;
+            }
+
+            // なければGASからオンデマンド取得
+            try {
+                btn.textContent = "回答メンバーを読み込み中...";
+                const res = await fetch(`${GAS_API_URL}?key=${API_KEY}&action=getEventAttendances&eventId=${encodeURIComponent(evId)}`);
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+
+                eventAttendeesCache[evId] = data.attendances || [];
+                renderExpandContent(expandEl, eventAttendeesCache[evId]);
+                expandEl.classList.remove("hidden");
+                btn.textContent = "回答メンバー一覧を閉じる ▲";
+            } catch (err) {
+                btn.textContent = "回答メンバー一覧を表示 ▼";
+                alert("メンバー一覧の取得に失敗しました: " + err.message);
+            }
+        }
+
+        // 参加人数集計バー ＋ メンバー一覧HTMLのレンダリング
+        function renderExpandContent(containerEl, attendees) {
+            const countJoin = attendees.filter(a => a.status === "参加").length;
+            const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
+            const countPending = attendees.filter(a => a.status === "未定").length;
+            const countAbsent = attendees.filter(a => a.status === "不参加").length;
+
+            containerEl.innerHTML = `
+                <!-- 集計バー -->
+                <div class="summary-stats" style="margin-top: 10px; margin-bottom: 8px;">
+                  <div class="stat-item stat-join">参加<b>${countJoin}人</b></div>
+                  <div class="stat-item">遅刻/早退<b>${countLate}人</b></div>
+                  <div class="stat-item stat-pending">未定<b>${countPending}人</b></div>
+                  <div class="stat-item stat-absent">不参加<b>${countAbsent}人</b></div>
+                </div>
+
+                <!-- メンバー一覧 -->
+                <div class="members-list">
+                  ${attendees.length === 0 ? '<div style="color:#888; text-align:center; padding: 6px 0;">まだ回答はありません</div>' :
+                    attendees.map(a => `
+                      <div class="member-row">
+                        <span><b>${escapeHtml(a.name || a.userName)}</b>（${escapeHtml(a.status)}）</span>
+                        <span style="color:#777;">${escapeHtml(a.comment || "")}</span>
+                      </div>
+                    `).join('')
+                  }
+                </div>
+            `;
+        }
 
         // タブ切り替えとフィルター状態
         let currentTab = "calendar";
@@ -1334,12 +1551,6 @@
                 if (dayIndex === 0) dayColorStyle = "color: var(--sunday);";
                 if (dayIndex === 6) dayColorStyle = "color: var(--saturday);";
 
-                const attendees = cachedAttendances.filter(a => String(a.eventId) === evId);
-                const countJoin = attendees.filter(a => a.status === "参加").length;
-                const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
-                const countPending = attendees.filter(a => a.status === "未定").length;
-                const countAbsent = attendees.filter(a => a.status === "不参加").length;
-
                 const currentData = editState[evId] || { status: "", comment: "" };
                 const myStatus = currentData.status;
                 const myComment = currentData.comment;
@@ -1369,26 +1580,9 @@
 
                     <textarea id="list-comment-${evId}" rows="1" placeholder="備考（遅刻理由など）">${escapeHtml(myComment)}</textarea>
 
-                    <!-- 集計バー -->
-                    <div class="summary-stats" style="margin-bottom: 4px;">
-                      <div class="stat-item stat-join">参加<b>${countJoin}人</b></div>
-                      <div class="stat-item">遅刻/早退<b>${countLate}人</b></div>
-                      <div class="stat-item stat-pending">未定<b>${countPending}人</b></div>
-                      <div class="stat-item stat-absent">不参加<b>${countAbsent}人</b></div>
-                    </div>
-
-                    <!-- メンバー一覧 -->
-                    <div class="members-toggle" data-target="list-att-${evId}">回答メンバー一覧を表示 ▼</div>
-                    <div class="members-list hidden" id="list-att-${evId}">
-                      ${attendees.length === 0 ? '<div style="color:#888; text-align:center;">まだ回答はありません</div>' :
-                        attendees.map(a => `
-                          <div class="member-row">
-                            <span><b>${escapeHtml(a.userName)}</b>（${escapeHtml(a.status)}）</span>
-                            <span style="color:#777;">${escapeHtml(a.comment || "")}</span>
-                          </div>
-                        `).join('')
-                    }
-                    </div>
+                    <!-- 回答メンバー一覧トグルボタン（オンデマンド取得） -->
+                    <div class="members-toggle" data-event-id="${evId}" data-target="list-expand-${evId}">回答メンバー一覧を表示 ▼</div>
+                    <div class="members-expand-area hidden" id="list-expand-${evId}"></div>
                   </div>
                 `;
             });
@@ -1434,19 +1628,9 @@
                 }
             });
 
-            // メンバー一覧開閉
+            // メンバー一覧オンデマンド取得＆開閉
             container.querySelectorAll(".members-toggle").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const targetId = btn.getAttribute("data-target");
-                    const listEl = document.getElementById(targetId);
-                    if (listEl.classList.contains("hidden")) {
-                        listEl.classList.remove("hidden");
-                        btn.textContent = "回答メンバー一覧を閉じる ▲";
-                    } else {
-                        listEl.classList.add("hidden");
-                        btn.textContent = "回答メンバー一覧を表示 ▼";
-                    }
-                });
+                btn.addEventListener("click", () => handleMembersToggle(btn));
             });
         }
 
