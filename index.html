@@ -1176,6 +1176,9 @@
             document.getElementById("loading").classList.add("hidden");
             document.getElementById("app").classList.remove("hidden");
 
+            // UIが表示された後に全イベントリスナーを安全に登録
+            setupEventListeners();
+
             // 2. バックグラウンドで非同期にLIFF初期化＆最新データ取得・差分更新
             loadLatestDataAsync(false);
         }
@@ -1827,8 +1830,153 @@
             }
         }
 
+        // ============================================================
+        // 全イベントリスナーをまとめて登録する関数（init()内でUI表示後に呼ぶ）
+        // ============================================================
+        function setupEventListeners() {
+
+        // タブ切り替え
+        const btnTabCal = document.getElementById("btn-tab-calendar");
+        const btnTabList = document.getElementById("btn-tab-list");
+        const btnTabOther = document.getElementById("btn-tab-other");
+        if (btnTabCal) btnTabCal.addEventListener("click", () => switchTab("calendar"));
+        if (btnTabList) btnTabList.addEventListener("click", () => switchTab("list"));
+        if (btnTabOther) btnTabOther.addEventListener("click", () => switchTab("other"));
+
+        // 前月・次月・今月に戻るボタン
+        const prevMonthBtn = document.getElementById("prev-month");
+        const nextMonthBtn = document.getElementById("next-month");
+        const returnBtnElSetup = document.getElementById("btn-today-return");
+        const monthDisplayEl = document.getElementById("month-display");
+        if (prevMonthBtn) prevMonthBtn.addEventListener("click", goToPrevMonth);
+        if (nextMonthBtn) nextMonthBtn.addEventListener("click", goToNextMonth);
+        if (returnBtnElSetup) returnBtnElSetup.addEventListener("click", returnToCurrentMonth);
+        if (monthDisplayEl) monthDisplayEl.addEventListener("click", returnToCurrentMonth);
+
+        // カレンダーのスワイプ（左右スライド）対応
+        const calendarElSetup = document.querySelector(".calendar-card");
+        if (calendarElSetup) {
+            calendarElSetup.addEventListener("touchstart", (e) => {
+                touchStartX = e.changedTouches[0].clientX;
+                touchStartY = e.changedTouches[0].clientY;
+            }, { passive: true });
+            calendarElSetup.addEventListener("touchend", (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
+            }, { passive: true });
+            calendarElSetup.addEventListener("mousedown", (e) => {
+                isMouseDown = true;
+                mouseStartX = e.clientX;
+                mouseStartY = e.clientY;
+            });
+            calendarElSetup.addEventListener("mouseup", (e) => {
+                if (!isMouseDown) return;
+                isMouseDown = false;
+                handleSwipe(mouseStartX, mouseStartY, e.clientX, e.clientY);
+            });
+            calendarElSetup.addEventListener("mouseleave", () => {
+                isMouseDown = false;
+            });
+        }
+
+        // プロフィール変更ボタン
+        const editProfileBtn = document.getElementById("btn-open-edit-profile");
+        if (editProfileBtn) editProfileBtn.addEventListener("click", () => {
+            loadAndShowRegisterModal(currentUser, true);
+        });
+
+        // 部費・会計情報のオンデマンドポップアップ
+        const loadFeeBtn = document.getElementById("btn-load-fee");
+        if (loadFeeBtn) loadFeeBtn.addEventListener("click", async () => {
+            await loadAndShowFeeModal();
+        });
+
+        // フィルターチップのイベントリスナー
+        document.querySelectorAll("#filter-type-group .chip").forEach(chip => {
+            chip.addEventListener("click", () => {
+                document.querySelectorAll("#filter-type-group .chip").forEach(c => c.classList.remove("active"));
+                chip.classList.add("active");
+                currentTypeFilter = chip.getAttribute("data-type");
+                renderListView();
+            });
+        });
+        document.querySelectorAll("#filter-day-group .chip").forEach(chip => {
+            chip.addEventListener("click", () => {
+                document.querySelectorAll("#filter-day-group .chip").forEach(c => c.classList.remove("active"));
+                chip.classList.add("active");
+                currentDayFilter = chip.getAttribute("data-day");
+                renderListView();
+            });
+        });
+        document.querySelectorAll("#filter-status-group .chip").forEach(chip => {
+            chip.addEventListener("click", () => {
+                document.querySelectorAll("#filter-status-group .chip").forEach(c => c.classList.remove("active"));
+                chip.classList.add("active");
+                currentStatusFilter = chip.getAttribute("data-status");
+                renderListView();
+            });
+        });
+
+        // 表示中の日程を一括設定するボタンのイベントリスナー
+        document.querySelectorAll(".batch-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const targetStatus = btn.getAttribute("data-batch-status");
+                const filtered = getFilteredEvents();
+                if (filtered.length === 0) { alert("設定対象の日程がありません。"); return; }
+                const batchComment = document.getElementById("batch-comment-input").value.trim();
+                let appliedCount = 0;
+                filtered.forEach(ev => {
+                    if (isEventPast(ev.date)) return;
+                    const evId = String(ev.eventId);
+                    const item = getEditItem(evId);
+                    item.status = targetStatus;
+                    if (batchComment !== "") item.comment = batchComment;
+                    checkModified(evId);
+                    appliedCount++;
+                });
+                renderListView();
+                updateSubmitButtonUI();
+                if (appliedCount > 0) {
+                    const statusText = targetStatus ? `『${targetStatus}』` : "クリア";
+                    showToast(`⚡ ${appliedCount}件を${statusText}に設定しました（※最下部の『回答を一括保存する』を押してください）`);
+                } else {
+                    showToast("変更可能な日程がありません（過去の練習は締め切られています）");
+                }
+            });
+        });
+
+        // 備考のみ一括適用ボタン
+        const batchCommentBtn = document.getElementById("btn-batch-apply-comment");
+        if (batchCommentBtn) batchCommentBtn.addEventListener("click", () => {
+            const batchComment = document.getElementById("batch-comment-input").value.trim();
+            const filtered = getFilteredEvents();
+            if (filtered.length === 0) { alert("設定対象の日程がありません。"); return; }
+            if (batchComment === "") {
+                const ok = confirm("一括備考欄が空です。表示中の全日程の備考をクリア（空）にしますか？");
+                if (!ok) return;
+            }
+            let appliedCount = 0;
+            filtered.forEach(ev => {
+                if (isEventPast(ev.date)) return;
+                const evId = String(ev.eventId);
+                const item = getEditItem(evId);
+                item.comment = batchComment;
+                checkModified(evId);
+                appliedCount++;
+            });
+            renderListView();
+            updateSubmitButtonUI();
+            if (appliedCount > 0) {
+                showToast(`⚡ ${appliedCount}件に備考を一括適用しました（※最下部の『回答を一括保存する』を押してください）`);
+            } else {
+                showToast("変更可能な日程がありません（過去の練習は締め切られています）");
+            }
+        });
+
         // 一括送信ボタンの処理（日付をまたいで変更された全日程を送信）
-        document.getElementById("btn-submit-all").addEventListener("click", async () => {
+        const submitAllBtn = document.getElementById("btn-submit-all");
+        if (submitAllBtn) submitAllBtn.addEventListener("click", async () => {
             const submitBtn = document.getElementById("btn-submit-all");
 
             // 変更があったイベント（または現在ステータスが入っている全イベント）を抽出
@@ -1927,7 +2075,9 @@
                 submitBtn.disabled = false;
                 updateSubmitButtonUI();
             }
-        });
+        }); // end submitAllBtn click
+
+        } // end setupEventListeners()
 
         // 回答メンバー一覧＆集計バーのオンデマンド取得・トグル共通関数
         async function handleMembersToggle(btn) {
@@ -2050,10 +2200,7 @@
         let currentDayFilter = "all";
         let currentStatusFilter = "all";
 
-        // タブ切り替え
-        document.getElementById("btn-tab-calendar").addEventListener("click", () => switchTab("calendar"));
-        document.getElementById("btn-tab-list").addEventListener("click", () => switchTab("list"));
-        document.getElementById("btn-tab-other").addEventListener("click", () => switchTab("other"));
+        // タブ切り替え（setupEventListeners に移動済み）
 
         function switchTab(tab) {
             currentTab = tab;
@@ -2207,15 +2354,7 @@
             if (earlyEl) earlyEl.textContent = earlyCount;
         }
 
-        // プロフィール変更ボタン押下時（オンデマンドで編集用モーダルを開く）
-        document.getElementById("btn-open-edit-profile").addEventListener("click", () => {
-            loadAndShowRegisterModal(currentUser, true);
-        });
-
-        // 部費・会計情報のオンデマンドポップアップ読み込み＆表示
-        document.getElementById("btn-load-fee").addEventListener("click", async () => {
-            await loadAndShowFeeModal();
-        });
+        // プロフィール変更・部費ボタン（setupEventListeners に移動済み）
 
         async function loadAndShowFeeModal() {
             const btn = document.getElementById("btn-load-fee");
@@ -2404,111 +2543,7 @@
             }, 2000);
         }
 
-        // フィルターチップのイベントリスナー
-        document.querySelectorAll("#filter-type-group .chip").forEach(chip => {
-            chip.addEventListener("click", () => {
-                document.querySelectorAll("#filter-type-group .chip").forEach(c => c.classList.remove("active"));
-                chip.classList.add("active");
-                currentTypeFilter = chip.getAttribute("data-type");
-                renderListView();
-            });
-        });
-
-        document.querySelectorAll("#filter-day-group .chip").forEach(chip => {
-            chip.addEventListener("click", () => {
-                document.querySelectorAll("#filter-day-group .chip").forEach(c => c.classList.remove("active"));
-                chip.classList.add("active");
-                currentDayFilter = chip.getAttribute("data-day");
-                renderListView();
-            });
-        });
-
-        document.querySelectorAll("#filter-status-group .chip").forEach(chip => {
-            chip.addEventListener("click", () => {
-                document.querySelectorAll("#filter-status-group .chip").forEach(c => c.classList.remove("active"));
-                chip.classList.add("active");
-                currentStatusFilter = chip.getAttribute("data-status");
-                renderListView();
-            });
-        });
-
-        // 表示中の日程を一括設定するボタンのイベントリスナー
-        document.querySelectorAll(".batch-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const targetStatus = btn.getAttribute("data-batch-status");
-                const filtered = getFilteredEvents();
-
-                if (filtered.length === 0) {
-                    alert("設定対象の日程がありません。");
-                    return;
-                }
-
-                const batchComment = document.getElementById("batch-comment-input").value.trim();
-                let appliedCount = 0;
-
-                filtered.forEach(ev => {
-                    // 前日より前の過去日程は変更不可（スキップ）
-                    if (isEventPast(ev.date)) return;
-
-                    const evId = String(ev.eventId);
-                    const item = getEditItem(evId);
-                    item.status = targetStatus;
-                    // 一括備考に入力があれば備考も上書き設定
-                    if (batchComment !== "") {
-                        item.comment = batchComment;
-                    }
-                    checkModified(evId);
-                    appliedCount++;
-                });
-
-                renderListView();
-                updateSubmitButtonUI();
-
-                if (appliedCount > 0) {
-                    const statusText = targetStatus ? `『${targetStatus}』` : "クリア";
-                    showToast(`⚡ ${appliedCount}件を${statusText}に設定しました（※最下部の『回答を一括保存する』を押してください）`);
-                } else {
-                    showToast("変更可能な日程がありません（過去の練習は締め切られています）");
-                }
-            });
-        });
-
-        // 備考のみ一括適用ボタンのイベントリスナー
-        document.getElementById("btn-batch-apply-comment").addEventListener("click", () => {
-            const batchComment = document.getElementById("batch-comment-input").value.trim();
-            const filtered = getFilteredEvents();
-
-            if (filtered.length === 0) {
-                alert("設定対象の日程がありません。");
-                return;
-            }
-
-            if (batchComment === "") {
-                const ok = confirm("一括備考欄が空です。表示中の全日程の備考をクリア（空）にしますか？");
-                if (!ok) return;
-            }
-
-            let appliedCount = 0;
-            filtered.forEach(ev => {
-                // 前日より前の過去日程は変更不可（スキップ）
-                if (isEventPast(ev.date)) return;
-
-                const evId = String(ev.eventId);
-                const item = getEditItem(evId);
-                item.comment = batchComment;
-                checkModified(evId);
-                appliedCount++;
-            });
-
-            renderListView();
-            updateSubmitButtonUI();
-
-            if (appliedCount > 0) {
-                showToast(`⚡ ${appliedCount}件に備考を一括適用しました（※最下部の『回答を一括保存する』を押してください）`);
-            } else {
-                showToast("変更可能な日程がありません（過去の練習は締め切られています）");
-            }
-        });
+        // フィルター・一括操作ボタン（setupEventListeners に移動済み）
 
         // フィルター条件に一致するイベント一覧を取得（今日以降優先でソート）
         function getFilteredEvents() {
@@ -2691,49 +2726,14 @@
             renderCalendar();
         }
 
-        // 前月・次月・今月に戻るボタン
-        document.getElementById("prev-month").addEventListener("click", goToPrevMonth);
-        document.getElementById("next-month").addEventListener("click", goToNextMonth);
-        const returnBtnEl = document.getElementById("btn-today-return");
-        if (returnBtnEl) returnBtnEl.addEventListener("click", returnToCurrentMonth);
-        document.getElementById("month-display").addEventListener("click", returnToCurrentMonth);
+        // 前月・次月・今月に戻るボタン、スワイプ（setupEventListeners に移動済み）
 
-        // カレンダーのスワイプ（左右スライド）対応
-        const calendarEl = document.querySelector(".calendar-card");
+        // スワイプ状態変数（setupEventListeners内のクロージャでも参照できるようモジュールスコープに宣言）
         let touchStartX = 0;
         let touchStartY = 0;
-
-        calendarEl.addEventListener("touchstart", (e) => {
-            touchStartX = e.changedTouches[0].clientX;
-            touchStartY = e.changedTouches[0].clientY;
-        }, { passive: true });
-
-        calendarEl.addEventListener("touchend", (e) => {
-            const touchEndX = e.changedTouches[0].clientX;
-            const touchEndY = e.changedTouches[0].clientY;
-            handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
-        }, { passive: true });
-
-        // PCマウスドラッグにも対応
         let isMouseDown = false;
         let mouseStartX = 0;
         let mouseStartY = 0;
-
-        calendarEl.addEventListener("mousedown", (e) => {
-            isMouseDown = true;
-            mouseStartX = e.clientX;
-            mouseStartY = e.clientY;
-        });
-
-        calendarEl.addEventListener("mouseup", (e) => {
-            if (!isMouseDown) return;
-            isMouseDown = false;
-            handleSwipe(mouseStartX, mouseStartY, e.clientX, e.clientY);
-        });
-
-        calendarEl.addEventListener("mouseleave", () => {
-            isMouseDown = false;
-        });
 
         function handleSwipe(startX, startY, endX, endY) {
             const diffX = endX - startX;
