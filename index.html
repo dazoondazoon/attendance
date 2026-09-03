@@ -7,8 +7,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>部活出欠カレンダー</title>
-    <!-- LIFF SDK -->
-    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <!-- LINEのCDNへの接続を事前に確立してLIFF SDK読み込みを高速化 -->
+    <link rel="preconnect" href="https://static.line-scdn.net">
+    <link rel="dns-prefetch" href="//static.line-scdn.net">
+    <link rel="dns-prefetch" href="//script.google.com">
+    <!-- LIFF SDK はレンダリングをブロックしないよう動的に読み込む (loadLatestDataAsync 内) -->
     <style>
         :root {
             --primary: #06c755;
@@ -1185,6 +1188,18 @@
 
         async function loadLatestDataAsync(isManualRetry = false) {
             try {
+                // LIFF SDKをブロッキングなしで動的に読み込む（初回のみ）
+                if (typeof liff === 'undefined') {
+                    await new Promise((resolve, reject) => {
+                        const s = document.createElement('script');
+                        s.charset = 'utf-8';
+                        s.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
+                        s.onload = resolve;
+                        s.onerror = () => reject(new Error('LIFF SDKの読み込みに失敗しました'));
+                        document.head.appendChild(s);
+                    });
+                }
+
                 await liff.init({ liffId: LIFF_ID });
                 if (!liff.isInClient() && !liff.isLoggedIn()) {
                     liff.login();
