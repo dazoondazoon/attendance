@@ -613,6 +613,251 @@
             justify-content: space-between;
         }
 
+        /* その他タブ */
+        .other-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+        }
+
+        .other-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .other-card-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #edf2f7;
+        }
+
+        .profile-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-item-label {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            margin-bottom: 2px;
+        }
+
+        .profile-item-val {
+            font-size: 0.88rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .btn-edit-profile {
+            width: 100%;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            font-weight: bold;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-edit-profile:active {
+            background: #e2e8f0;
+        }
+
+        /* 部費管理スタイル */
+        .fee-load-btn {
+            width: 100%;
+            background: rgba(6, 199, 85, 0.08);
+            border: 1.5px solid rgba(6, 199, 85, 0.25);
+            color: var(--primary-dark);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .fee-load-btn:active {
+            background: rgba(6, 199, 85, 0.16);
+        }
+
+        .fee-summary-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            border: 1px solid rgba(6, 199, 85, 0.2);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .fee-total-label {
+            font-size: 0.8rem;
+            color: #065f46;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .fee-total-num {
+            font-size: 1.55rem;
+            font-weight: 900;
+            color: #064e3b;
+        }
+
+        .fee-status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 900;
+            letter-spacing: 0.3px;
+        }
+
+        .fee-status-paid {
+            background: #059669;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+        }
+
+        .fee-status-unpaid {
+            background: #ea580c;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(234, 88, 12, 0.3);
+        }
+
+        .fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            margin-bottom: 14px;
+        }
+
+        .fee-table th {
+            text-align: left;
+            background: #f8fafc;
+            color: #64748b;
+            padding: 8px 10px;
+            font-weight: 700;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .fee-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+
+        .fee-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .fee-rule-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 0.78rem;
+            color: #475569;
+            line-height: 1.55;
+            margin-bottom: 14px;
+        }
+
+        .bank-info-box {
+            background: #fff;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 10px;
+        }
+
+        .bank-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            padding: 4px 0;
+        }
+
+        .bank-info-label {
+            color: #64748b;
+        }
+
+        .bank-info-val {
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .btn-copy-account {
+            width: 100%;
+            background: #334155;
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.84rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-copy-account:active {
+            background: #1e293b;
+            transform: scale(0.98);
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.88);
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: toastAnim 0.25s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes toastAnim {
+            from { opacity: 0; transform: translate(-50%, 10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
         .hidden {
             display: none !important;
         }
@@ -629,6 +874,7 @@
             <div class="tab-nav">
                 <button type="button" class="tab-btn active" id="btn-tab-calendar">カレンダー</button>
                 <button type="button" class="tab-btn" id="btn-tab-list">リスト</button>
+                <button type="button" class="tab-btn" id="btn-tab-other">その他</button>
             </div>
 
             <!-- カレンダービュー -->
@@ -715,9 +961,51 @@
                 <div id="list-events-container"></div>
             </div>
 
+            <!-- その他ビュー -->
+            <div id="view-other" class="hidden">
+                <!-- プロフィールカード -->
+                <div class="other-card">
+                    <div class="other-card-header">
+                        <div class="other-card-title">👤 部員プロフィール</div>
+                    </div>
+                    <div class="profile-grid">
+                        <div class="profile-item">
+                            <span class="profile-item-label">氏名</span>
+                            <span class="profile-item-val" id="prof-display-name">---</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-item-label">学年</span>
+                            <span class="profile-item-val" id="prof-display-grade">---</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-item-label">大学名</span>
+                            <span class="profile-item-val" id="prof-display-univ">---</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-item-label">性別</span>
+                            <span class="profile-item-val" id="prof-display-sex">---</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-edit-profile" id="btn-open-edit-profile">プロフィールを変更する</button>
+                </div>
+
+                <!-- 部費・会計管理カード -->
+                <div class="other-card">
+                    <div class="other-card-header">
+                        <div class="other-card-title">💰 部費・会計情報</div>
+                    </div>
+                    <p style="font-size:0.84rem; color:var(--text-sub); margin-bottom:12px; line-height:1.4;">
+                        月別部費やイベント費用の請求内訳、回収・お支払い状況を確認できます。
+                    </p>
+                    <button type="button" class="fee-load-btn" id="btn-load-fee">
+                        <span>💰 部費・請求内訳を確認する</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- 統一送信ボタン（常に押しやすい高さに配置） -->
             <div class="action-area" id="submit-all-area">
-                <button type="button" class="btn-submit-all" id="btn-submit-all">回答を一括保存する</button>
+                <button type="button" class="btn-submit-all" id="btn-submit-all" disabled style="background:#94a3b8; cursor:not-allowed; box-shadow:none;">読み込み中...</button>
             </div>
         </div>
     </div>
@@ -728,9 +1016,12 @@
         const API_KEY = "akHF3ikejc4Doa75kdjh6go";
 
         let currentUser = { userId: "", displayName: "" };
+        let currentUserProfile = null; // nameシートの登録プロフィール
         let cachedEvents = [];
         let cachedAttendances = []; // 初期ロード時は自分自身の回答レコードのみ保持
         let eventAttendeesCache = {}; // 各イベントの回答メンバー一覧のオンデマンドキャッシュ { [eventId]: Array }
+        let cachedFeeData = null; // 部費情報のオンデマンドキャッシュ
+        let isEventsLoading = true; // イベント情報のロード中フラグ
 
         // 全イベントに対するローカルの回答編集状態を管理（日付をまたいでも消えない）
         let editState = {}; // { [eventId]: { status: string, comment: string, isModified: boolean } }
@@ -741,6 +1032,41 @@
         const WEEK_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
 
         async function init() {
+            // 1. LIFF初期化やネットワーク通信を待たずに、即座に今月のカレンダー画面を表示（体感0msロード）
+            try {
+                const savedEvents = localStorage.getItem("badminton_cached_events");
+                if (savedEvents) {
+                    cachedEvents = JSON.parse(savedEvents);
+                    if (cachedEvents.length > 0) {
+                        isEventsLoading = false; // キャッシュがあれば即座に保存可能状態にする
+                    }
+                }
+                const savedProfile = localStorage.getItem("badminton_user_profile");
+                if (savedProfile) {
+                    currentUserProfile = JSON.parse(savedProfile);
+                    currentUser.displayName = currentUserProfile.name || "";
+                    const userNameEl = document.getElementById("user-name");
+                    if (userNameEl && currentUser.displayName) userNameEl.textContent = currentUser.displayName;
+                }
+            } catch (e) {
+                console.warn("ローカルキャッシュ読み込みスキップ:", e);
+            }
+
+            // 即座にカレンダー画面を完全描画して表示
+            initEditState();
+            setDefaultSelectedDate();
+            renderCalendar();
+            renderEventDetails();
+            updateSubmitButtonUI();
+
+            document.getElementById("loading").classList.add("hidden");
+            document.getElementById("app").classList.remove("hidden");
+
+            // 2. バックグラウンドで非同期にLIFF初期化＆最新データ取得・差分更新
+            loadLatestDataAsync();
+        }
+
+        async function loadLatestDataAsync() {
             try {
                 await liff.init({ liffId: LIFF_ID });
                 if (!liff.isInClient() && !liff.isLoggedIn()) {
@@ -750,34 +1076,40 @@
 
                 const profile = await liff.getProfile();
                 currentUser.userId = profile.userId;
-                currentUser.displayName = profile.displayName;
+                if (!currentUser.displayName) {
+                    currentUser.displayName = profile.displayName;
+                }
                 const userNameEl = document.getElementById("user-name");
                 if (userNameEl) userNameEl.textContent = currentUser.displayName;
 
-                // 初期アクセス時はイベント日程 ＋ 自分の出欠データのみ超軽量取得
+                // 最新のイベント日程 ＋ 自分の出欠データを超軽量取得
                 const initData = await fetchData(currentUser.userId);
+                isEventsLoading = false;
 
-                if (initData && initData.userProfile && initData.userProfile.name) {
-                    currentUser.displayName = initData.userProfile.name;
+                if (initData && initData.userProfile) {
+                    currentUserProfile = initData.userProfile;
+                    if (initData.userProfile.name) {
+                        currentUser.displayName = initData.userProfile.name;
+                    }
+                    try {
+                        localStorage.setItem("badminton_user_profile", JSON.stringify(currentUserProfile));
+                    } catch (e) {}
                 }
 
-                // まずカレンダー画面を完全に描画して表示
+                // カレンダーおよび出欠状態を最新データでスムーズに再描画
                 initEditState();
-                setDefaultSelectedDate();
                 renderCalendar();
                 renderEventDetails();
                 updateSubmitButtonUI();
-
-                document.getElementById("loading").classList.add("hidden");
-                document.getElementById("app").classList.remove("hidden");
+                if (currentTab === "list") renderListView();
+                if (currentTab === "other") renderOtherView();
 
                 // 初回アクセス（nameシートに未登録）の場合のみ、カレンダーの上にポップアップとして重ねて表示
                 if (initData && initData.isRegistered === false) {
-                    await loadAndShowRegisterModal(currentUser);
+                    await loadAndShowRegisterModal(currentUser, false);
                 }
             } catch (err) {
-                alert("初期化エラー: " + err.message);
-                console.error(err);
+                console.error("バックグラウンド同期エラー:", err);
             }
         }
 
@@ -789,11 +1121,17 @@
 
             cachedEvents = data.events || [];
             cachedAttendances = data.attendances || [];
+            if (data.userProfile) currentUserProfile = data.userProfile;
+
+            try {
+                localStorage.setItem("badminton_cached_events", JSON.stringify(cachedEvents));
+            } catch (e) {}
+
             return data;
         }
 
-        // 初回部員登録モーダルをオンデマンド読み込み・表示（未登録時のみ読み込むため普段のロード時間は0ms）
-        function loadAndShowRegisterModal(user) {
+        // 部員登録・設定変更モーダルをオンデマンド読み込み・表示（isEditMode対応）
+        function loadAndShowRegisterModal(user, isEditMode = false) {
             return new Promise(async (resolve, reject) => {
                 try {
                     const formRes = await fetch("register_form.html");
@@ -803,6 +1141,27 @@
                     // DOMに追加（styleタグも確実に注入）
                     document.body.insertAdjacentHTML("beforeend", formHtml);
                     const overlay = document.getElementById("register-overlay");
+
+                    // 閉じるボタンと編集モードUI調整
+                    const closeBtn = document.getElementById("btn-close-register");
+                    const regBadge = document.getElementById("reg-badge");
+                    const regTitle = document.getElementById("reg-title");
+                    const regDesc = document.getElementById("reg-desc");
+                    const submitBtn = document.getElementById("btn-submit-register");
+
+                    if (isEditMode) {
+                        if (closeBtn) {
+                            closeBtn.classList.remove("hidden");
+                            closeBtn.addEventListener("click", () => {
+                                overlay.remove();
+                                resolve(false);
+                            });
+                        }
+                        if (regBadge) regBadge.textContent = "🏸 設定変更";
+                        if (regTitle) regTitle.textContent = "部員情報の変更";
+                        if (regDesc) regDesc.textContent = "登録情報（氏名・学年・大学・性別）を変更できます。";
+                        if (submitBtn) submitBtn.textContent = "変更を保存する";
+                    }
 
                     // LINE名表示
                     const lineNameEl = document.getElementById("reg-line-name");
@@ -845,6 +1204,57 @@
 
                     // 性別チップ選択
                     setupChipGroup("sex-chip-group", "reg-sex");
+
+                    // 既存値の投入（編集モード時）
+                    if (isEditMode && currentUserProfile) {
+                        const p = currentUserProfile;
+                        if (p.lastName) document.getElementById("reg-last-name").value = p.lastName;
+                        if (p.firstName) document.getElementById("reg-first-name").value = p.firstName;
+                        if (p.furiganaLastName) document.getElementById("reg-kana-last").value = p.furiganaLastName;
+                        if (p.furiganaFirstName) document.getElementById("reg-kana-first").value = p.furiganaFirstName;
+
+                        // 学年チップ復元
+                        if (p.grade) {
+                            let baseGrade = p.grade;
+                            let detailGrade = "";
+                            if (p.grade.includes("(")) {
+                                const m = p.grade.match(/^(.*?)\s*\((.*?)\)$/);
+                                if (m) {
+                                    baseGrade = m[1].trim();
+                                    detailGrade = m[2].trim();
+                                }
+                            }
+                            selectChipValue("grade-chip-group", "reg-grade", baseGrade);
+                            if (detailGrade) {
+                                const detailContainer = document.getElementById("grade-detail-container");
+                                const detailInput = document.getElementById("reg-grade-detail");
+                                if (detailContainer && detailInput) {
+                                    detailContainer.classList.remove("hidden");
+                                    detailInput.value = detailGrade;
+                                }
+                            }
+                        }
+
+                        // 大学名チップ復元
+                        if (p.univ) {
+                            if (p.univ === "東京大学" || p.univ === "日本赤十字看護大学") {
+                                selectChipValue("univ-chip-group", "reg-univ", p.univ);
+                            } else {
+                                selectChipValue("univ-chip-group", "reg-univ", "その他");
+                                const otherContainer = document.getElementById("univ-other-container");
+                                const otherInput = document.getElementById("reg-univ-other");
+                                if (otherContainer && otherInput) {
+                                    otherContainer.classList.remove("hidden");
+                                    otherInput.value = p.univ;
+                                }
+                            }
+                        }
+
+                        // 性別チップ復元
+                        if (p.sex) {
+                            selectChipValue("sex-chip-group", "reg-sex", p.sex);
+                        }
+                    }
 
                     // フォーム送信処理
                     const form = document.getElementById("register-form");
@@ -913,21 +1323,29 @@
                                 body: JSON.stringify(payload)
                             });
 
-                            currentUser.displayName = `${lastName} ${firstName}`;
-                            alert(`部員情報を登録しました！ようこそ、${currentUser.displayName}さん。`);
+                            currentUserProfile = payload.user;
+                            currentUserProfile.name = `${lastName} ${firstName}`;
+                            currentUser.displayName = currentUserProfile.name;
+
+                            if (isEditMode) {
+                                alert("部員情報を更新しました！");
+                                renderOtherView();
+                            } else {
+                                alert(`部員情報を登録しました！ようこそ、${currentUser.displayName}さん。`);
+                            }
 
                             // モーダルをフェードアウトして消去
                             overlay.style.transition = "opacity 0.2s";
                             overlay.style.opacity = "0";
                             setTimeout(() => {
                                 overlay.remove();
-                                resolve();
+                                resolve(true);
                             }, 200);
 
                         } catch (err) {
                             showError("登録エラーが発生しました: " + err.message);
                             submitBtn.disabled = false;
-                            submitBtn.textContent = "登録してカレンダーへ進む";
+                            submitBtn.textContent = isEditMode ? "変更を保存する" : "登録してカレンダーを開始";
                         }
                     });
 
@@ -948,6 +1366,20 @@
                                 hiddenInput.value = val;
                                 if (onSelect) onSelect(val);
                             });
+                        });
+                    }
+
+                    function selectChipValue(groupId, hiddenInputId, targetVal) {
+                        const group = document.getElementById(groupId);
+                        if (!group) return;
+                        const hiddenInput = document.getElementById(hiddenInputId);
+                        group.querySelectorAll(".reg-chip").forEach(chip => {
+                            if (chip.getAttribute("data-val") === targetVal) {
+                                chip.classList.add("active");
+                                hiddenInput.value = targetVal;
+                            } else {
+                                chip.classList.remove("active");
+                            }
                         });
                     }
 
@@ -1201,6 +1633,20 @@
             const submitBtn = document.getElementById("btn-submit-all");
             if (!submitBtn) return;
 
+            // イベント情報がまだ読み込まれていない場合は「読み込み中...」で灰色・非活性
+            if (isEventsLoading) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = "読み込み中...";
+                submitBtn.style.background = "#94a3b8";
+                submitBtn.style.cursor = "not-allowed";
+                submitBtn.style.boxShadow = "none";
+                return;
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.style.cursor = "pointer";
+            submitBtn.style.boxShadow = "0 4px 14px rgba(6, 199, 85, 0.35)";
+
             let modifiedCount = 0;
             Object.keys(editState).forEach(evId => {
                 checkModified(evId);
@@ -1388,28 +1834,232 @@
         // タブ切り替え
         document.getElementById("btn-tab-calendar").addEventListener("click", () => switchTab("calendar"));
         document.getElementById("btn-tab-list").addEventListener("click", () => switchTab("list"));
+        document.getElementById("btn-tab-other").addEventListener("click", () => switchTab("other"));
 
         function switchTab(tab) {
             currentTab = tab;
             const btnCal = document.getElementById("btn-tab-calendar");
             const btnList = document.getElementById("btn-tab-list");
+            const btnOther = document.getElementById("btn-tab-other");
             const viewCal = document.getElementById("view-calendar");
             const viewList = document.getElementById("view-list");
+            const viewOther = document.getElementById("view-other");
+            const submitArea = document.getElementById("submit-all-area");
+
+            btnCal.classList.toggle("active", tab === "calendar");
+            btnList.classList.toggle("active", tab === "list");
+            btnOther.classList.toggle("active", tab === "other");
+
+            viewCal.classList.toggle("hidden", tab !== "calendar");
+            viewList.classList.toggle("hidden", tab !== "list");
+            viewOther.classList.toggle("hidden", tab !== "other");
+
+            if (submitArea) {
+                submitArea.classList.toggle("hidden", tab === "other");
+            }
 
             if (tab === "calendar") {
-                btnCal.classList.add("active");
-                btnList.classList.remove("active");
-                viewCal.classList.remove("hidden");
-                viewList.classList.add("hidden");
                 renderCalendar();
                 renderEventDetails();
-            } else {
-                btnCal.classList.remove("active");
-                btnList.classList.add("active");
-                viewCal.classList.add("hidden");
-                viewList.classList.remove("hidden");
+            } else if (tab === "list") {
                 renderListView();
+            } else if (tab === "other") {
+                renderOtherView();
             }
+        }
+
+        // その他ビューの描画
+        function renderOtherView() {
+            const p = currentUserProfile;
+            const nameEl = document.getElementById("prof-display-name");
+            const gradeEl = document.getElementById("prof-display-grade");
+            const univEl = document.getElementById("prof-display-univ");
+            const sexEl = document.getElementById("prof-display-sex");
+
+            if (p) {
+                if (nameEl) nameEl.textContent = p.name || `${p.lastName || ''} ${p.firstName || ''}`.trim() || currentUser.displayName || "未設定";
+                if (gradeEl) gradeEl.textContent = p.grade || "未設定";
+                if (univEl) univEl.textContent = p.univ || "未設定";
+                if (sexEl) sexEl.textContent = p.sex || "未設定";
+            } else {
+                if (nameEl) nameEl.textContent = currentUser.displayName || "未設定";
+                if (gradeEl) gradeEl.textContent = "未設定";
+                if (univEl) univEl.textContent = "未設定";
+                if (sexEl) sexEl.textContent = "未設定";
+            }
+        }
+
+        // プロフィール変更ボタン押下時（オンデマンドで編集用モーダルを開く）
+        document.getElementById("btn-open-edit-profile").addEventListener("click", () => {
+            loadAndShowRegisterModal(currentUser, true);
+        });
+
+        // 部費・会計情報のオンデマンドポップアップ読み込み＆表示
+        document.getElementById("btn-load-fee").addEventListener("click", async () => {
+            await loadAndShowFeeModal();
+        });
+
+        async function loadAndShowFeeModal() {
+            const btn = document.getElementById("btn-load-fee");
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "<span>💰 部費データを取得中...</span>";
+            btn.style.pointerEvents = "none";
+
+            try {
+                // 1. 部費データの取得（キャッシュがあれば即時、なければfetch）
+                if (!cachedFeeData) {
+                    const url = `${GAS_API_URL}?key=${API_KEY}&action=getMyFee&userId=${encodeURIComponent(currentUser.userId)}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (!data.success) throw new Error(data.message);
+                    cachedFeeData = data;
+                }
+
+                // 2. fee_modal.html のオンデマンド取得
+                const modalRes = await fetch("fee_modal.html");
+                if (!modalRes.ok) throw new Error("部費画面の読み込みに失敗しました");
+                const modalHtml = await modalRes.text();
+
+                // 3. DOMへ注入
+                document.body.insertAdjacentHTML("beforeend", modalHtml);
+                const overlay = document.getElementById("fee-overlay");
+
+                // 4. データ反映
+                renderFeeModalContent(cachedFeeData);
+
+                // 5. 閉じるボタン＆オーバーレイクリックイベント
+                const closeBtn = document.getElementById("btn-close-fee-modal");
+                if (closeBtn) {
+                    closeBtn.addEventListener("click", closeFeeModal);
+                }
+                overlay.addEventListener("click", (e) => {
+                    if (e.target === overlay) closeFeeModal();
+                });
+
+                function closeFeeModal() {
+                    overlay.style.transition = "opacity 0.2s";
+                    overlay.style.opacity = "0";
+                    setTimeout(() => overlay.remove(), 200);
+                }
+
+                // 6. 口座情報をコピーするボタン
+                const copyBtn = document.getElementById("btn-copy-account-info");
+                if (copyBtn) {
+                    copyBtn.addEventListener("click", async () => {
+                        const accountInfo = `【部費振込先口座】
+金融機関: みずほ銀行
+支店名: 本郷支店 (店番号 075)
+口座種別: 普通預金
+口座番号: 1372826
+口座名義: トウキョウダイガクイガクブテツモンウキュウブ`;
+
+                        try {
+                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                await navigator.clipboard.writeText(accountInfo);
+                            } else {
+                                const textArea = document.createElement("textarea");
+                                textArea.value = accountInfo;
+                                document.body.appendChild(textArea);
+                                textArea.select();
+                                document.execCommand("copy");
+                                textArea.remove();
+                            }
+                            showToast("振込先口座情報をコピーしました！");
+                        } catch (err) {
+                            alert(accountInfo);
+                        }
+                    });
+                }
+
+            } catch (err) {
+                alert("部費データの取得に失敗しました: " + err.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.style.pointerEvents = "auto";
+            }
+        }
+
+        // モーダル内へデータを描画
+        function renderFeeModalContent(data) {
+            const userNameEl = document.getElementById("fee-modal-user-name");
+            if (userNameEl && (currentUserProfile || data.memberName)) {
+                userNameEl.textContent = `${data.memberName || (currentUserProfile && currentUserProfile.name) || ''} さんの部費明細`;
+            }
+
+            if (!data.found) {
+                document.getElementById("fee-modal-total-amount").textContent = "---";
+                const badge = document.getElementById("fee-modal-status-badge");
+                badge.className = "fee-status-badge fee-status-unpaid";
+                badge.textContent = "未登録";
+                document.getElementById("fee-modal-monthly-tbody").innerHTML = `<tr><td colspan="2" style="text-align:center; color:#888;">${escapeHtml(data.message)}</td></tr>`;
+                document.getElementById("fee-modal-event-tbody").innerHTML = `<tr><td colspan="3" style="text-align:center; color:#888;">データなし</td></tr>`;
+                return;
+            }
+
+            // 請求合計額
+            document.getElementById("fee-modal-total-amount").textContent = `¥${Number(data.totalAmount || 0).toLocaleString()}`;
+
+            // ステータスバッジ
+            const badge = document.getElementById("fee-modal-status-badge");
+            if (data.isPaid) {
+                badge.className = "fee-status-badge fee-status-paid";
+                badge.textContent = "✔ 支払い済み";
+            } else {
+                badge.className = "fee-status-badge fee-status-unpaid";
+                badge.textContent = "未払い（要お振込）";
+            }
+
+            // 月別部費テーブル
+            const monthlyTbody = document.getElementById("fee-modal-monthly-tbody");
+            if (!data.monthlyFees || data.monthlyFees.length === 0) {
+                monthlyTbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:#888;">月別部費データなし</td></tr>`;
+            } else {
+                monthlyTbody.innerHTML = data.monthlyFees.map(m => `
+                    <tr>
+                        <td><b>${escapeHtml(m.month)}</b></td>
+                        <td style="text-align:right; font-weight:bold;">¥${Number(m.amount).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            }
+
+            // イベント等費用テーブル
+            const eventTbody = document.getElementById("fee-modal-event-tbody");
+            if (!data.eventFees || data.eventFees.length === 0) {
+                eventTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#888;">追加費用はありません</td></tr>`;
+            } else {
+                eventTbody.innerHTML = data.eventFees.map(item => {
+                    const isDiscount = Number(item.amount) < 0;
+                    const amountText = isDiscount ? `-¥${Math.abs(Number(item.amount)).toLocaleString()}` : `¥${Number(item.amount).toLocaleString()}`;
+                    const amountColor = isDiscount ? "color:#059669; font-weight:bold;" : "font-weight:bold;";
+                    return `
+                        <tr>
+                            <td>
+                                <div><b>${escapeHtml(item.name)}</b></div>
+                                ${item.unitPrice ? `<div style="font-size:0.7rem; color:#888;">単価: ¥${Number(item.unitPrice).toLocaleString()}</div>` : ''}
+                            </td>
+                            <td style="text-align:center;">${item.count ? `${item.count}回/個` : '1'}</td>
+                            <td style="text-align:right; ${amountColor}">${amountText}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        // 簡易トースト通知
+        function showToast(msg) {
+            const existing = document.querySelector(".toast-msg");
+            if (existing) existing.remove();
+
+            const toast = document.createElement("div");
+            toast.className = "toast-msg";
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transition = "opacity 0.3s";
+                toast.style.opacity = "0";
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
         }
 
         // フィルターチップのイベントリスナー
