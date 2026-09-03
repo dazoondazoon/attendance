@@ -909,6 +909,291 @@
             to { opacity: 1; transform: translate(-50%, 0); }
         }
 
+        /* --- 管理者タブ用スタイル --- */
+        .admin-subnav {
+            display: flex;
+            background: #e2e8f0;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 16px;
+            gap: 4px;
+        }
+
+        .admin-subnav-btn {
+            flex: 1;
+            padding: 8px 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: none;
+            background: transparent;
+            color: #475569;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .admin-subnav-btn.active {
+            background: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .admin-action-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .admin-primary-btn {
+            flex: 1;
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            text-align: center;
+        }
+
+        .admin-primary-btn:active {
+            opacity: 0.85;
+        }
+
+        .admin-secondary-btn {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .admin-secondary-btn:active {
+            background: #f1f5f9;
+        }
+
+        .admin-danger-btn {
+            background: #ef4444;
+            color: #ffffff;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .admin-danger-btn:active {
+            opacity: 0.85;
+        }
+
+        .admin-control-group {
+            margin-bottom: 12px;
+        }
+
+        .admin-control-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .admin-select, .admin-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            background: #ffffff;
+            color: #0f172a;
+            box-sizing: border-box;
+        }
+
+        .admin-btn-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .admin-chip-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+            color: #334155;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+
+        .admin-chip-btn.active {
+            background: #0f172a;
+            border-color: #0f172a;
+            color: #ffffff;
+        }
+
+        .admin-capacity-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.82rem;
+        }
+
+        .admin-step-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-step-btn:active {
+            background: #e2e8f0;
+        }
+
+        .admin-member-chips-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+            max-height: 140px;
+            overflow-y: auto;
+            padding: 4px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .admin-member-chip {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .admin-member-chip-remove {
+            cursor: pointer;
+            color: #94a3b8;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .admin-member-chip-remove:hover {
+            color: #ef4444;
+        }
+
+        /* 普通の白黒テーブル（プレビュー & キャンバス出力用） */
+        .admin-table-preview-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #ffffff;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .admin-plain-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .admin-plain-table th, .admin-plain-table td {
+            border: 1px solid #000000;
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .admin-plain-table th {
+            background: #f8fafc;
+            font-weight: bold;
+        }
+
+        .admin-plain-table tr:nth-child(even) td {
+            background: #ffffff;
+        }
+
+        /* 共通モーダル（確認・編集・一括） */
+        .admin-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .admin-modal-box {
+            background: #ffffff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .admin-modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .admin-modal-body {
+            font-size: 0.85rem;
+            color: #334155;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .admin-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
         .hidden {
             display: none !important;
         }
@@ -933,6 +1218,7 @@
                 <button type="button" class="tab-btn active" id="btn-tab-calendar">カレンダー</button>
                 <button type="button" class="tab-btn" id="btn-tab-list">リスト</button>
                 <button type="button" class="tab-btn" id="btn-tab-other">その他</button>
+                <button type="button" class="tab-btn hidden" id="btn-tab-admin">管理者</button>
             </div>
 
             <!-- カレンダービュー -->
@@ -1109,9 +1395,337 @@
                 </div>
             </div>
 
+            <!-- 管理者ビュー（幹部のみ表示） -->
+            <div id="view-admin" class="hidden">
+                <!-- サブナビゲーション -->
+                <div class="admin-subnav">
+                    <button type="button" class="admin-subnav-btn active" data-admin-view="court">面分け表</button>
+                    <button type="button" class="admin-subnav-btn" data-admin-view="rally">基礎打ち表</button>
+                    <button type="button" class="admin-subnav-btn" data-admin-view="members">部員管理</button>
+                    <button type="button" class="admin-subnav-btn" data-admin-view="schedule">日程管理</button>
+                </div>
+
+                <!-- 1. 面分け表セクション -->
+                <div id="admin-sec-court">
+                    <div class="admin-card">
+                        <!-- 最短アクションバー -->
+                        <div class="admin-action-bar">
+                            <button type="button" class="admin-primary-btn" id="btn-save-court-img">画像保存</button>
+                            <button type="button" class="admin-primary-btn" id="btn-copy-court-img">画像コピー</button>
+                        </div>
+
+                        <!-- 対象練習選択 -->
+                        <div class="admin-control-group">
+                            <label class="admin-control-label">対象の練習日程</label>
+                            <select id="admin-court-event-select" class="admin-select"></select>
+                        </div>
+
+                        <!-- 面数選択 -->
+                        <div class="admin-control-group">
+                            <label class="admin-control-label">面の数</label>
+                            <div class="admin-btn-chips" id="admin-court-count-chips">
+                                <button type="button" class="admin-chip-btn" data-courts="2">2面</button>
+                                <button type="button" class="admin-chip-btn" data-courts="3">3面</button>
+                                <button type="button" class="admin-chip-btn" data-courts="4">4面</button>
+                                <button type="button" class="admin-chip-btn" data-courts="5">5面</button>
+                            </div>
+                            <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+                                <span style="font-size:0.75rem; color:#64748b;">自由指定:</span>
+                                <input type="number" id="admin-court-custom-num" class="admin-input" style="width:70px; padding:4px 8px;" min="1" max="10" placeholder="面数">
+                            </div>
+                        </div>
+
+                        <!-- 各面の人数の微調整 -->
+                        <div class="admin-control-group">
+                            <label class="admin-control-label">各面の人数配分（調整可能）</label>
+                            <div id="admin-court-capacities-list" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 12px;"></div>
+                        </div>
+
+                        <!-- 振り分け方式 -->
+                        <div class="admin-control-group">
+                            <label class="admin-control-label">振り分け方式</label>
+                            <div class="admin-btn-chips" id="admin-court-mode-chips">
+                                <button type="button" class="admin-chip-btn" data-mode="block_random">順番ランダム</button>
+                                <button type="button" class="admin-chip-btn" data-mode="rank">ランク順</button>
+                                <button type="button" class="admin-chip-btn" data-mode="full_random">完全ランダム</button>
+                            </div>
+                        </div>
+
+                        <!-- 参加者リスト & 除外・追加 -->
+                        <div class="admin-control-group">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <label class="admin-control-label" style="margin-bottom:0;">参加メンバー (<span id="admin-court-member-count">0</span>名)</label>
+                                <span style="font-size:0.72rem; color:#64748b;">✕で一時除外</span>
+                            </div>
+                            <div class="admin-member-chips-wrap" id="admin-court-members-chips"></div>
+                            <div style="margin-top:6px; display:flex; gap:6px;">
+                                <select id="admin-court-add-member-select" class="admin-select" style="font-size:0.78rem; padding:4px 8px;">
+                                    <option value="">-- 追加する部員を選択 --</option>
+                                </select>
+                                <button type="button" id="btn-admin-court-add-member" class="admin-secondary-btn" style="padding:4px 10px; font-size:0.75rem; white-space:nowrap;">追加</button>
+                            </div>
+                        </div>
+
+                        <!-- 動的プレビュー（白黒の普通の表） -->
+                        <div class="admin-control-group" style="margin-top:16px;">
+                            <label class="admin-control-label">面分け表 プレビュー</label>
+                            <div class="admin-table-preview-container" id="admin-court-preview-box"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 基礎打ち表セクション -->
+                <div id="admin-sec-rally" class="hidden">
+                    <div class="admin-card">
+                        <!-- 最短アクションバー -->
+                        <div class="admin-action-bar">
+                            <button type="button" class="admin-primary-btn" id="btn-save-rally-img">画像保存</button>
+                            <button type="button" class="admin-primary-btn" id="btn-copy-rally-img">画像コピー</button>
+                        </div>
+
+                        <!-- 対象練習選択 -->
+                        <div class="admin-control-group">
+                            <label class="admin-control-label">対象の練習日程</label>
+                            <select id="admin-rally-event-select" class="admin-select"></select>
+                        </div>
+
+                        <!-- 方式切り替え -->
+                        <div class="admin-control-group">
+                            <label class="admin-control-label">ペアリング方式</label>
+                            <div class="admin-btn-chips" id="admin-rally-mode-chips">
+                                <button type="button" class="admin-chip-btn active" data-mode="rank">ランク順</button>
+                                <button type="button" class="admin-chip-btn" data-mode="reverse">逆ランク順</button>
+                            </div>
+                        </div>
+
+                        <!-- 参加者リスト & 除外・追加 -->
+                        <div class="admin-control-group">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <label class="admin-control-label" style="margin-bottom:0;">参加メンバー (<span id="admin-rally-member-count">0</span>名)</label>
+                                <span style="font-size:0.72rem; color:#64748b;">✕で一時除外</span>
+                            </div>
+                            <div class="admin-member-chips-wrap" id="admin-rally-members-chips"></div>
+                            <div style="margin-top:6px; display:flex; gap:6px;">
+                                <select id="admin-rally-add-member-select" class="admin-select" style="font-size:0.78rem; padding:4px 8px;">
+                                    <option value="">-- 追加する部員を選択 --</option>
+                                </select>
+                                <button type="button" id="btn-admin-rally-add-member" class="admin-secondary-btn" style="padding:4px 10px; font-size:0.75rem; white-space:nowrap;">追加</button>
+                            </div>
+                        </div>
+
+                        <!-- 動的プレビュー（白黒の普通の表・番号なし） -->
+                        <div class="admin-control-group" style="margin-top:16px;">
+                            <label class="admin-control-label">基礎打ち表 プレビュー</label>
+                            <div class="admin-table-preview-container" id="admin-rally-preview-box"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 部員管理セクション -->
+                <div id="admin-sec-members" class="hidden">
+                    <div class="admin-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                            <button type="button" id="btn-admin-open-add-member" class="admin-primary-btn" style="flex:none; padding:8px 14px; font-size:0.8rem;">＋ 新規部員の追加</button>
+                            <button type="button" id="btn-admin-promote-grade" class="admin-danger-btn" style="padding:8px 14px; font-size:0.8rem;">全員の学年を1つ進級</button>
+                        </div>
+                        <input type="text" id="admin-member-search-input" class="admin-input" placeholder="名前・フリガナ・学年で検索..." style="margin-bottom:12px;">
+                        <div id="admin-members-list-container" style="max-height:480px; overflow-y:auto;"></div>
+                    </div>
+                </div>
+
+                <!-- 4. 日程管理セクション -->
+                <div id="admin-sec-schedule" class="hidden">
+                    <div class="admin-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                            <button type="button" id="btn-admin-open-add-event" class="admin-primary-btn" style="flex:none; padding:8px 14px; font-size:0.8rem;">＋ 練習日程を追加</button>
+                            <button type="button" id="btn-admin-open-batch-events" class="admin-secondary-btn" style="padding:8px 14px; font-size:0.8rem;">曜日一括登録</button>
+                        </div>
+                        <div id="admin-events-list-container" style="max-height:480px; overflow-y:auto;"></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 統一送信ボタン（常に押しやすい高さに配置） -->
             <div class="action-area" id="submit-all-area">
                 <button type="button" class="btn-submit-all" id="btn-submit-all" disabled style="background:#94a3b8; cursor:not-allowed; box-shadow:none;">読み込み中...</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理者用モーダル群 -->
+    <!-- 1. 共通安全確認モーダル -->
+    <div id="admin-confirm-modal" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box">
+            <div class="admin-modal-title" id="admin-confirm-title">確認</div>
+            <div class="admin-modal-body" id="admin-confirm-body"></div>
+            <div class="admin-modal-actions">
+                <button type="button" class="admin-secondary-btn" id="btn-admin-confirm-cancel">キャンセル</button>
+                <button type="button" class="admin-danger-btn" id="btn-admin-confirm-execute">実行する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 部員編集・追加モーダル -->
+    <div id="admin-member-modal" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box">
+            <div class="admin-modal-title" id="admin-member-modal-title">部員情報の編集</div>
+            <form id="admin-member-form">
+                <input type="hidden" id="admin-m-userid">
+                <div class="admin-control-group">
+                    <label class="admin-control-label">姓 / 名 <span style="color:#ef4444;">*</span></label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="admin-m-lastname" class="admin-input" placeholder="姓 (例: 山田)" required>
+                        <input type="text" id="admin-m-firstname" class="admin-input" placeholder="名 (例: 太郎)" required>
+                    </div>
+                </div>
+                <div class="admin-control-group">
+                    <label class="admin-control-label">フリガナ (全角カタカナ) <span style="color:#ef4444;">*</span></label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="admin-m-k-last" class="admin-input" placeholder="セイ (例: ヤマダ)" required>
+                        <input type="text" id="admin-m-k-first" class="admin-input" placeholder="メイ (例: タロウ)" required>
+                    </div>
+                </div>
+                <div class="admin-control-group">
+                    <label class="admin-control-label">学年 <span style="color:#ef4444;">*</span></label>
+                    <select id="admin-m-grade" class="admin-select" required>
+                        <option value="1年">1年</option>
+                        <option value="2年">2年</option>
+                        <option value="3年">3年</option>
+                        <option value="4年">4年</option>
+                        <option value="5年">5年</option>
+                        <option value="6年">6年</option>
+                        <option value="大学院">大学院</option>
+                        <option value="OBOG">OBOG</option>
+                        <option value="その他">その他</option>
+                    </select>
+                </div>
+                <div class="admin-control-group">
+                    <label class="admin-control-label">大学 <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin-m-univ" class="admin-input" placeholder="例: 名古屋大学" required>
+                </div>
+                <div class="admin-control-group">
+                    <label class="admin-control-label">性別 <span style="color:#ef4444;">*</span></label>
+                    <select id="admin-m-sex" class="admin-select" required>
+                        <option value="男性">男性</option>
+                        <option value="女性">女性</option>
+                        <option value="回答しない">回答しない</option>
+                    </select>
+                </div>
+                <div class="admin-control-group" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+                    <input type="checkbox" id="admin-m-isadmin" style="width:18px; height:18px;">
+                    <label for="admin-m-isadmin" style="font-size:0.85rem; font-weight:bold; color:#0f172a; cursor:pointer;">管理者権限（幹部）</label>
+                </div>
+                <div class="admin-modal-actions" style="margin-top:20px;">
+                    <button type="button" class="admin-secondary-btn" id="btn-admin-member-cancel">キャンセル</button>
+                    <button type="submit" class="admin-primary-btn" id="btn-admin-member-save" style="flex:none; padding:8px 20px;">保存する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. 代理出欠変更モーダル -->
+    <div id="admin-proxy-att-modal" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box">
+            <div class="admin-modal-title">出欠の代理変更</div>
+            <div id="admin-proxy-att-info" style="font-size:0.85rem; color:#475569; margin-bottom:12px;"></div>
+            <form id="admin-proxy-att-form">
+                <input type="hidden" id="admin-proxy-userid">
+                <div class="admin-control-group">
+                    <label class="admin-control-label">対象の練習日程</label>
+                    <select id="admin-proxy-event-select" class="admin-select"></select>
+                </div>
+                <div class="admin-control-group">
+                    <label class="admin-control-label">出欠ステータス</label>
+                    <div class="admin-btn-chips" id="admin-proxy-status-chips">
+                        <button type="button" class="admin-chip-btn active" data-status="参加">参加</button>
+                        <button type="button" class="admin-chip-btn" data-status="遅刻">遅刻</button>
+                        <button type="button" class="admin-chip-btn" data-status="早退">早退</button>
+                        <button type="button" class="admin-chip-btn" data-status="未定">未定</button>
+                        <button type="button" class="admin-chip-btn" data-status="不参加">不参加</button>
+                    </div>
+                </div>
+                <div class="admin-control-group">
+                    <label class="admin-control-label">備考</label>
+                    <input type="text" id="admin-proxy-comment" class="admin-input" placeholder="遅刻理由など">
+                </div>
+                <div class="admin-modal-actions" style="margin-top:20px;">
+                    <button type="button" class="admin-secondary-btn" id="btn-admin-proxy-cancel">キャンセル</button>
+                    <button type="submit" class="admin-primary-btn" id="btn-admin-proxy-save" style="flex:none; padding:8px 20px;">保存する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. 日程追加・編集モーダル -->
+    <div id="admin-event-modal" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box">
+            <div class="admin-modal-title" id="admin-event-modal-title">練習日程の編集</div>
+            <form id="admin-event-form">
+                <input type="hidden" id="admin-ev-id">
+                <div class="admin-control-group">
+                    <label class="admin-control-label">日付 (yyyy/MM/dd) <span style="color:#ef4444;">*</span></label>
+                    <input type="date" id="admin-ev-date" class="admin-input" required>
+                </div>
+                <div class="admin-control-group">
+                    <label class="admin-control-label">時間帯 <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin-ev-time" class="admin-input" placeholder="例: 18:00〜21:00" required>
+                </div>
+                <div class="admin-control-group">
+                    <label class="admin-control-label">場所 <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin-ev-place" class="admin-input" placeholder="例: 2体半面" required>
+                </div>
+                <div class="admin-control-group">
+                    <label class="admin-control-label">練習種別・タイトル <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin-ev-title" class="admin-input" placeholder="例: 正規練" required>
+                </div>
+                <div class="admin-modal-actions" style="margin-top:20px;">
+                    <button type="button" class="admin-secondary-btn" id="btn-admin-event-cancel">キャンセル</button>
+                    <button type="submit" class="admin-primary-btn" id="btn-admin-event-save" style="flex:none; padding:8px 20px;">保存する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. 曜日一括登録モーダル -->
+    <div id="admin-batch-event-modal" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box">
+            <div class="admin-modal-title">練習日程の曜日一括登録</div>
+            <div class="admin-modal-body">
+                指定した月の特定曜日の練習日程をまとめて一括生成して登録できます。
+            </div>
+            <div class="admin-control-group">
+                <label class="admin-control-label">対象年月</label>
+                <input type="month" id="admin-batch-month" class="admin-input" required>
+            </div>
+            <div class="admin-control-group">
+                <label class="admin-control-label">対象曜日</label>
+                <div class="admin-btn-chips" id="admin-batch-day-chips">
+                    <button type="button" class="admin-chip-btn" data-day="1">月曜</button>
+                    <button type="button" class="admin-chip-btn" data-day="2">火曜</button>
+                    <button type="button" class="admin-chip-btn" data-day="3">水曜</button>
+                    <button type="button" class="admin-chip-btn" data-day="4">木曜</button>
+                    <button type="button" class="admin-chip-btn" data-day="5">金曜</button>
+                    <button type="button" class="admin-chip-btn" data-day="6">土曜</button>
+                    <button type="button" class="admin-chip-btn" data-day="0">日曜</button>
+                </div>
+            </div>
+            <div class="admin-control-group">
+                <label class="admin-control-label">時間帯</label>
+                <input type="text" id="admin-batch-time" class="admin-input" value="18:00〜21:00">
+            </div>
+            <div class="admin-control-group">
+                <label class="admin-control-label">場所</label>
+                <input type="text" id="admin-batch-place" class="admin-input" value="2体半面">
+            </div>
+            <div class="admin-control-group">
+                <label class="admin-control-label">タイトル</label>
+                <input type="text" id="admin-batch-title" class="admin-input" value="正規練">
+            </div>
+            <div id="admin-batch-preview-result" style="margin-top:12px; font-size:0.8rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px; max-height:120px; overflow-y:auto;" class="hidden"></div>
+            <div class="admin-modal-actions" style="margin-top:20px;">
+                <button type="button" class="admin-secondary-btn" id="btn-admin-batch-cancel">キャンセル</button>
+                <button type="button" class="admin-secondary-btn" id="btn-admin-batch-preview">日程プレビュー</button>
+                <button type="button" class="admin-primary-btn" id="btn-admin-batch-execute" style="flex:none; padding:8px 20px;" disabled>一括登録する</button>
             </div>
         </div>
     </div>
@@ -1163,6 +1777,7 @@
                     currentUser.displayName = currentUserProfile.name || "";
                     const userNameEl = document.getElementById("user-name");
                     if (userNameEl && currentUser.displayName) userNameEl.textContent = currentUser.displayName;
+                    checkAndShowAdminTab();
                 }
             } catch (e) {
                 console.warn("ローカルキャッシュ読み込みスキップ:", e);
@@ -1242,6 +1857,7 @@
                     try {
                         localStorage.setItem("badminton_user_profile", JSON.stringify(currentUserProfile));
                     } catch (e) {}
+                    checkAndShowAdminTab();
                 }
 
                 // カレンダーおよび出欠状態を最新データでスムーズに再描画
@@ -1874,9 +2490,11 @@
         const btnTabCal = document.getElementById("btn-tab-calendar");
         const btnTabList = document.getElementById("btn-tab-list");
         const btnTabOther = document.getElementById("btn-tab-other");
+        const btnTabAdmin = document.getElementById("btn-tab-admin");
         if (btnTabCal) btnTabCal.addEventListener("click", () => switchTab("calendar"));
         if (btnTabList) btnTabList.addEventListener("click", () => switchTab("list"));
         if (btnTabOther) btnTabOther.addEventListener("click", () => switchTab("other"));
+        if (btnTabAdmin) btnTabAdmin.addEventListener("click", () => switchTab("admin"));
 
         // 前月・次月・今月に戻るボタン
         const prevMonthBtn = document.getElementById("prev-month");
@@ -2244,21 +2862,25 @@
             const btnCal = document.getElementById("btn-tab-calendar");
             const btnList = document.getElementById("btn-tab-list");
             const btnOther = document.getElementById("btn-tab-other");
+            const btnAdmin = document.getElementById("btn-tab-admin");
             const viewCal = document.getElementById("view-calendar");
             const viewList = document.getElementById("view-list");
             const viewOther = document.getElementById("view-other");
+            const viewAdmin = document.getElementById("view-admin");
             const submitArea = document.getElementById("submit-all-area");
 
             btnCal.classList.toggle("active", tab === "calendar");
             btnList.classList.toggle("active", tab === "list");
             btnOther.classList.toggle("active", tab === "other");
+            if (btnAdmin) btnAdmin.classList.toggle("active", tab === "admin");
 
             viewCal.classList.toggle("hidden", tab !== "calendar");
             viewList.classList.toggle("hidden", tab !== "list");
             viewOther.classList.toggle("hidden", tab !== "other");
+            if (viewAdmin) viewAdmin.classList.toggle("hidden", tab !== "admin");
 
             if (submitArea) {
-                submitArea.classList.toggle("hidden", tab === "other");
+                submitArea.classList.toggle("hidden", tab === "other" || tab === "admin");
             }
 
             if (tab === "calendar") {
@@ -2268,6 +2890,8 @@
                 renderListView();
             } else if (tab === "other") {
                 renderOtherView();
+            } else if (tab === "admin") {
+                renderAdminView();
             }
         }
 
@@ -2829,6 +3453,1340 @@
             return String(str).replace(/[&<>"']/g, m => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
             }[m]));
+        }
+
+        // ============================================================
+        // 管理者（幹部）専用機能ロジック
+        // ============================================================
+        function checkAndShowAdminTab() {
+            const btnTabAdmin = document.getElementById("btn-tab-admin");
+            if (!btnTabAdmin) return;
+            if (currentUserProfile && currentUserProfile.isAdmin) {
+                btnTabAdmin.classList.remove("hidden");
+            } else {
+                btnTabAdmin.classList.add("hidden");
+            }
+        }
+
+        let adminData = {
+            members: [],
+            ranks: [],
+            events: [],
+            attendances: [],
+            isLoaded: false
+        };
+
+        let currentAdminSubView = "court"; // court | rally | members | schedule
+
+        // 面分け表の状態
+        let courtState = {
+            eventId: "",
+            courtCount: 3,
+            capacities: [],
+            mode: "block_random",
+            excludedUserIds: new Set(),
+            customMembers: []
+        };
+
+        // 基礎打ち表の状態
+        let rallyState = {
+            eventId: "",
+            mode: "rank",
+            excludedUserIds: new Set(),
+            customMembers: []
+        };
+
+        // 共通安全確認モーダル
+        let adminConfirmCallback = null;
+        function showAdminConfirm(title, bodyHtml, onConfirm) {
+            const modal = document.getElementById("admin-confirm-modal");
+            document.getElementById("admin-confirm-title").textContent = title;
+            document.getElementById("admin-confirm-body").innerHTML = bodyHtml;
+            adminConfirmCallback = onConfirm;
+            modal.classList.remove("hidden");
+        }
+
+        document.getElementById("btn-admin-confirm-cancel")?.addEventListener("click", () => {
+            document.getElementById("admin-confirm-modal").classList.add("hidden");
+            adminConfirmCallback = null;
+        });
+
+        document.getElementById("btn-admin-confirm-execute")?.addEventListener("click", async () => {
+            document.getElementById("admin-confirm-modal").classList.add("hidden");
+            if (typeof adminConfirmCallback === "function") {
+                const cb = adminConfirmCallback;
+                adminConfirmCallback = null;
+                await cb();
+            }
+        });
+
+        // 管理者データのオンデマンドロード
+        async function loadAdminDataAsync(forceRefresh = false) {
+            if (adminData.isLoaded && !forceRefresh) return;
+            showToast("管理者データを取得中...");
+            try {
+                const url = `${GAS_API_URL}?action=getAdminData&userId=${encodeURIComponent(currentUser.userId)}&key=${API_KEY}`;
+                const res = await fetch(url);
+                const json = await res.json();
+                if (!json.success) {
+                    alert(json.message || "管理者データの取得に失敗しました");
+                    return;
+                }
+                adminData = {
+                    members: json.members || [],
+                    ranks: json.ranks || [],
+                    events: json.events || [],
+                    attendances: json.attendances || [],
+                    isLoaded: true
+                };
+                showToast("管理者データを読み込みました");
+            } catch (err) {
+                console.error(err);
+                alert("管理者データの取得中にエラーが発生しました: " + err.message);
+            }
+        }
+
+        // 管理者タブ全体の描画
+        async function renderAdminView() {
+            if (!adminData.isLoaded) {
+                await loadAdminDataAsync();
+            }
+            setupAdminSubNav();
+            switchAdminSubView(currentAdminSubView);
+        }
+
+        // サブナビゲーション切り替え
+        function setupAdminSubNav() {
+            const btns = document.querySelectorAll(".admin-subnav-btn");
+            btns.forEach(btn => {
+                btn.onclick = () => {
+                    btns.forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    const target = btn.getAttribute("data-admin-view");
+                    switchAdminSubView(target);
+                };
+            });
+        }
+
+        function switchAdminSubView(view) {
+            currentAdminSubView = view;
+            document.getElementById("admin-sec-court").classList.toggle("hidden", view !== "court");
+            document.getElementById("admin-sec-rally").classList.toggle("hidden", view !== "rally");
+            document.getElementById("admin-sec-members").classList.toggle("hidden", view !== "members");
+            document.getElementById("admin-sec-schedule").classList.toggle("hidden", view !== "schedule");
+
+            if (view === "court") initCourtSplitView();
+            else if (view === "rally") initRallyTableView();
+            else if (view === "members") renderAdminMembersView();
+            else if (view === "schedule") renderAdminScheduleView();
+        }
+
+        // ------------------------------------------------------------
+        // 1. 面分け表ロジック
+        // ------------------------------------------------------------
+        function findUserRank(name) {
+            if (!name) return 999;
+            const cleanName = String(name).replace(/\s+/g, "");
+            for (const r of adminData.ranks) {
+                const rName = String(r.name).replace(/\s+/g, "");
+                if (cleanName === rName) return r.rank;
+            }
+            // 苗字マッチング
+            for (const r of adminData.ranks) {
+                const rName = String(r.name).replace(/\s+/g, "");
+                if (cleanName.startsWith(rName) || rName.startsWith(cleanName)) return r.rank;
+            }
+            return 999;
+        }
+
+        function getRecentRegularEvent() {
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+            // 今日以降の正規練
+            const futureRegular = adminData.events.filter(e => e.date >= todayStr && e.title.includes("正規"));
+            if (futureRegular.length > 0) return futureRegular[0];
+            // 今日以降の任意のイベント
+            const futureAny = adminData.events.filter(e => e.date >= todayStr);
+            if (futureAny.length > 0) return futureAny[0];
+            // 最後のイベント
+            return adminData.events[adminData.events.length - 1] || null;
+        }
+
+        function initCourtSplitView() {
+            const selectEl = document.getElementById("admin-court-event-select");
+            selectEl.innerHTML = "";
+            adminData.events.forEach(ev => {
+                const opt = document.createElement("option");
+                opt.value = ev.eventId;
+                opt.textContent = `${ev.date} ${ev.title} (${ev.time})`;
+                selectEl.appendChild(opt);
+            });
+
+            // 直近正規練を自動設定
+            if (!courtState.eventId) {
+                const defEv = getRecentRegularEvent();
+                if (defEv) {
+                    courtState.eventId = defEv.eventId;
+                    selectEl.value = defEv.eventId;
+                    applyDefaultCourtSettingsForEvent(defEv);
+                }
+            } else {
+                selectEl.value = courtState.eventId;
+            }
+
+            selectEl.onchange = () => {
+                courtState.eventId = selectEl.value;
+                courtState.excludedUserIds.clear();
+                courtState.customMembers = [];
+                const ev = adminData.events.find(e => String(e.eventId) === String(courtState.eventId));
+                if (ev) applyDefaultCourtSettingsForEvent(ev);
+                updateCourtSplitPreview();
+            };
+
+            // 面数チップ
+            document.querySelectorAll("#admin-court-count-chips .admin-chip-btn").forEach(btn => {
+                btn.onclick = () => {
+                    const cnt = parseInt(btn.getAttribute("data-courts"), 10);
+                    setCourtCount(cnt);
+                };
+            });
+
+            // 自由指定面数入力
+            const customNumInput = document.getElementById("admin-court-custom-num");
+            customNumInput.oninput = () => {
+                const val = parseInt(customNumInput.value, 10);
+                if (val >= 1 && val <= 10) {
+                    setCourtCount(val);
+                }
+            };
+
+            // 方式チップ
+            document.querySelectorAll("#admin-court-mode-chips .admin-chip-btn").forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll("#admin-court-mode-chips .admin-chip-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    courtState.mode = btn.getAttribute("data-mode");
+                    updateCourtSplitPreview();
+                };
+            });
+
+            // 部員追加セレクト
+            const addSelect = document.getElementById("admin-court-add-member-select");
+            addSelect.innerHTML = '<option value="">-- 追加する部員を選択 --</option>';
+            adminData.members.forEach(m => {
+                const opt = document.createElement("option");
+                opt.value = m.userId;
+                opt.textContent = `${m.name} (${m.grade || '部員'})`;
+                addSelect.appendChild(opt);
+            });
+
+            document.getElementById("btn-admin-court-add-member").onclick = () => {
+                const uId = addSelect.value;
+                if (!uId) return;
+                const m = adminData.members.find(x => x.userId === uId);
+                if (m) {
+                    courtState.excludedUserIds.delete(uId);
+                    if (!courtState.customMembers.some(c => c.userId === uId)) {
+                        courtState.customMembers.push({
+                            userId: m.userId,
+                            name: m.name,
+                            rank: findUserRank(m.name)
+                        });
+                    }
+                    addSelect.value = "";
+                    recalcCourtCapacities();
+                    updateCourtSplitPreview();
+                }
+            };
+
+            // 最短保存・コピーボタン
+            document.getElementById("btn-save-court-img").onclick = () => saveCourtSplitImage();
+            document.getElementById("btn-copy-court-img").onclick = () => copyCourtSplitImage();
+
+            recalcCourtCapacities();
+            updateCourtSplitPreview();
+        }
+
+        function applyDefaultCourtSettingsForEvent(ev) {
+            const d = new Date(ev.date.replace(/\//g, "-"));
+            const day = d.getDay(); // 1:月, 3:水, 5:金
+            if (day === 5) {
+                // 金曜日は4面、ランク順
+                courtState.courtCount = 4;
+                courtState.mode = "rank";
+            } else {
+                // 月・水およびその他は3面、順番ランダム
+                courtState.courtCount = 3;
+                courtState.mode = "block_random";
+            }
+
+            // UI反映
+            document.querySelectorAll("#admin-court-count-chips .admin-chip-btn").forEach(b => {
+                b.classList.toggle("active", parseInt(b.getAttribute("data-courts"), 10) === courtState.courtCount);
+            });
+            document.getElementById("admin-court-custom-num").value = courtState.courtCount;
+
+            document.querySelectorAll("#admin-court-mode-chips .admin-chip-btn").forEach(b => {
+                b.classList.toggle("active", b.getAttribute("data-mode") === courtState.mode);
+            });
+
+            recalcCourtCapacities();
+        }
+
+        function setCourtCount(cnt) {
+            courtState.courtCount = cnt;
+            document.querySelectorAll("#admin-court-count-chips .admin-chip-btn").forEach(b => {
+                b.classList.toggle("active", parseInt(b.getAttribute("data-courts"), 10) === cnt);
+            });
+            document.getElementById("admin-court-custom-num").value = cnt;
+            recalcCourtCapacities();
+            updateCourtSplitPreview();
+        }
+
+        function getActiveCourtMembers() {
+            const evId = String(courtState.eventId);
+            // 出欠データから参加・遅刻・早退を取得
+            const atts = adminData.attendances.filter(a => String(a.eventId) === evId && (a.status === "参加" || a.status === "遅刻" || a.status === "早退"));
+            const map = new Map();
+
+            atts.forEach(a => {
+                if (!courtState.excludedUserIds.has(a.userId)) {
+                    map.set(a.userId, {
+                        userId: a.userId,
+                        name: a.name,
+                        status: a.status,
+                        rank: findUserRank(a.name)
+                    });
+                }
+            });
+
+            // 手動追加部員
+            courtState.customMembers.forEach(c => {
+                if (!courtState.excludedUserIds.has(c.userId) && !map.has(c.userId)) {
+                    map.set(c.userId, {
+                        userId: c.userId,
+                        name: c.name,
+                        status: "参加",
+                        rank: c.rank
+                    });
+                }
+            });
+
+            const list = Array.from(map.values());
+            // ランク昇順ソート
+            list.sort((a, b) => a.rank - b.rank);
+            return list;
+        }
+
+        function recalcCourtCapacities() {
+            const members = getActiveCourtMembers();
+            const N = members.length;
+            const M = Math.max(1, courtState.courtCount);
+            const base = Math.floor(N / M);
+            const rem = N % M;
+            courtState.capacities = [];
+            for (let i = 0; i < M; i++) {
+                courtState.capacities.push(i < rem ? base + 1 : base);
+            }
+            renderCourtCapacitiesUI();
+        }
+
+        function renderCourtCapacitiesUI() {
+            const container = document.getElementById("admin-court-capacities-list");
+            container.innerHTML = "";
+            courtState.capacities.forEach((cap, idx) => {
+                const row = document.createElement("div");
+                row.className = "admin-capacity-row";
+                row.innerHTML = `
+                    <span>第${idx + 1}面</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button type="button" class="admin-step-btn" data-step="-1" data-idx="${idx}">-</button>
+                        <b style="min-width:24px; text-align:center;">${cap}人</b>
+                        <button type="button" class="admin-step-btn" data-step="1" data-idx="${idx}">+</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            container.querySelectorAll(".admin-step-btn").forEach(btn => {
+                btn.onclick = () => {
+                    const idx = parseInt(btn.getAttribute("data-idx"), 10);
+                    const step = parseInt(btn.getAttribute("data-step"), 10);
+                    courtState.capacities[idx] = Math.max(0, courtState.capacities[idx] + step);
+                    renderCourtCapacitiesUI();
+                    updateCourtSplitPreview();
+                };
+            });
+        }
+
+        function updateCourtSplitPreview() {
+            const members = getActiveCourtMembers();
+            document.getElementById("admin-court-member-count").textContent = members.length;
+
+            // 参加者チップ描画
+            const chipsWrap = document.getElementById("admin-court-members-chips");
+            chipsWrap.innerHTML = "";
+            members.forEach(m => {
+                const chip = document.createElement("div");
+                chip.className = "admin-member-chip";
+                const rankText = m.rank === 999 ? '外' : `${m.rank}位`;
+                chip.innerHTML = `
+                    <span>${escapeHtml(m.name)} <span style="color:#64748b; font-size:0.68rem;">(${rankText})</span></span>
+                    <span class="admin-member-chip-remove" title="一時除外" data-uid="${m.userId}">✕</span>
+                `;
+                chip.querySelector(".admin-member-chip-remove").onclick = () => {
+                    courtState.excludedUserIds.add(m.userId);
+                    recalcCourtCapacities();
+                    updateCourtSplitPreview();
+                };
+                chipsWrap.appendChild(chip);
+            });
+
+            // 振り分け実行
+            const courts = doCourtSplitAlgorithm(members, courtState.courtCount, courtState.capacities, courtState.mode);
+
+            // 白黒の普通の表（HTML Table）生成
+            const previewBox = document.getElementById("admin-court-preview-box");
+            let maxRows = 0;
+            courts.forEach(c => { if (c.length > maxRows) maxRows = c.length; });
+
+            let tableHtml = '<table class="admin-plain-table"><thead><tr>';
+            courts.forEach((c, idx) => {
+                tableHtml += `<th>第${idx + 1}面 (${c.length}名)</th>`;
+            });
+            tableHtml += '</tr></thead><tbody>';
+
+            for (let r = 0; r < maxRows; r++) {
+                tableHtml += '<tr>';
+                courts.forEach(c => {
+                    const m = c[r];
+                    tableHtml += `<td>${m ? escapeHtml(m.name) : ''}</td>`;
+                });
+                tableHtml += '</tr>';
+            }
+            tableHtml += '</tbody></table>';
+
+            previewBox.innerHTML = tableHtml;
+        }
+
+        // 振り分けアルゴリズム
+        function doCourtSplitAlgorithm(members, M, capacities, mode) {
+            const courts = Array.from({ length: M }, () => []);
+            const caps = [...capacities];
+            const pool = [...members];
+
+            if (mode === "rank") {
+                // 上位から順に各面へ
+                let mIdx = 0;
+                for (let c = 0; c < M; c++) {
+                    const count = caps[c] || 0;
+                    for (let i = 0; i < count && mIdx < pool.length; i++) {
+                        courts[c].push(pool[mIdx++]);
+                    }
+                }
+            } else if (mode === "block_random") {
+                // 面数ごとのブロックに分けてシャッフル配置
+                let p = 0;
+                while (p < pool.length) {
+                    const blockSize = Math.min(M, pool.length - p);
+                    const block = pool.slice(p, p + blockSize);
+                    // Fisher-Yates
+                    for (let i = block.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [block[i], block[j]] = [block[j], block[i]];
+                    }
+                    // 各面に1人ずつ分配（空きがある面へ）
+                    let bIdx = 0;
+                    for (let c = 0; c < M && bIdx < block.length; c++) {
+                        if (courts[c].length < (caps[c] || 999)) {
+                            courts[c].push(block[bIdx++]);
+                        }
+                    }
+                    // 定員で余った人を残りの面へ
+                    while (bIdx < block.length) {
+                        for (let c = 0; c < M; c++) {
+                            if (courts[c].length < (caps[c] || 999)) {
+                                courts[c].push(block[bIdx++]);
+                                break;
+                            }
+                        }
+                    }
+                    p += blockSize;
+                }
+            } else if (mode === "full_random") {
+                // 完全ランダム
+                for (let i = pool.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [pool[i], pool[j]] = [pool[j], pool[i]];
+                }
+                let mIdx = 0;
+                for (let c = 0; c < M; c++) {
+                    const count = caps[c] || 0;
+                    for (let i = 0; i < count && mIdx < pool.length; i++) {
+                        courts[c].push(pool[mIdx++]);
+                    }
+                }
+            }
+
+            return courts;
+        }
+
+        // Canvasによる白黒テーブル画像生成
+        function createTableCanvas(title, headers, rows) {
+            const scale = 2; // 高解像度
+            const colCount = headers.length;
+            const colWidth = 150;
+            const rowHeight = 36;
+            const padding = 24;
+            const headerHeight = 60; // タイトル分
+
+            const width = padding * 2 + colWidth * colCount;
+            const height = padding * 2 + headerHeight + (rows.length + 1) * rowHeight;
+
+            const canvas = document.createElement("canvas");
+            canvas.width = width * scale;
+            canvas.height = height * scale;
+            const ctx = canvas.getContext("2d");
+            ctx.scale(scale, scale);
+
+            // 背景（白）
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+
+            // タイトル
+            ctx.fillStyle = "#000000";
+            ctx.font = "bold 16px sans-serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillText(title, padding, padding + 20);
+
+            const startY = padding + headerHeight;
+
+            // テーブル外枠 & ヘッダー背景
+            ctx.fillStyle = "#f8fafc";
+            ctx.fillRect(padding, startY, colWidth * colCount, rowHeight);
+
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 1;
+
+            // ヘッダーテキスト
+            ctx.fillStyle = "#000000";
+            ctx.font = "bold 13px sans-serif";
+            ctx.textAlign = "center";
+            headers.forEach((h, c) => {
+                ctx.fillText(h, padding + c * colWidth + colWidth / 2, startY + rowHeight / 2);
+            });
+
+            // データ行
+            ctx.font = "13px sans-serif";
+            rows.forEach((r, rIdx) => {
+                const y = startY + (rIdx + 1) * rowHeight;
+                r.forEach((cell, cIdx) => {
+                    ctx.fillText(cell || "", padding + cIdx * colWidth + colWidth / 2, y + rowHeight / 2);
+                });
+            });
+
+            // 罫線（横線）
+            for (let i = 0; i <= rows.length + 1; i++) {
+                const y = startY + i * rowHeight;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding + colWidth * colCount, y);
+                ctx.stroke();
+            }
+
+            // 罫線（縦線）
+            for (let j = 0; j <= colCount; j++) {
+                const x = padding + j * colWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, startY);
+                ctx.lineTo(x, startY + (rows.length + 1) * rowHeight);
+                ctx.stroke();
+            }
+
+            return canvas;
+        }
+
+        async function saveCourtSplitImage() {
+            const ev = adminData.events.find(e => String(e.eventId) === String(courtState.eventId));
+            const evTitle = ev ? `${ev.date} ${ev.title} 面分け表` : "面分け表";
+            const members = getActiveCourtMembers();
+            const courts = doCourtSplitAlgorithm(members, courtState.courtCount, courtState.capacities, courtState.mode);
+
+            const headers = courts.map((c, idx) => `第${idx + 1}面 (${c.length}名)`);
+            let maxRows = 0;
+            courts.forEach(c => { if (c.length > maxRows) maxRows = c.length; });
+            const rows = [];
+            for (let r = 0; r < maxRows; r++) {
+                rows.push(courts.map(c => c[r] ? c[r].name : ""));
+            }
+
+            const canvas = createTableCanvas(evTitle, headers, rows);
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `court_split_${(ev ? ev.date : 'date').replace(/\//g, '')}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast("画像を保存しました");
+            });
+        }
+
+        async function copyCourtSplitImage() {
+            const ev = adminData.events.find(e => String(e.eventId) === String(courtState.eventId));
+            const evTitle = ev ? `${ev.date} ${ev.title} 面分け表` : "面分け表";
+            const members = getActiveCourtMembers();
+            const courts = doCourtSplitAlgorithm(members, courtState.courtCount, courtState.capacities, courtState.mode);
+
+            const headers = courts.map((c, idx) => `第${idx + 1}面 (${c.length}名)`);
+            let maxRows = 0;
+            courts.forEach(c => { if (c.length > maxRows) maxRows = c.length; });
+            const rows = [];
+            for (let r = 0; r < maxRows; r++) {
+                rows.push(courts.map(c => c[r] ? c[r].name : ""));
+            }
+
+            const canvas = createTableCanvas(evTitle, headers, rows);
+            canvas.toBlob(async blob => {
+                try {
+                    if (navigator.clipboard && navigator.clipboard.write) {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ "image/png": blob })
+                        ]);
+                        showToast("画像をクリップボードにコピーしました");
+                    } else {
+                        // クリップボードAPI非対応端末
+                        saveCourtSplitImage();
+                    }
+                } catch (e) {
+                    console.warn(e);
+                    // フォールバックで保存
+                    saveCourtSplitImage();
+                }
+            });
+        }
+
+        // ------------------------------------------------------------
+        // 2. 基礎打ち表ロジック
+        // ------------------------------------------------------------
+        function initRallyTableView() {
+            const selectEl = document.getElementById("admin-rally-event-select");
+            selectEl.innerHTML = "";
+            adminData.events.forEach(ev => {
+                const opt = document.createElement("option");
+                opt.value = ev.eventId;
+                opt.textContent = `${ev.date} ${ev.title} (${ev.time})`;
+                selectEl.appendChild(opt);
+            });
+
+            if (!rallyState.eventId) {
+                const defEv = getRecentRegularEvent();
+                if (defEv) {
+                    rallyState.eventId = defEv.eventId;
+                    selectEl.value = defEv.eventId;
+                }
+            } else {
+                selectEl.value = rallyState.eventId;
+            }
+
+            selectEl.onchange = () => {
+                rallyState.eventId = selectEl.value;
+                rallyState.excludedUserIds.clear();
+                rallyState.customMembers = [];
+                updateRallyPreview();
+            };
+
+            // 方式チップ
+            document.querySelectorAll("#admin-rally-mode-chips .admin-chip-btn").forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll("#admin-rally-mode-chips .admin-chip-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    rallyState.mode = btn.getAttribute("data-mode");
+                    updateRallyPreview();
+                };
+            });
+
+            // 部員追加セレクト
+            const addSelect = document.getElementById("admin-rally-add-member-select");
+            addSelect.innerHTML = '<option value="">-- 追加する部員を選択 --</option>';
+            adminData.members.forEach(m => {
+                const opt = document.createElement("option");
+                opt.value = m.userId;
+                opt.textContent = `${m.name} (${m.grade || '部員'})`;
+                addSelect.appendChild(opt);
+            });
+
+            document.getElementById("btn-admin-rally-add-member").onclick = () => {
+                const uId = addSelect.value;
+                if (!uId) return;
+                const m = adminData.members.find(x => x.userId === uId);
+                if (m) {
+                    rallyState.excludedUserIds.delete(uId);
+                    if (!rallyState.customMembers.some(c => c.userId === uId)) {
+                        rallyState.customMembers.push({
+                            userId: m.userId,
+                            name: m.name,
+                            rank: findUserRank(m.name)
+                        });
+                    }
+                    addSelect.value = "";
+                    updateRallyPreview();
+                }
+            };
+
+            document.getElementById("btn-save-rally-img").onclick = () => saveRallyImage();
+            document.getElementById("btn-copy-rally-img").onclick = () => copyRallyImage();
+
+            updateRallyPreview();
+        }
+
+        function getActiveRallyMembers() {
+            const evId = String(rallyState.eventId);
+            const atts = adminData.attendances.filter(a => String(a.eventId) === evId && (a.status === "参加" || a.status === "遅刻" || a.status === "早退"));
+            const map = new Map();
+
+            atts.forEach(a => {
+                if (!rallyState.excludedUserIds.has(a.userId)) {
+                    map.set(a.userId, {
+                        userId: a.userId,
+                        name: a.name,
+                        status: a.status,
+                        rank: findUserRank(a.name)
+                    });
+                }
+            });
+
+            rallyState.customMembers.forEach(c => {
+                if (!rallyState.excludedUserIds.has(c.userId) && !map.has(c.userId)) {
+                    map.set(c.userId, {
+                        userId: c.userId,
+                        name: c.name,
+                        status: "参加",
+                        rank: c.rank
+                    });
+                }
+            });
+
+            const list = Array.from(map.values());
+            list.sort((a, b) => a.rank - b.rank);
+            return list;
+        }
+
+        function doRallyPairing(members, mode) {
+            const pool = [...members];
+            const pairs = [];
+
+            if (mode === "rank") {
+                // ランク順（上から順に2人ずつ）
+                for (let i = 0; i < pool.length; i += 2) {
+                    if (i + 1 < pool.length) {
+                        pairs.push([pool[i], pool[i + 1]]);
+                    } else {
+                        // 奇数の余り ➡ 最後の組に合流して3人組にする
+                        if (pairs.length > 0) {
+                            pairs[pairs.length - 1].push(pool[i]);
+                        } else {
+                            pairs.push([pool[i]]);
+                        }
+                    }
+                }
+            } else if (mode === "reverse") {
+                // 逆ランク順（トップ＆ボトム）
+                let left = 0;
+                let right = pool.length - 1;
+                while (left < right) {
+                    pairs.push([pool[left], pool[right]]);
+                    left++;
+                    right--;
+                }
+                if (left === right) {
+                    // 奇数の真ん中 ➡ 最後のペアに合流して3人組にする
+                    if (pairs.length > 0) {
+                        pairs[pairs.length - 1].push(pool[left]);
+                    } else {
+                        pairs.push([pool[left]]);
+                    }
+                }
+            }
+
+            return pairs;
+        }
+
+        function updateRallyPreview() {
+            const members = getActiveRallyMembers();
+            document.getElementById("admin-rally-member-count").textContent = members.length;
+
+            // 参加者チップ描画
+            const chipsWrap = document.getElementById("admin-rally-members-chips");
+            chipsWrap.innerHTML = "";
+            members.forEach(m => {
+                const chip = document.createElement("div");
+                chip.className = "admin-member-chip";
+                const rankText = m.rank === 999 ? '外' : `${m.rank}位`;
+                chip.innerHTML = `
+                    <span>${escapeHtml(m.name)} <span style="color:#64748b; font-size:0.68rem;">(${rankText})</span></span>
+                    <span class="admin-member-chip-remove" title="一時除外" data-uid="${m.userId}">✕</span>
+                `;
+                chip.querySelector(".admin-member-chip-remove").onclick = () => {
+                    rallyState.excludedUserIds.add(m.userId);
+                    updateRallyPreview();
+                };
+                chipsWrap.appendChild(chip);
+            });
+
+            // ペアリング実行
+            const pairs = doRallyPairing(members, rallyState.mode);
+
+            // コート番号・ペア番号は表示しない普通の白黒表
+            const previewBox = document.getElementById("admin-rally-preview-box");
+            let tableHtml = '<table class="admin-plain-table"><thead><tr><th>選手 1</th><th>選手 2</th></tr></thead><tbody>';
+            pairs.forEach(p => {
+                if (p.length === 3) {
+                    tableHtml += `<tr><td>${escapeHtml(p[0].name)}</td><td>${escapeHtml(p[1].name)} / ${escapeHtml(p[2].name)}</td></tr>`;
+                } else if (p.length === 2) {
+                    tableHtml += `<tr><td>${escapeHtml(p[0].name)}</td><td>${escapeHtml(p[1].name)}</td></tr>`;
+                } else if (p.length === 1) {
+                    tableHtml += `<tr><td>${escapeHtml(p[0].name)}</td><td>-</td></tr>`;
+                }
+            });
+            tableHtml += '</tbody></table>';
+            previewBox.innerHTML = tableHtml;
+        }
+
+        async function saveRallyImage() {
+            const ev = adminData.events.find(e => String(e.eventId) === String(rallyState.eventId));
+            const evTitle = ev ? `${ev.date} ${ev.title} 基礎打ち表` : "基礎打ち表";
+            const members = getActiveRallyMembers();
+            const pairs = doRallyPairing(members, rallyState.mode);
+
+            const headers = ["選手 1", "選手 2"];
+            const rows = pairs.map(p => {
+                if (p.length === 3) return [p[0].name, `${p[1].name} / ${p[2].name}`];
+                if (p.length === 2) return [p[0].name, p[1].name];
+                return [p[0].name, "-"];
+            });
+
+            const canvas = createTableCanvas(evTitle, headers, rows);
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `rally_${(ev ? ev.date : 'date').replace(/\//g, '')}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast("画像を保存しました");
+            });
+        }
+
+        async function copyRallyImage() {
+            const ev = adminData.events.find(e => String(e.eventId) === String(rallyState.eventId));
+            const evTitle = ev ? `${ev.date} ${ev.title} 基礎打ち表` : "基礎打ち表";
+            const members = getActiveRallyMembers();
+            const pairs = doRallyPairing(members, rallyState.mode);
+
+            const headers = ["選手 1", "選手 2"];
+            const rows = pairs.map(p => {
+                if (p.length === 3) return [p[0].name, `${p[1].name} / ${p[2].name}`];
+                if (p.length === 2) return [p[0].name, p[1].name];
+                return [p[0].name, "-"];
+            });
+
+            const canvas = createTableCanvas(evTitle, headers, rows);
+            canvas.toBlob(async blob => {
+                try {
+                    if (navigator.clipboard && navigator.clipboard.write) {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ "image/png": blob })
+                        ]);
+                        showToast("画像をクリップボードにコピーしました");
+                    } else {
+                        saveRallyImage();
+                    }
+                } catch (e) {
+                    console.warn(e);
+                    saveRallyImage();
+                }
+            });
+        }
+
+        // ------------------------------------------------------------
+        // 3. 部員管理ロジック
+        // ------------------------------------------------------------
+        function renderAdminMembersView() {
+            const searchInput = document.getElementById("admin-member-search-input");
+            const filterText = (searchInput ? searchInput.value : "").trim().toLowerCase();
+
+            const container = document.getElementById("admin-members-list-container");
+            container.innerHTML = "";
+
+            const filtered = adminData.members.filter(m => {
+                if (!filterText) return true;
+                const name = (m.name || "").toLowerCase();
+                const fName = (m.furiganaLastName + m.furiganaFirstName).toLowerCase();
+                const grade = (m.grade || "").toLowerCase();
+                return name.includes(filterText) || fName.includes(filterText) || grade.includes(filterText);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="padding:16px; text-align:center; color:#94a3b8; font-size:0.85rem;">該当する部員がいません</div>';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(m => {
+                html += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9; gap:8px;">
+                        <div>
+                            <div style="font-weight:700; font-size:0.88rem; color:#0f172a;">
+                                ${escapeHtml(m.name)}
+                                ${m.isAdmin ? '<span style="background:#0f172a; color:#fff; font-size:0.68rem; padding:1px 5px; border-radius:4px; margin-left:4px;">幹部</span>' : ''}
+                            </div>
+                            <div style="font-size:0.75rem; color:#64748b;">
+                                ${escapeHtml(m.grade || '学年未設定')} / ${escapeHtml(m.univ || '大学未設定')} / ${escapeHtml(m.sex || '-')}
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="openAdminProxyModal('${m.userId}')">出欠</button>
+                            <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="openAdminMemberModal('${m.userId}')">編集</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            if (searchInput) {
+                searchInput.oninput = () => renderAdminMembersView();
+            }
+
+            // 新規追加ボタン
+            const addBtn = document.getElementById("btn-admin-open-add-member");
+            if (addBtn) addBtn.onclick = () => openAdminMemberModal("");
+
+            // 全員進級ボタン
+            const promoteBtn = document.getElementById("btn-admin-promote-grade");
+            if (promoteBtn) {
+                promoteBtn.onclick = () => {
+                    showAdminConfirm(
+                        "学年の一括進級",
+                        "部員全員の学年を1学年進級させます。<br><b>1年➡2年、2年➡3年、3年➡4年、4年➡OBOG、5年➡6年、6年➡OBOG</b><br><br>※この操作はスプレッドシートに即時反映されます。本当によろしいですか？",
+                        async () => {
+                            showToast("学年を一括進級中...");
+                            try {
+                                const res = await fetch(GAS_API_URL, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "text/plain" },
+                                    body: JSON.stringify({
+                                        apiKey: API_KEY,
+                                        action: "adminBatchPromoteGrade",
+                                        adminUserId: currentUser.userId
+                                    })
+                                });
+                                const json = await res.json();
+                                if (json.success) {
+                                    showToast(json.message || "学年を進級させました");
+                                    await loadAdminDataAsync(true);
+                                    renderAdminMembersView();
+                                } else {
+                                    alert(json.message || "進級処理に失敗しました");
+                                }
+                            } catch (e) {
+                                alert("通信エラー: " + e.message);
+                            }
+                        }
+                    );
+                };
+            }
+        }
+
+        function openAdminMemberModal(userId) {
+            const modal = document.getElementById("admin-member-modal");
+            const titleEl = document.getElementById("admin-member-modal-title");
+            const m = adminData.members.find(x => x.userId === userId) || {};
+
+            titleEl.textContent = userId ? "部員情報の編集" : "新規部員の追加";
+            document.getElementById("admin-m-userid").value = userId || "";
+            document.getElementById("admin-m-lastname").value = m.lastName || "";
+            document.getElementById("admin-m-firstname").value = m.firstName || "";
+            document.getElementById("admin-m-k-last").value = m.furiganaLastName || "";
+            document.getElementById("admin-m-k-first").value = m.furiganaFirstName || "";
+            document.getElementById("admin-m-grade").value = m.grade || "1年";
+            document.getElementById("admin-m-univ").value = m.univ || "名古屋大学";
+            document.getElementById("admin-m-sex").value = m.sex || "男性";
+            document.getElementById("admin-m-isadmin").checked = !!m.isAdmin;
+
+            modal.classList.remove("hidden");
+
+            document.getElementById("btn-admin-member-cancel").onclick = () => modal.classList.add("hidden");
+
+            document.getElementById("admin-member-form").onsubmit = async (e) => {
+                e.preventDefault();
+                modal.classList.add("hidden");
+
+                const newMember = {
+                    userId: document.getElementById("admin-m-userid").value,
+                    lastName: document.getElementById("admin-m-lastname").value.trim(),
+                    firstName: document.getElementById("admin-m-firstname").value.trim(),
+                    furiganaLastName: document.getElementById("admin-m-k-last").value.trim(),
+                    furiganaFirstName: document.getElementById("admin-m-k-first").value.trim(),
+                    grade: document.getElementById("admin-m-grade").value,
+                    univ: document.getElementById("admin-m-univ").value.trim(),
+                    sex: document.getElementById("admin-m-sex").value,
+                    isAdmin: document.getElementById("admin-m-isadmin").checked
+                };
+
+                showToast("部員情報を保存中...");
+                try {
+                    const res = await fetch(GAS_API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain" },
+                        body: JSON.stringify({
+                            apiKey: API_KEY,
+                            action: "adminUpdateMember",
+                            adminUserId: currentUser.userId,
+                            member: newMember
+                        })
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        showToast("部員情報を保存しました");
+                        await loadAdminDataAsync(true);
+                        renderAdminMembersView();
+                    } else {
+                        alert(json.message || "保存に失敗しました");
+                    }
+                } catch (err) {
+                    alert("通信エラー: " + err.message);
+                }
+            };
+        }
+
+        function openAdminProxyModal(userId) {
+            const m = adminData.members.find(x => x.userId === userId);
+            if (!m) return;
+
+            const modal = document.getElementById("admin-proxy-att-modal");
+            document.getElementById("admin-proxy-att-info").textContent = `対象部員: ${m.name} (${m.grade || '部員'})`;
+            document.getElementById("admin-proxy-userid").value = userId;
+
+            const evSelect = document.getElementById("admin-proxy-event-select");
+            evSelect.innerHTML = "";
+            adminData.events.forEach(ev => {
+                const opt = document.createElement("option");
+                opt.value = ev.eventId;
+                opt.textContent = `${ev.date} ${ev.title}`;
+                evSelect.appendChild(opt);
+            });
+
+            let currentStatus = "参加";
+            document.querySelectorAll("#admin-proxy-status-chips .admin-chip-btn").forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll("#admin-proxy-status-chips .admin-chip-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    currentStatus = btn.getAttribute("data-status");
+                };
+            });
+
+            // イベント選択変更時に既存の出欠を取得
+            const loadProxyState = () => {
+                const selEvId = evSelect.value;
+                const rec = adminData.attendances.find(a => String(a.eventId) === String(selEvId) && String(a.userId) === String(userId));
+                if (rec) {
+                    currentStatus = rec.status || "参加";
+                    document.getElementById("admin-proxy-comment").value = rec.comment || "";
+                } else {
+                    currentStatus = "参加";
+                    document.getElementById("admin-proxy-comment").value = "";
+                }
+                document.querySelectorAll("#admin-proxy-status-chips .admin-chip-btn").forEach(b => {
+                    b.classList.toggle("active", b.getAttribute("data-status") === currentStatus);
+                });
+            };
+            evSelect.onchange = loadProxyState;
+            loadProxyState();
+
+            modal.classList.remove("hidden");
+            document.getElementById("btn-admin-proxy-cancel").onclick = () => modal.classList.add("hidden");
+
+            document.getElementById("admin-proxy-att-form").onsubmit = async (e) => {
+                e.preventDefault();
+                modal.classList.add("hidden");
+
+                const targetEventId = evSelect.value;
+                const comment = document.getElementById("admin-proxy-comment").value.trim();
+
+                showToast("代理出欠を保存中...");
+                try {
+                    const res = await fetch(GAS_API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain" },
+                        body: JSON.stringify({
+                            apiKey: API_KEY,
+                            action: "adminUpdateAttendance",
+                            adminUserId: currentUser.userId,
+                            targetUserId: userId,
+                            targetEventId: targetEventId,
+                            targetName: m.name,
+                            status: currentStatus,
+                            comment: comment
+                        })
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        showToast("出欠を更新しました");
+                        await loadAdminDataAsync(true);
+                    } else {
+                        alert(json.message || "更新に失敗しました");
+                    }
+                } catch (err) {
+                    alert("通信エラー: " + err.message);
+                }
+            };
+        }
+
+        // ------------------------------------------------------------
+        // 4. 日程管理ロジック
+        // ------------------------------------------------------------
+        function renderAdminEventsList() {
+            const container = document.getElementById("admin-events-list-container");
+            container.innerHTML = "";
+
+            const sorted = [...adminData.events].sort((a, b) => a.date.localeCompare(b.date));
+
+            let html = '';
+            sorted.forEach(ev => {
+                html += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9; gap:8px;">
+                        <div>
+                            <div style="font-weight:700; font-size:0.88rem; color:#0f172a;">
+                                ${ev.date} ${escapeHtml(ev.title)}
+                            </div>
+                            <div style="font-size:0.75rem; color:#64748b;">
+                                ${escapeHtml(ev.time)} @ ${escapeHtml(ev.place)}
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="openAdminEventModal('${ev.eventId}')">編集</button>
+                            <button type="button" class="admin-secondary-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="copyAdminEvent('${ev.eventId}')">複製</button>
+                            <button type="button" class="admin-danger-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteAdminEvent('${ev.eventId}')">削除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            document.getElementById("btn-admin-open-add-event").onclick = () => openAdminEventModal("");
+            document.getElementById("btn-admin-open-batch-events").onclick = () => openBatchEventsModal();
+        }
+
+        function openAdminEventModal(eventId) {
+            const modal = document.getElementById("admin-event-modal");
+            const titleEl = document.getElementById("admin-event-modal-title");
+            const ev = adminData.events.find(x => String(x.eventId) === String(eventId)) || {};
+
+            titleEl.textContent = eventId ? "練習日程の編集" : "練習日程の新規追加";
+            document.getElementById("admin-ev-id").value = eventId || "";
+            document.getElementById("admin-ev-date").value = ev.date ? ev.date.replace(/\//g, "-") : "";
+            document.getElementById("admin-ev-time").value = ev.time || "18:00〜21:00";
+            document.getElementById("admin-ev-place").value = ev.place || "2体半面";
+            document.getElementById("admin-ev-title").value = ev.title || "正規練";
+
+            modal.classList.remove("hidden");
+            document.getElementById("btn-admin-event-cancel").onclick = () => modal.classList.add("hidden");
+
+            document.getElementById("admin-event-form").onsubmit = async (e) => {
+                e.preventDefault();
+                modal.classList.add("hidden");
+
+                const dateVal = document.getElementById("admin-ev-date").value.replace(/-/g, "/");
+                const timeVal = document.getElementById("admin-ev-time").value.trim();
+                const placeVal = document.getElementById("admin-ev-place").value.trim();
+                const titleVal = document.getElementById("admin-ev-title").value.trim();
+
+                showToast("練習日程を保存中...");
+                try {
+                    const res = await fetch(GAS_API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain" },
+                        body: JSON.stringify({
+                            apiKey: API_KEY,
+                            action: "adminSaveEvents",
+                            adminUserId: currentUser.userId,
+                            events: [{
+                                eventId: eventId || "",
+                                date: dateVal,
+                                time: timeVal,
+                                place: placeVal,
+                                title: titleVal,
+                                isDelete: false
+                            }]
+                        })
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        showToast("練習日程を保存しました");
+                        await loadAdminDataAsync(true);
+                        renderAdminEventsList();
+                    } else {
+                        alert(json.message || "保存に失敗しました");
+                    }
+                } catch (err) {
+                    alert("通信エラー: " + err.message);
+                }
+            };
+        }
+
+        function copyAdminEvent(eventId) {
+            const ev = adminData.events.find(x => String(x.eventId) === String(eventId));
+            if (!ev) return;
+            openAdminEventModal("");
+            document.getElementById("admin-ev-time").value = ev.time || "";
+            document.getElementById("admin-ev-place").value = ev.place || "";
+            document.getElementById("admin-ev-title").value = ev.title || "";
+        }
+
+        function deleteAdminEvent(eventId) {
+            const ev = adminData.events.find(x => String(x.eventId) === String(eventId));
+            if (!ev) return;
+            showAdminConfirm(
+                "日程の削除",
+                `<b>${ev.date} ${escapeHtml(ev.title)}</b> を削除します。<br>この操作は取り消せません。本当によろしいですか？`,
+                async () => {
+                    showToast("日程を削除中...");
+                    try {
+                        const res = await fetch(GAS_API_URL, {
+                            method: "POST",
+                            headers: { "Content-Type": "text/plain" },
+                            body: JSON.stringify({
+                                apiKey: API_KEY,
+                                action: "adminSaveEvents",
+                                adminUserId: currentUser.userId,
+                                events: [{
+                                    eventId: eventId,
+                                    isDelete: true
+                                }]
+                            })
+                        });
+                        const json = await res.json();
+                        if (json.success) {
+                            showToast("日程を削除しました");
+                            await loadAdminDataAsync(true);
+                            renderAdminEventsList();
+                        } else {
+                            alert(json.message || "削除に失敗しました");
+                        }
+                    } catch (err) {
+                        alert("通信エラー: " + err.message);
+                    }
+                }
+            );
+        }
+
+        // 曜日一括登録モーダル
+        let batchEventsGenerated = [];
+        function openBatchEventsModal() {
+            const modal = document.getElementById("admin-batch-event-modal");
+            const now = new Date();
+            const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+            document.getElementById("admin-batch-month").value = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth()+1).padStart(2, '0')}`;
+
+            let selectedDay = 3; // 水曜
+            document.querySelectorAll("#admin-batch-day-chips .admin-chip-btn").forEach(btn => {
+                const d = parseInt(btn.getAttribute("data-day"), 10);
+                btn.classList.toggle("active", d === selectedDay);
+                btn.onclick = () => {
+                    document.querySelectorAll("#admin-batch-day-chips .admin-chip-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    selectedDay = d;
+                };
+            });
+
+            const previewBox = document.getElementById("admin-batch-preview-result");
+            previewBox.classList.add("hidden");
+            const executeBtn = document.getElementById("btn-admin-batch-execute");
+            executeBtn.disabled = true;
+
+            modal.classList.remove("hidden");
+            document.getElementById("btn-admin-batch-cancel").onclick = () => modal.classList.add("hidden");
+
+            document.getElementById("btn-admin-batch-preview").onclick = () => {
+                const ym = document.getElementById("admin-batch-month").value;
+                if (!ym) {
+                    alert("対象年月を選択してください");
+                    return;
+                }
+                const [year, month] = ym.split("-").map(Number);
+                const time = document.getElementById("admin-batch-time").value.trim();
+                const place = document.getElementById("admin-batch-place").value.trim();
+                const title = document.getElementById("admin-batch-title").value.trim();
+
+                const d = new Date(year, month - 1, 1);
+                batchEventsGenerated = [];
+
+                while (d.getMonth() === month - 1) {
+                    if (d.getDay() === selectedDay) {
+                        const dateStr = `${year}/${String(month).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+                        batchEventsGenerated.push({
+                            date: dateStr,
+                            time: time,
+                            place: place,
+                            title: title,
+                            isDelete: false
+                        });
+                    }
+                    d.setDate(d.getDate() + 1);
+                }
+
+                if (batchEventsGenerated.length === 0) {
+                    previewBox.innerHTML = "該当する日付がありませんでした。";
+                    previewBox.classList.remove("hidden");
+                    executeBtn.disabled = true;
+                    return;
+                }
+
+                let html = `<b>生成された日程 (${batchEventsGenerated.length}件):</b><br>`;
+                batchEventsGenerated.forEach(b => {
+                    html += `・${b.date} (${WEEK_NAMES[selectedDay]}) ${escapeHtml(b.title)} ${escapeHtml(b.time)} @ ${escapeHtml(b.place)}<br>`;
+                });
+                previewBox.innerHTML = html;
+                previewBox.classList.remove("hidden");
+                executeBtn.disabled = false;
+            };
+
+            executeBtn.onclick = () => {
+                modal.classList.add("hidden");
+                showAdminConfirm(
+                    "日程の一括登録",
+                    `以下の ${batchEventsGenerated.length} 件の日程を一括登録します。<br><br>` +
+                    batchEventsGenerated.map(b => `・${b.date} ${escapeHtml(b.title)}`).join("<br>") +
+                    "<br><br>登録を実行してよろしいですか？",
+                    async () => {
+                        showToast("日程を一括登録中...");
+                        try {
+                            const res = await fetch(GAS_API_URL, {
+                                method: "POST",
+                                headers: { "Content-Type": "text/plain" },
+                                body: JSON.stringify({
+                                    apiKey: API_KEY,
+                                    action: "adminSaveEvents",
+                                    adminUserId: currentUser.userId,
+                                    events: batchEventsGenerated
+                                })
+                            });
+                            const json = await res.json();
+                            if (json.success) {
+                                showToast("一括登録が完了しました");
+                                await loadAdminDataAsync(true);
+                                renderAdminEventsList();
+                            } else {
+                                alert(json.message || "登録に失敗しました");
+                            }
+                        } catch (err) {
+                            alert("通信エラー: " + err.message);
+                        }
+                    }
+                );
+            };
         }
 
         // ページ離脱・リロード時の未保存変更警告
