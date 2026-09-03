@@ -1,0 +1,302 @@
+<!-- 部費・会計情報 ポップアップモーダル（オンデマンド読み込み用） -->
+<div id="fee-overlay" class="fee-overlay">
+    <div class="fee-modal-content">
+        <!-- 上部バー（ハンドル ＆ 閉じるボタン） -->
+        <div class="modal-top-bar">
+            <div class="modal-handle"></div>
+            <button type="button" id="btn-close-fee-modal" class="btn-modal-close" aria-label="閉じる">✕</button>
+        </div>
+
+        <div class="fee-header">
+            <span class="fee-badge">💰 会計・部費明細</span>
+            <h2 class="fee-title" id="fee-modal-user-name">部費・請求内訳</h2>
+        </div>
+
+        <!-- 合計金額 ＆ 支払いステータス -->
+        <div class="fee-summary-box">
+            <div>
+                <div class="fee-total-label">ご請求合計金額</div>
+                <div class="fee-total-num" id="fee-modal-total-amount">¥0</div>
+            </div>
+            <div id="fee-modal-status-container">
+                <span class="fee-status-badge fee-status-unpaid" id="fee-modal-status-badge">未払い</span>
+            </div>
+        </div>
+
+        <!-- 月別部費内訳 -->
+        <div class="fee-section-title">📅 月別部費</div>
+        <table class="fee-table">
+            <thead>
+                <tr><th>月</th><th style="text-align:right;">金額</th></tr>
+            </thead>
+            <tbody id="fee-modal-monthly-tbody"></tbody>
+        </table>
+
+        <!-- イベント・遠征等費用内訳 -->
+        <div class="fee-section-title">🏸 イベント・合宿・備品代</div>
+        <table class="fee-table">
+            <thead>
+                <tr><th>項目名</th><th style="text-align:center;">数量/回数</th><th style="text-align:right;">小計</th></tr>
+            </thead>
+            <tbody id="fee-modal-event-tbody"></tbody>
+        </table>
+
+        <!-- 部費ルール・注意事項 -->
+        <div class="fee-rule-card">
+            <div style="font-weight:bold; margin-bottom:4px; color:#1e293b;">📌 部費の算定ルール</div>
+            <div>練習参加回数は、ひと月あたり <b>0回→0円</b>、<b>1回→1,000円</b>、<b>2回→2,000円</b>、<b>3回以上→2,500円</b> となっています。</div>
+            <div style="margin-top:2px;">※1年生は <b>4〜7月</b> までの練習参加回数による部費は <b>0円</b> です。</div>
+            <div style="margin-top:6px; color:#059669; font-weight:bold;">間違っている部分や疑問点などがあったら松下までご連絡ください！お願いいたします🙇‍♂️</div>
+        </div>
+
+        <!-- 振込先口座案内 -->
+        <div class="bank-info-box">
+            <div style="font-size:0.84rem; font-weight:bold; color:#1e293b; margin-bottom:6px;">🏦 お振込先口座</div>
+            <div class="bank-info-row"><span class="bank-info-label">金融機関:</span><span class="bank-info-val">みずほ銀行</span></div>
+            <div class="bank-info-row"><span class="bank-info-label">支店名:</span><span class="bank-info-val">本郷支店（店番号 075）</span></div>
+            <div class="bank-info-row"><span class="bank-info-label">口座種別:</span><span class="bank-info-val">普通預金</span></div>
+            <div class="bank-info-row"><span class="bank-info-label">口座番号:</span><span class="bank-info-val">1372826</span></div>
+            <div class="bank-info-row"><span class="bank-info-label">口座名義:</span><span class="bank-info-val" style="font-size:0.75rem;">トウキョウダイガクイガクブテツモンウキュウブ</span></div>
+            
+            <button type="button" class="btn-copy-account" id="btn-copy-account-info">
+                <span>📋 口座情報をコピー</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fee-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    .fee-modal-content {
+        background: #ffffff;
+        width: 100%;
+        max-width: 440px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 20px;
+        padding: 18px 20px 24px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        animation: feePopUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        -webkit-overflow-scrolling: touch;
+        box-sizing: border-box;
+    }
+
+    @keyframes feePopUp {
+        from { transform: scale(0.94) translateY(12px); opacity: 0; }
+        to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .modal-top-bar {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 8px;
+    }
+
+    .modal-handle {
+        width: 36px;
+        height: 4px;
+        background: #cbd5e1;
+        border-radius: 2px;
+    }
+
+    .btn-modal-close {
+        position: absolute;
+        right: -4px;
+        top: -4px;
+        background: #f1f5f9;
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        color: #64748b;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+    }
+
+    .btn-modal-close:hover {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+    .fee-header {
+        text-align: center;
+        margin-bottom: 14px;
+    }
+
+    .fee-badge {
+        display: inline-block;
+        background: rgba(6, 199, 85, 0.12);
+        color: #049f43;
+        font-size: 0.76rem;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-bottom: 6px;
+    }
+
+    .fee-title {
+        font-size: 1.22rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .fee-summary-box {
+        background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+        border: 1px solid rgba(6, 199, 85, 0.2);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .fee-total-label {
+        font-size: 0.78rem;
+        color: #065f46;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+
+    .fee-total-num {
+        font-size: 1.55rem;
+        font-weight: 900;
+        color: #064e3b;
+    }
+
+    .fee-status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+    }
+
+    .fee-status-paid {
+        background: #059669;
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+    }
+
+    .fee-status-unpaid {
+        background: #ea580c;
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(234, 88, 12, 0.3);
+    }
+
+    .fee-section-title {
+        font-size: 0.86rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 6px;
+    }
+
+    .fee-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+        margin-bottom: 14px;
+    }
+
+    .fee-table th {
+        text-align: left;
+        background: #f8fafc;
+        color: #64748b;
+        padding: 8px 10px;
+        font-weight: 700;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .fee-table td {
+        padding: 9px 10px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    .fee-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .fee-rule-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 0.78rem;
+        color: #475569;
+        line-height: 1.55;
+        margin-bottom: 14px;
+    }
+
+    .bank-info-box {
+        background: #fff;
+        border: 1.5px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 14px;
+    }
+
+    .bank-info-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        padding: 4px 0;
+    }
+
+    .bank-info-label {
+        color: #64748b;
+    }
+
+    .bank-info-val {
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .btn-copy-account {
+        width: 100%;
+        background: #334155;
+        color: #ffffff;
+        border: none;
+        padding: 11px;
+        border-radius: 10px;
+        font-size: 0.86rem;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-copy-account:active {
+        background: #1e293b;
+        transform: scale(0.98);
+    }
+</style>
