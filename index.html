@@ -1071,20 +1071,23 @@
         }
 
         .admin-select, .admin-input {
-            width: 100%;
-            max-width: 100%;
+            width: 100% !important;
+            max-width: 100% !important;
             padding: 8px 10px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             font-size: 0.85rem;
             background: #ffffff;
             color: #0f172a;
-            box-sizing: border-box;
-            min-width: 0;
+            box-sizing: border-box !important;
+            min-width: 0 !important;
             display: block;
         }
 
-        input[type="month"].admin-input {
+        input[type="date"].admin-input,
+        input[type="month"].admin-input,
+        input[type="time"].admin-input,
+        input[type="datetime-local"].admin-input {
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;
@@ -1179,7 +1182,7 @@
             color: #ef4444;
         }
 
-        /* 普通の白黒テーブル（文字大きめ・余白狭め） */
+        /* 普通の白黒テーブル（文字サイズ調整・改行防止） */
         .admin-table-preview-container {
             width: 100%;
             overflow-x: auto;
@@ -1203,15 +1206,17 @@
             border: 1px solid #000000;
             padding: 5px 6px;
             text-align: center;
-            font-size: 0.94rem;
+            font-size: 0.82rem;
             font-weight: 700;
             line-height: 1.25;
+            white-space: nowrap;
         }
 
         .admin-plain-table th {
             background: #f8fafc;
-            font-size: 0.84rem;
+            font-size: 0.78rem;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .admin-plain-table tr:nth-child(even) td {
@@ -3428,11 +3433,10 @@
 
         // フィルター・一括操作ボタン（setupEventListeners に移動済み）
 
-        // フィルター条件に一致するイベント一覧を取得（今日以降優先でソート）
+        // フィルター条件に一致するイベント一覧を取得（終了したイベントは一番下に並ぶ）
         function getFilteredEvents() {
             return cachedEvents
                 .slice()
-                .sort((a, b) => toStandardYMD(a.date).localeCompare(toStandardYMD(b.date)))
                 .filter(ev => {
                     const ymd = toStandardYMD(ev.date);
                     if (!ymd) return false;
@@ -3470,6 +3474,16 @@
                     }
 
                     return true;
+                })
+                .sort((a, b) => {
+                    // 終了したイベント（isEventPast == true）は一番下に配置
+                    const isPastA = isEventPast(a.date) ? 1 : 0;
+                    const isPastB = isEventPast(b.date) ? 1 : 0;
+                    if (isPastA !== isPastB) {
+                        return isPastA - isPastB; // 0 (受付中・予定) が先、1 (終了) が後
+                    }
+                    // 同じグループ内では日付昇順
+                    return toStandardYMD(a.date).localeCompare(toStandardYMD(b.date));
                 });
         }
 
