@@ -1485,6 +1485,7 @@
                             await fetch(GAS_API_URL, {
                                 method: "POST",
                                 mode: "no-cors",
+                                headers: { "Content-Type": "text/plain" },
                                 body: JSON.stringify(payload)
                             });
 
@@ -1589,19 +1590,17 @@
             }
         }
 
-        // 前日より前（一昨日以前、2日前以前）の日程かどうか判定（前日より前は修正不可）
+        // 当日より前（昨日以前、過去の練習日程）かどうか判定（過去日程は出欠の修正不可）
         function isEventPast(dateStr) {
             const ymd = toStandardYMD(dateStr);
             if (!ymd) return false;
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
 
             const [y, m, d] = ymd.split("-").map(Number);
             const evDate = new Date(y, m - 1, d);
 
-            return evDate < yesterday;
+            return evDate < today;
         }
 
         // カレンダー描画
@@ -1744,7 +1743,7 @@
             </div>
 
             <textarea id="comment-${evId}" rows="2" placeholder="備考（遅刻理由や未定の詳細など）" ${isPast ? 'disabled' : ''}>${escapeHtml(myComment)}</textarea>
-            ${isPast ? '<div class="closed-notice">※前日より前の練習のため、出欠の修正は締め切られています</div>' : ''}
+            ${isPast ? '<div class="closed-notice">※過去の練習のため、出欠の修正は締め切られています</div>' : ''}
 
             <!-- 回答メンバー一覧トグルボタン（オンデマンド取得） -->
             <div class="members-toggle" data-event-id="${evId}" data-target="expand-${evId}">回答メンバー一覧を表示 ▼</div>
@@ -1755,13 +1754,15 @@
 
             area.innerHTML = html;
 
-            // ボタンのトグル動作＆editStateへの保存
+            // ボタンのトグル動作＆editStateへの保存（過去日程は確実にブロック）
             document.querySelectorAll("#event-detail-area .status-group").forEach(group => {
                 const evId = group.getAttribute("data-event-id");
                 const buttons = group.querySelectorAll(".status-btn");
 
                 buttons.forEach(btn => {
                     btn.addEventListener("click", () => {
+                        if (group.classList.contains("disabled")) return; // ロック時は一切反応しない
+
                         let nextStatus = "";
                         if (btn.classList.contains("active")) {
                             btn.classList.remove("active");
@@ -1780,12 +1781,13 @@
                 });
             });
 
-            // テキストエリア入力監視＆editStateへの保存
+            // テキストエリア入力監視＆editStateへの保存（過去日程はブロック）
             matchedEvents.forEach(ev => {
                 const evId = String(ev.eventId);
                 const commentEl = document.getElementById(`comment-${evId}`);
                 if (commentEl) {
                     commentEl.addEventListener("input", (e) => {
+                        if (commentEl.disabled) return;
                         const item = getEditItem(evId);
                         item.comment = e.target.value;
                         checkModified(evId);
@@ -2036,6 +2038,7 @@
             sortedEventIds.forEach(evId => {
                 const ev = cachedEvents.find(e => String(e.eventId) === evId);
                 if (!ev) return;
+                if (isEventPast(ev.date)) return; // 過去日程は絶対に送信・更新しない（安全ガード）
 
                 const data = editState[evId];
                 const status = data.status;
@@ -2069,6 +2072,7 @@
                 await fetch(GAS_API_URL, {
                     method: "POST",
                     mode: "no-cors",
+                    headers: { "Content-Type": "text/plain" },
                     body: JSON.stringify(payload)
                 });
 
@@ -2687,7 +2691,7 @@
                     </div>
 
                     <textarea id="list-comment-${evId}" rows="1" placeholder="備考（遅刻理由など）" ${isPast ? 'disabled' : ''}>${escapeHtml(myComment)}</textarea>
-                    ${isPast ? '<div class="closed-notice">※前日より前の練習のため、出欠の修正は締め切られています</div>' : ''}
+                    ${isPast ? '<div class="closed-notice">※過去の練習のため、出欠の修正は締め切られています</div>' : ''}
 
                     <!-- 回答メンバー一覧トグルボタン（オンデマンド取得） -->
                     <div class="members-toggle" data-event-id="${evId}" data-target="list-expand-${evId}">回答メンバー一覧を表示 ▼</div>
@@ -2698,13 +2702,15 @@
 
             container.innerHTML = html;
 
-            // リスト内ボタンのトグル動作＆editStateへの保存
+            // リスト内ボタンのトグル動作＆editStateへの保存（過去日程は確実にブロック）
             container.querySelectorAll(".status-group").forEach(group => {
                 const evId = group.getAttribute("data-event-id");
                 const buttons = group.querySelectorAll(".status-btn");
 
                 buttons.forEach(btn => {
                     btn.addEventListener("click", () => {
+                        if (group.classList.contains("disabled")) return; // ロック時は一切反応しない
+
                         let nextStatus = "";
                         if (btn.classList.contains("active")) {
                             btn.classList.remove("active");
@@ -2723,12 +2729,13 @@
                 });
             });
 
-            // リスト内テキストエリア入力監視
+            // リスト内テキストエリア入力監視（過去日程はブロック）
             filtered.forEach(ev => {
                 const evId = String(ev.eventId);
                 const commentEl = document.getElementById(`list-comment-${evId}`);
                 if (commentEl) {
                     commentEl.addEventListener("input", (e) => {
+                        if (commentEl.disabled) return;
                         const item = getEditItem(evId);
                         item.comment = e.target.value;
                         checkModified(evId);
