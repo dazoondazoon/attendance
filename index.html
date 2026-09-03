@@ -3956,16 +3956,14 @@
                     <!-- カード右上の参加人数表示 -->
                     <div class="card-top-right">
                       <div class="event-people-badge" title="参加予定人数（参加・遅刻・早退の合計）">
-                        <span class="badge-icon">👥</span>
-                        <span class="badge-label">参加</span>
+                        <span class="badge-label"> 参加 </span>
                         <span class="badge-num">${eventItem.people !== undefined ? eventItem.people : 0}</span>
-                        <span class="badge-unit">人</span>
+                        <span class="badge-unit"> 人 </span>
                       </div>
                     </div>
 
-                    <div class="list-date-badge">
+                    <div class="list-date-badge" style="padding-right: 95px;">
                       <span style="${dayColorStyle}">📅 ${m}/${d} (${weekDay})</span>
-                      <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-sub);">🕒 ${escapeHtml(eventItem.time)}</span>
                     </div>
                     <div class="event-title" style="padding-right: 95px;">
                       <span class="title-badge" style="background-color: ${color};"></span>
@@ -3973,6 +3971,7 @@
                       ${isPast ? '<span class="status-badge-closed">終了</span>' : ''}
                     </div>
                     <div class="event-meta" style="margin-bottom: 8px;">
+                      <div>🕒 時間: ${escapeHtml(eventItem.time)}</div>
                       <div>🏸 場所: ${escapeHtml(eventItem.place)}</div>
                     </div>
 
