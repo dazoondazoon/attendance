@@ -54,7 +54,8 @@
 
         /* 未保存の変更がある場合の全体背景色（保存忘れ防止・白カードがくっきり浮き立つアンバー） */
         body.has-unsaved-changes {
-            background-color: #fef3c7 !important; /* 落ち着いたハニーアンバー色で白カードが綺麗に浮き立つ */
+            background-color: #fef3c7 !important;
+            /* 落ち着いたハニーアンバー色で白カードが綺麗に浮き立つ */
         }
 
         .container {
@@ -154,7 +155,8 @@
             transition: all 0.15s ease;
         }
 
-        .btn-today-return-action:hover, .btn-today-return-action:active {
+        .btn-today-return-action:hover,
+        .btn-today-return-action:active {
             background: #ecfdf5;
             border-color: var(--primary);
             color: var(--primary);
@@ -291,27 +293,61 @@
 
         /* 未保存の変更があるカード（白背景を保ち、太いアクセントライン＆アンバー枠線でクッキリ強調） */
         .event-card.is-modified {
-            background: #ffffff !important; /* 背景色と溶け合わないピュアホワイト */
-            border: 2px solid #f59e0b !important; /* 目を引くアンバー枠線 */
-            border-left: 6px solid #d97706 !important; /* 左端に太い未保存アクセントバー */
+            background: #ffffff !important;
+            /* 背景色と溶け合わないピュアホワイト */
+            border: 2px solid #f59e0b !important;
+            /* 目を引くアンバー枠線 */
+            border-left: 6px solid #d97706 !important;
+            /* 左端に太い未保存アクセントバー */
             box-shadow: 0 4px 16px rgba(217, 119, 6, 0.22) !important;
         }
 
-        .event-card.is-modified::before {
-            content: "● 未保存";
+        /* カード右上の参加人数表示バッジ */
+        .card-top-right {
             position: absolute;
-            top: 10px;
+            top: 12px;
             right: 12px;
-            font-size: 0.68rem;
-            font-weight: 800;
-            color: #b45309;
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            padding: 2px 8px;
-            border-radius: 6px;
-            letter-spacing: 0.2px;
+            z-index: 3;
             pointer-events: none;
-            z-index: 2;
+        }
+
+        /* 参加人数バッジ（わかりやすく存在感のあるモダンデザイン） */
+        .event-people-badge {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 2px;
+            background: #f0fdf4;
+            border: 1.5px solid #10b981;
+            padding: 3px 9px;
+            border-radius: 18px;
+            color: #065f46;
+            box-shadow: 0 1px 4px rgba(16, 185, 129, 0.18);
+            white-space: nowrap;
+        }
+
+        .event-people-badge .badge-icon {
+            font-size: 0.8rem;
+            margin-right: 2px;
+        }
+
+        .event-people-badge .badge-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #059669;
+        }
+
+        .event-people-badge .badge-num {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #047857;
+            margin: 0 1px;
+            letter-spacing: -0.3px;
+        }
+
+        .event-people-badge .badge-unit {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #059669;
         }
 
         .event-title {
@@ -429,11 +465,25 @@
             color: #dc2626 !important;
         }
 
-        .status-btn[data-val="参加"]:hover:not(.active) { background: #f7fdf9; }
-        .status-btn[data-val="遅刻"]:hover:not(.active) { background: #f8faff; }
-        .status-btn[data-val="早退"]:hover:not(.active) { background: #faf8ff; }
-        .status-btn[data-val="未定"]:hover:not(.active) { background: #fffdf5; }
-        .status-btn[data-val="不参加"]:hover:not(.active) { background: #fef8f8; }
+        .status-btn[data-val="参加"]:hover:not(.active) {
+            background: #f7fdf9;
+        }
+
+        .status-btn[data-val="遅刻"]:hover:not(.active) {
+            background: #f8faff;
+        }
+
+        .status-btn[data-val="早退"]:hover:not(.active) {
+            background: #faf8ff;
+        }
+
+        .status-btn[data-val="未定"]:hover:not(.active) {
+            background: #fffdf5;
+        }
+
+        .status-btn[data-val="不参加"]:hover:not(.active) {
+            background: #fef8f8;
+        }
 
         .status-hint {
             font-size: 0.72rem;
@@ -601,7 +651,8 @@
         }
 
         /* フィルターカード */
-        .filter-card, .batch-card {
+        .filter-card,
+        .batch-card {
             background: var(--card-bg);
             border-radius: 16px;
             padding: 14px 14px;
@@ -1012,14 +1063,26 @@
         }
 
         @keyframes toastAnim {
-            from { opacity: 0; transform: translate(-50%, 10px); }
-            to { opacity: 1; transform: translate(-50%, 0); }
+            from {
+                opacity: 0;
+                transform: translate(-50%, 10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
         }
 
         /* --- 更新ボタン & 同期中インジケータースタイル --- */
         @keyframes spinAnim {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .spin-icon {
@@ -1177,7 +1240,8 @@
             display: block;
         }
 
-        .admin-select, .admin-input {
+        .admin-select,
+        .admin-input {
             width: 100% !important;
             max-width: 100% !important;
             padding: 8px 10px;
@@ -1309,7 +1373,8 @@
             color: #000000;
         }
 
-        .admin-plain-table th, .admin-plain-table td {
+        .admin-plain-table th,
+        .admin-plain-table td {
             border: 1px solid #000000;
             padding: 5px 6px;
             text-align: center;
@@ -1402,9 +1467,12 @@
         <div id="loading">
             <div id="loading-spinner">カレンダーを読み込み中...</div>
             <div id="loading-error" class="hidden" style="padding: 24px 12px; text-align: center;">
-                <p style="font-size: 1.05rem; font-weight: bold; color: #e11d48; margin-bottom: 8px;">⚠️ データの読み込みに失敗しました</p>
-                <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 16px;" id="loading-error-msg">通信環境をご確認の上、再度お試しください。</p>
-                <button type="button" id="btn-retry-fetch" class="btn-submit-all" style="width: auto; padding: 10px 24px; display: inline-block;">🔄 再試行する</button>
+                <p style="font-size: 1.05rem; font-weight: bold; color: #e11d48; margin-bottom: 8px;">⚠️ データの読み込みに失敗しました
+                </p>
+                <p style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 16px;" id="loading-error-msg">
+                    通信環境をご確認の上、再度お試しください。</p>
+                <button type="button" id="btn-retry-fetch" class="btn-submit-all"
+                    style="width: auto; padding: 10px 24px; display: inline-block;">🔄 再試行する</button>
             </div>
         </div>
 
@@ -1427,10 +1495,14 @@
                 <!-- 凡例 ＆ タブ内更新ボタン -->
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <div class="legend-bar" style="margin-bottom:0; flex:1;">
-                        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-regular);"></span>正規練</div>
-                        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-free);"></span>自主練</div>
-                        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-obog);"></span>OBOG練</div>
-                        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-other);"></span>その他</div>
+                        <div class="legend-item"><span class="legend-dot"
+                                style="background:var(--dot-regular);"></span>正規練</div>
+                        <div class="legend-item"><span class="legend-dot" style="background:var(--dot-free);"></span>自主練
+                        </div>
+                        <div class="legend-item"><span class="legend-dot"
+                                style="background:var(--dot-obog);"></span>OBOG練</div>
+                        <div class="legend-item"><span class="legend-dot"
+                                style="background:var(--dot-other);"></span>その他</div>
                     </div>
                 </div>
 
@@ -1467,6 +1539,12 @@
             <div id="view-list" class="hidden">
                 <!-- フィルターカード -->
                 <div class="filter-card">
+                    <div class="filter-section" style="margin-bottom: 10px;">
+                        <div class="filter-title">📅 対象月 (複数選択可)</div>
+                        <div class="chip-group" id="filter-month-group">
+                            <!-- JSで自動生成 -->
+                        </div>
+                    </div>
                     <div class="filter-section">
                         <div class="filter-title">🏸 練習種別</div>
                         <div class="chip-group" id="filter-type-group">
@@ -1514,7 +1592,8 @@
                         <button type="button" class="batch-btn batch-clear" data-batch-status="">クリア</button>
                     </div>
                     <div class="batch-comment-row">
-                        <input type="text" id="batch-comment-input" class="batch-comment-input" placeholder="一括備考（例: 19時合流、就活のため等）">
+                        <input type="text" id="batch-comment-input" class="batch-comment-input"
+                            placeholder="一括備考（例: 19時合流、就活のため等）">
                         <button type="button" id="btn-batch-apply-comment" class="batch-comment-btn">備考のみ適用</button>
                     </div>
                 </div>
@@ -1531,19 +1610,24 @@
                 </div>
 
                 <!-- 直近の練習予定カード -->
-                <div class="other-card" id="card-upcoming-event" style="background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border: 1px solid rgba(6,199,85,0.25);">
+                <div class="other-card" id="card-upcoming-event"
+                    style="background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border: 1px solid rgba(6,199,85,0.25);">
                     <div class="other-card-header" style="margin-bottom: 6px;">
                         <div class="other-card-title" style="color: var(--primary-dark);">🏸 次回の参加予定</div>
-                        <span id="upcoming-status-badge" style="font-size:0.75rem; font-weight:bold; color:#fff; background:var(--primary); padding:2px 8px; border-radius:10px;">参加</span>
+                        <span id="upcoming-status-badge"
+                            style="font-size:0.75rem; font-weight:bold; color:#fff; background:var(--primary); padding:2px 8px; border-radius:10px;">参加</span>
                     </div>
                     <div id="upcoming-content">
-                        <div style="font-size: 0.96rem; font-weight: bold; margin-bottom: 4px; color:#1e293b;" id="upcoming-title">9/5 (土) 正規練</div>
-                        <div style="font-size: 0.8rem; color: var(--text-sub); display:flex; flex-direction:column; gap:2px;" id="upcoming-meta">
+                        <div style="font-size: 0.96rem; font-weight: bold; margin-bottom: 4px; color:#1e293b;"
+                            id="upcoming-title">9/5 (土) 正規練</div>
+                        <div style="font-size: 0.8rem; color: var(--text-sub); display:flex; flex-direction:column; gap:2px;"
+                            id="upcoming-meta">
                             <div>🕒 時間: 13:00〜17:00</div>
                             <div>🏸 場所: メインアリーナ</div>
                         </div>
                     </div>
-                    <div id="upcoming-empty" class="hidden" style="font-size:0.84rem; color:var(--text-sub); padding:4px 0;">
+                    <div id="upcoming-empty" class="hidden"
+                        style="font-size:0.84rem; color:var(--text-sub); padding:4px 0;">
                         現在、予定されている参加練習はありません。
                     </div>
                 </div>
@@ -1578,14 +1662,20 @@
                 <div class="other-card" id="card-monthly-stats">
                     <div class="other-card-header">
                         <div class="other-card-title">🏸 今月の練習参加状況</div>
-                        <span id="stat-current-month-badge" style="font-size:0.75rem; font-weight:bold; color:var(--primary-dark); background:rgba(6,199,85,0.1); padding:2px 8px; border-radius:10px;">今月</span>
+                        <span id="stat-current-month-badge"
+                            style="font-size:0.75rem; font-weight:bold; color:var(--primary-dark); background:rgba(6,199,85,0.1); padding:2px 8px; border-radius:10px;">今月</span>
                     </div>
-                    <div style="background:#f8fafc; border-radius:12px; padding:12px; border:1px solid #edf2f7; margin-bottom:10px;">
-                        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+                    <div
+                        style="background:#f8fafc; border-radius:12px; padding:12px; border:1px solid #edf2f7; margin-bottom:10px;">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
                             <span style="font-size:0.82rem; color:var(--text-sub);">参加予定 / 実績</span>
-                            <span style="font-size:1.3rem; font-weight:800; color:var(--primary-dark);"><span id="stat-join-count">0</span> <small style="font-size:0.8rem; font-weight:normal; color:var(--text);">回</small></span>
+                            <span style="font-size:1.3rem; font-weight:800; color:var(--primary-dark);"><span
+                                    id="stat-join-count">0</span> <small
+                                    style="font-size:0.8rem; font-weight:normal; color:var(--text);">回</small></span>
                         </div>
-                        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; text-align:center; font-size:0.75rem; border-top:1px dashed #e2e8f0; padding-top:8px;">
+                        <div
+                            style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; text-align:center; font-size:0.75rem; border-top:1px dashed #e2e8f0; padding-top:8px;">
                             <div>参加: <b id="stat-detail-join" style="color:var(--primary-dark);">0</b></div>
                             <div>遅刻: <b id="stat-detail-late" style="color:var(--text);">0</b></div>
                             <div>早退: <b id="stat-detail-early" style="color:var(--text);">0</b></div>
@@ -1649,14 +1739,17 @@
                             </div>
                             <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
                                 <span style="font-size:0.75rem; color:#64748b;">自由指定:</span>
-                                <input type="number" id="admin-court-custom-num" class="admin-input" style="width:70px; padding:4px 8px;" min="1" max="10" placeholder="面数">
+                                <input type="number" id="admin-court-custom-num" class="admin-input"
+                                    style="width:70px; padding:4px 8px;" min="1" max="10" placeholder="面数">
                             </div>
                         </div>
 
                         <!-- 各面の人数の微調整 -->
                         <div class="admin-control-group">
                             <label class="admin-control-label">各面の人数配分（調整可能）</label>
-                            <div id="admin-court-capacities-list" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 12px;"></div>
+                            <div id="admin-court-capacities-list"
+                                style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 12px;">
+                            </div>
                         </div>
 
                         <!-- 振り分け方式 -->
@@ -1672,15 +1765,18 @@
                         <!-- 参加者リスト & 除外・追加 -->
                         <div class="admin-control-group">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <label class="admin-control-label" style="margin-bottom:0;">参加メンバー (<span id="admin-court-member-count">0</span>名)</label>
+                                <label class="admin-control-label" style="margin-bottom:0;">参加メンバー (<span
+                                        id="admin-court-member-count">0</span>名)</label>
                                 <span style="font-size:0.72rem; color:#64748b;">✕で一時除外</span>
                             </div>
                             <div class="admin-member-chips-wrap" id="admin-court-members-chips"></div>
                             <div style="margin-top:6px; display:flex; gap:6px;">
-                                <select id="admin-court-add-member-select" class="admin-select" style="font-size:0.78rem; padding:4px 8px;">
+                                <select id="admin-court-add-member-select" class="admin-select"
+                                    style="font-size:0.78rem; padding:4px 8px;">
                                     <option value="">-- 追加する部員を選択 --</option>
                                 </select>
-                                <button type="button" id="btn-admin-court-add-member" class="admin-secondary-btn" style="padding:4px 10px; font-size:0.75rem; white-space:nowrap;">追加</button>
+                                <button type="button" id="btn-admin-court-add-member" class="admin-secondary-btn"
+                                    style="padding:4px 10px; font-size:0.75rem; white-space:nowrap;">追加</button>
                             </div>
                         </div>
 
@@ -1719,15 +1815,18 @@
                         <!-- 参加者リスト & 除外・追加 -->
                         <div class="admin-control-group">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <label class="admin-control-label" style="margin-bottom:0;">参加メンバー (<span id="admin-rally-member-count">0</span>名)</label>
+                                <label class="admin-control-label" style="margin-bottom:0;">参加メンバー (<span
+                                        id="admin-rally-member-count">0</span>名)</label>
                                 <span style="font-size:0.72rem; color:#64748b;">✕で一時除外</span>
                             </div>
                             <div class="admin-member-chips-wrap" id="admin-rally-members-chips"></div>
                             <div style="margin-top:6px; display:flex; gap:6px;">
-                                <select id="admin-rally-add-member-select" class="admin-select" style="font-size:0.78rem; padding:4px 8px;">
+                                <select id="admin-rally-add-member-select" class="admin-select"
+                                    style="font-size:0.78rem; padding:4px 8px;">
                                     <option value="">-- 追加する部員を選択 --</option>
                                 </select>
-                                <button type="button" id="btn-admin-rally-add-member" class="admin-secondary-btn" style="padding:4px 10px; font-size:0.75rem; white-space:nowrap;">追加</button>
+                                <button type="button" id="btn-admin-rally-add-member" class="admin-secondary-btn"
+                                    style="padding:4px 10px; font-size:0.75rem; white-space:nowrap;">追加</button>
                             </div>
                         </div>
 
@@ -1742,11 +1841,15 @@
                 <!-- 3. 部員管理セクション -->
                 <div id="admin-sec-members" class="hidden">
                     <div class="admin-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                            <button type="button" id="btn-admin-open-add-member" class="admin-primary-btn" style="flex:none; padding:7px 13px; font-size:0.8rem;">＋ 新規部員の追加</button>
-                            <button type="button" id="btn-admin-promote-grade" class="admin-danger-btn" style="padding:7px 13px; font-size:0.8rem;">全員の学年を1つ進級</button>
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                            <button type="button" id="btn-admin-open-add-member" class="admin-primary-btn"
+                                style="flex:none; padding:7px 13px; font-size:0.8rem;">＋ 新規部員の追加</button>
+                            <button type="button" id="btn-admin-promote-grade" class="admin-danger-btn"
+                                style="padding:7px 13px; font-size:0.8rem;">全員の学年を1つ進級</button>
                         </div>
-                        <input type="text" id="admin-member-search-input" class="admin-input" placeholder="名前・フリガナ・学年で検索..." style="margin-bottom:12px;">
+                        <input type="text" id="admin-member-search-input" class="admin-input"
+                            placeholder="名前・フリガナ・学年で検索..." style="margin-bottom:12px;">
                         <div id="admin-members-list-container" style="max-height:480px; overflow-y:auto;"></div>
                     </div>
                 </div>
@@ -1754,18 +1857,23 @@
                 <!-- 4. 日程管理セクション（カレンダーUI） -->
                 <div id="admin-sec-schedule" class="hidden">
                     <div class="admin-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
                             <div style="display:flex; gap:6px;">
-                                <button type="button" id="btn-admin-open-add-event" class="admin-primary-btn" style="flex:none; padding:7px 13px; font-size:0.8rem;">＋ 練習を追加</button>
-                                <button type="button" id="btn-admin-open-batch-events" class="admin-secondary-btn" style="padding:7px 13px; font-size:0.8rem;">曜日一括登録</button>
+                                <button type="button" id="btn-admin-open-add-event" class="admin-primary-btn"
+                                    style="flex:none; padding:7px 13px; font-size:0.8rem;">＋ 練習を追加</button>
+                                <button type="button" id="btn-admin-open-batch-events" class="admin-secondary-btn"
+                                    style="padding:7px 13px; font-size:0.8rem;">曜日一括登録</button>
                             </div>
                         </div>
 
                         <!-- 日程管理カレンダー -->
-                        <div class="calendar-card" style="box-shadow:none; border:1px solid #cbd5e1; margin-bottom:12px;">
+                        <div class="calendar-card"
+                            style="box-shadow:none; border:1px solid #cbd5e1; margin-bottom:12px;">
                             <div class="calendar-header">
                                 <button type="button" class="nav-btn" id="admin-sched-prev-month">‹</button>
-                                <div class="month-title" id="admin-sched-month-display" style="cursor:pointer;" title="タップで今月に戻る">2026年 9月</div>
+                                <div class="month-title" id="admin-sched-month-display" style="cursor:pointer;"
+                                    title="タップで今月に戻る">2026年 9月</div>
                                 <button type="button" class="nav-btn" id="admin-sched-next-month">›</button>
                             </div>
                             <div class="week-header">
@@ -1775,15 +1883,20 @@
                         </div>
 
                         <!-- 選択日の詳細 ＆ アクション -->
-                        <div id="admin-sched-selected-day-box" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;"></div>
+                        <div id="admin-sched-selected-day-box"
+                            style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- 統一送信ボタン（カレンダー・リスト用：左に更新ボタン、右に保存ボタン） -->
             <div class="action-area" id="submit-all-area" style="display:flex; gap:8px; align-items:center;">
-                <button type="button" class="btn-tab-refresh tab-refresh-trigger" style="height:48px; padding:0 18px; border-radius:10px; flex:none; font-size:0.86rem; background:#ffffff;" title="最新データに更新">更新</button>
-                <button type="button" class="btn-submit-all" id="btn-submit-all" disabled style="flex:1; margin:0; background:#94a3b8; cursor:not-allowed; box-shadow:none;">読み込み中...</button>
+                <button type="button" class="btn-tab-refresh tab-refresh-trigger"
+                    style="height:48px; padding:0 18px; border-radius:10px; flex:none; font-size:0.86rem; background:#ffffff;"
+                    title="最新データに更新">更新</button>
+                <button type="button" class="btn-submit-all" id="btn-submit-all" disabled
+                    style="flex:1; margin:0; background:#94a3b8; cursor:not-allowed; box-shadow:none;">読み込み中...</button>
             </div>
         </div>
     </div>
@@ -1849,11 +1962,13 @@
                 </div>
                 <div class="admin-control-group" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
                     <input type="checkbox" id="admin-m-isadmin" style="width:18px; height:18px;">
-                    <label for="admin-m-isadmin" style="font-size:0.85rem; font-weight:bold; color:#0f172a; cursor:pointer;">管理者権限（幹部）</label>
+                    <label for="admin-m-isadmin"
+                        style="font-size:0.85rem; font-weight:bold; color:#0f172a; cursor:pointer;">管理者権限（幹部）</label>
                 </div>
                 <div class="admin-modal-actions" style="margin-top:20px;">
                     <button type="button" class="admin-secondary-btn" id="btn-admin-member-cancel">キャンセル</button>
-                    <button type="submit" class="admin-primary-btn" id="btn-admin-member-save" style="flex:none; padding:8px 20px;">保存する</button>
+                    <button type="submit" class="admin-primary-btn" id="btn-admin-member-save"
+                        style="flex:none; padding:8px 20px;">保存する</button>
                 </div>
             </form>
         </div>
@@ -1862,9 +1977,12 @@
     <!-- 3. 部員出欠カレンダーモーダル（カレンダー形式で複数日の出欠を変更・保存） -->
     <div id="admin-member-att-modal" class="admin-modal-overlay hidden">
         <div class="admin-modal-box" style="max-width:520px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:8px; margin-bottom:12px;">
-                <div class="admin-modal-title" id="admin-member-att-cal-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">出欠の代理変更</div>
-                <button type="button" id="btn-admin-member-att-close" class="btn-modal-close" style="font-size:1.2rem; cursor:pointer; background:none; border:none;" aria-label="閉じる">✕</button>
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:8px; margin-bottom:12px;">
+                <div class="admin-modal-title" id="admin-member-att-cal-title"
+                    style="margin-bottom:0; border-bottom:none; padding-bottom:0;">出欠の代理変更</div>
+                <button type="button" id="btn-admin-member-att-close" class="btn-modal-close"
+                    style="font-size:1.2rem; cursor:pointer; background:none; border:none;" aria-label="閉じる">✕</button>
             </div>
             <!-- 出欠月間カレンダー -->
             <div class="calendar-card" style="box-shadow:none; border:1px solid #cbd5e1; margin-bottom:10px;">
@@ -1880,25 +1998,32 @@
             </div>
 
             <!-- 選択日の出欠編集エリア -->
-            <div id="admin-proxy-day-edit-area" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-bottom:14px;">
-                <div id="admin-proxy-selected-date-info" style="font-size:0.85rem; font-weight:bold; margin-bottom:6px; color:#1e293b;">日付をタップして出欠を変更できます</div>
+            <div id="admin-proxy-day-edit-area"
+                style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-bottom:14px;">
+                <div id="admin-proxy-selected-date-info"
+                    style="font-size:0.85rem; font-weight:bold; margin-bottom:6px; color:#1e293b;">日付をタップして出欠を変更できます
+                </div>
                 <!-- 1日に複数件ある場合の練習選択スイッチ -->
-                <div id="admin-proxy-multi-events-switch" class="hidden" style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;"></div>
+                <div id="admin-proxy-multi-events-switch" class="hidden"
+                    style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;"></div>
                 <div class="admin-btn-chips" id="admin-proxy-cal-chips" style="margin-bottom:8px;">
                     <button type="button" class="admin-chip-btn" data-status="参加">参加</button>
                     <button type="button" class="admin-chip-btn" data-status="遅刻">遅刻</button>
                     <button type="button" class="admin-chip-btn" data-status="早退">早退</button>
                     <button type="button" class="admin-chip-btn" data-status="未定">未定</button>
                     <button type="button" class="admin-chip-btn" data-status="不参加">不参加</button>
-                    <button type="button" class="admin-chip-btn" id="btn-admin-proxy-clear-status" data-status="" style="color:#64748b; border-style:dashed;">✕ 未選択</button>
+                    <button type="button" class="admin-chip-btn" id="btn-admin-proxy-clear-status" data-status=""
+                        style="color:#64748b; border-style:dashed;">✕ 未選択</button>
                 </div>
-                <input type="text" id="admin-proxy-cal-comment" class="admin-input" placeholder="備考 (遅刻理由など)" style="font-size:0.8rem; padding:6px 8px;">
+                <input type="text" id="admin-proxy-cal-comment" class="admin-input" placeholder="備考 (遅刻理由など)"
+                    style="font-size:0.8rem; padding:6px 8px;">
             </div>
 
             <!-- 変更後保存するボタン -->
             <div class="admin-modal-actions">
                 <button type="button" class="admin-secondary-btn" id="btn-admin-proxy-cal-cancel">閉じる</button>
-                <button type="button" class="admin-primary-btn" id="btn-admin-proxy-cal-save" style="flex:none; padding:8px 18px;" disabled>変更を保存する (0件)</button>
+                <button type="button" class="admin-primary-btn" id="btn-admin-proxy-cal-save"
+                    style="flex:none; padding:8px 18px;" disabled>変更を保存する (0件)</button>
             </div>
         </div>
     </div>
@@ -1927,7 +2052,8 @@
                 </div>
                 <div class="admin-modal-actions" style="margin-top:20px;">
                     <button type="button" class="admin-secondary-btn" id="btn-admin-event-cancel">キャンセル</button>
-                    <button type="submit" class="admin-primary-btn" id="btn-admin-event-save" style="flex:none; padding:8px 20px;">保存する</button>
+                    <button type="submit" class="admin-primary-btn" id="btn-admin-event-save"
+                        style="flex:none; padding:8px 20px;">保存する</button>
                 </div>
             </form>
         </div>
@@ -1968,27 +2094,38 @@
                 <label class="admin-control-label">タイトル</label>
                 <input type="text" id="admin-batch-title" class="admin-input" value="正規練">
             </div>
-            <div id="admin-batch-preview-result" style="margin-top:12px; font-size:0.8rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px; max-height:120px; overflow-y:auto;" class="hidden"></div>
-            <div class="admin-modal-actions" style="margin-top:20px; display:flex; gap:8px; flex-wrap:nowrap; justify-content:flex-end;">
-                <button type="button" class="admin-secondary-btn" id="btn-admin-batch-cancel" style="padding:8px 12px; font-size:0.8rem; white-space:nowrap;">キャンセル</button>
-                <button type="button" class="admin-secondary-btn" id="btn-admin-batch-preview" style="padding:8px 12px; font-size:0.8rem; white-space:nowrap;">プレビュー</button>
-                <button type="button" class="admin-primary-btn" id="btn-admin-batch-execute" style="flex:none; padding:8px 16px; font-size:0.8rem; white-space:nowrap;" disabled>登録する</button>
+            <div id="admin-batch-preview-result"
+                style="margin-top:12px; font-size:0.8rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px; max-height:120px; overflow-y:auto;"
+                class="hidden"></div>
+            <div class="admin-modal-actions"
+                style="margin-top:20px; display:flex; gap:8px; flex-wrap:nowrap; justify-content:flex-end;">
+                <button type="button" class="admin-secondary-btn" id="btn-admin-batch-cancel"
+                    style="padding:8px 12px; font-size:0.8rem; white-space:nowrap;">キャンセル</button>
+                <button type="button" class="admin-secondary-btn" id="btn-admin-batch-preview"
+                    style="padding:8px 12px; font-size:0.8rem; white-space:nowrap;">プレビュー</button>
+                <button type="button" class="admin-primary-btn" id="btn-admin-batch-execute"
+                    style="flex:none; padding:8px 16px; font-size:0.8rem; white-space:nowrap;" disabled>登録する</button>
             </div>
         </div>
     </div>
     <!-- 6. 画像プレビューモーダル（iPhone写真フォルダー保存案内） -->
     <div id="image-preview-modal" class="admin-modal-overlay hidden">
         <div class="admin-modal-box" style="text-align:center; max-width:440px;">
-            <div class="admin-modal-title" id="image-preview-title" style="border-bottom:none; margin-bottom:6px;">画像保存</div>
-            <div style="font-size:0.8rem; color:#475569; margin-bottom:12px; line-height:1.4; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px 10px;">
+            <div class="admin-modal-title" id="image-preview-title" style="border-bottom:none; margin-bottom:6px;">画像保存
+            </div>
+            <div
+                style="font-size:0.8rem; color:#475569; margin-bottom:12px; line-height:1.4; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px 10px;">
                 💡 <b>iPhoneの写真アプリに保存する場合:</b><br>下の画像を<b>長押しして「写真に追加」</b>（または「画像を保存」）を選択してください。
             </div>
-            <div style="margin-bottom:14px; max-height:55vh; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; padding:6px;">
-                <img id="image-preview-img" src="" alt="表画像プレビュー" style="max-width:100%; height:auto; display:block; margin:0 auto; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+            <div
+                style="margin-bottom:14px; max-height:55vh; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; padding:6px;">
+                <img id="image-preview-img" src="" alt="表画像プレビュー"
+                    style="max-width:100%; height:auto; display:block; margin:0 auto; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
             </div>
             <div class="admin-modal-actions" style="justify-content:center; gap:8px;">
                 <button type="button" class="admin-secondary-btn" id="btn-image-preview-close">閉じる</button>
-                <button type="button" class="admin-primary-btn" id="btn-image-preview-share" style="flex:none; padding:8px 16px;">共有メニューで保存</button>
+                <button type="button" class="admin-primary-btn" id="btn-image-preview-share"
+                    style="flex:none; padding:8px 16px;">共有メニューで保存</button>
             </div>
         </div>
     </div>
@@ -2066,7 +2203,7 @@
         function withTimeout(promise, ms, timeoutErrorMsg) {
             return Promise.race([
                 promise,
-                new Promise((_, reject) => setTimeout(() => reject(new Error(timeoutErrorMsg || `タイムアウト (${ms/1000}秒)`)), ms))
+                new Promise((_, reject) => setTimeout(() => reject(new Error(timeoutErrorMsg || `タイムアウト (${ms / 1000}秒)`)), ms))
             ]);
         }
 
@@ -2119,7 +2256,7 @@
                     }
                     try {
                         localStorage.setItem("badminton_user_profile", JSON.stringify(currentUserProfile));
-                    } catch (e) {}
+                    } catch (e) { }
                     checkAndShowAdminTab();
                 }
 
@@ -2127,6 +2264,7 @@
                 initEditState();
                 renderCalendar();
                 renderEventDetails();
+                renderMonthFilterChips();
                 updateSubmitButtonUI();
                 if (currentTab === "list") renderListView();
                 if (currentTab === "other") renderOtherView();
@@ -2158,6 +2296,11 @@
             }
         }
 
+        // ロード済み月の管理（初期は今月・来月が読み込まれ、他月はオンデマンド取得）
+        let loadedMonths = new Set();
+        let selectedFilterMonths = new Set(); // 複数選択可の月フィルター（例: "2026-09"）
+        let isFetchingMonth = false;
+
         async function fetchData(userId) {
             const url = `${GAS_API_URL}?key=${API_KEY}&userId=${encodeURIComponent(userId || "")}`;
             const res = await fetch(url);
@@ -2168,11 +2311,76 @@
             cachedAttendances = data.attendances || [];
             if (data.userProfile) currentUserProfile = data.userProfile;
 
+            // 今月と来月をloadedMonthsに初期登録
+            const now = new Date();
+            const y1 = now.getFullYear();
+            const m1 = now.getMonth() + 1;
+            const nextD = new Date(y1, m1, 1);
+            const y2 = nextD.getFullYear();
+            const m2 = nextD.getMonth() + 1;
+            loadedMonths.add(`${y1}/${String(m1).padStart(2, '0')}`);
+            loadedMonths.add(`${y2}/${String(m2).padStart(2, '0')}`);
+
+            cachedEvents.forEach(ev => {
+                const ym = toStandardYMD(ev.date).substring(0, 7).replace(/-/g, "/");
+                if (ym) loadedMonths.add(ym);
+            });
+
             try {
                 localStorage.setItem("badminton_cached_events", JSON.stringify(cachedEvents));
-            } catch (e) {}
+            } catch (e) { }
 
             return data;
+        }
+
+        // 特定月のイベント・出欠をオンデマンドで取得
+        async function ensureMonthEventsLoaded(year, month) {
+            const ymSlash = `${year}/${String(month).padStart(2, '0')}`;
+            if (loadedMonths.has(ymSlash)) return true;
+            if (isFetchingMonth) return false;
+
+            isFetchingMonth = true;
+            const syncIndicator = document.getElementById("sync-indicator");
+            if (syncIndicator) {
+                syncIndicator.innerHTML = `<span class="spin-icon"></span> ${year}年${month}月の予定を読み込み中...`;
+                syncIndicator.classList.remove("hidden");
+            }
+
+            try {
+                const uId = currentUser ? (currentUser.userId || "") : "";
+                const url = `${GAS_API_URL}?key=${API_KEY}&action=getEventsByMonth&month=${encodeURIComponent(ymSlash)}&userId=${encodeURIComponent(uId)}`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.success && data.events) {
+                    const existingIds = new Set(cachedEvents.map(e => String(e.eventId)));
+                    data.events.forEach(e => {
+                        if (!existingIds.has(String(e.eventId))) {
+                            cachedEvents.push(e);
+                        }
+                    });
+
+                    if (data.attendances && data.attendances.length > 0) {
+                        const existingAttKeys = new Set(cachedAttendances.map(a => `${a.eventId}_${a.userId}`));
+                        data.attendances.forEach(a => {
+                            const key = `${a.eventId}_${a.userId}`;
+                            if (!existingAttKeys.has(key)) {
+                                cachedAttendances.push(a);
+                            }
+                        });
+                        initEditState();
+                    }
+
+                    loadedMonths.add(ymSlash);
+                    return true;
+                }
+            } catch (err) {
+                console.error("オンデマンド取得失敗:", err);
+            } finally {
+                isFetchingMonth = false;
+                if (syncIndicator) syncIndicator.classList.add("hidden");
+            }
+            return false;
         }
 
         // 部員登録・設定変更モーダルをオンデマンド読み込み・表示（isEditMode対応）
@@ -2587,8 +2795,8 @@
             if (matchedEvents.length === 0) {
                 area.innerHTML = `
           <div class="no-event">
-            <p style="font-size: 1.05rem; font-weight: bold; margin-bottom: 6px;">練習予定はありません ☕</p>
-            <p>ゆっくり休養するか、自主練を企画しましょう！</p>
+            <p style="font-size: 1.05rem; font-weight: bold; margin-bottom: 6px;">練習予定はありません</p>
+            <p>ゆっくり休養しましょう！</p>
           </div>
         `;
                 return;
@@ -2610,7 +2818,16 @@
 
                 html += `
           <div class="event-card ${isMod ? 'is-modified' : ''}" id="card-${evId}" data-event-id="${evId}">
-            <div class="event-title">
+            <!-- カード右上の参加人数表示 -->
+            <div class="card-top-right">
+              <div class="event-people-badge" title="参加予定人数（参加・遅刻・早退の合計）">
+                <span class="badge-label"> 参加 </span>
+                <span class="badge-num">${eventItem.people !== undefined ? eventItem.people : 0}</span>
+                <span class="badge-unit"> 人 </span>
+              </div>
+            </div>
+
+            <div class="event-title" style="padding-right: 95px;">
               <span class="title-badge" style="background-color: ${color};"></span>
               ${escapeHtml(eventItem.title)}
               ${isPast ? '<span class="status-badge-closed">終了</span>' : ''}
@@ -2717,14 +2934,14 @@
             updateCardModifiedUI(evId);
         }
 
-        // 未保存の変更があるカードのUI（背景色変化＆未保存バッジ）および全体の背景色を更新
+        // 未保存の変更があるカードのUI（左端オレンジバー・枠線変化）および全体の背景色を更新
         function updateCardModifiedUI(evId) {
             const idStr = String(evId);
             const isMod = editState[idStr] ? !!editState[idStr].isModified : false;
-            const cardCal = document.getElementById(`card-${idStr}`);
-            if (cardCal) cardCal.classList.toggle("is-modified", isMod);
-            const cardList = document.getElementById(`list-card-${idStr}`);
-            if (cardList) cardList.classList.toggle("is-modified", isMod);
+
+            [document.getElementById(`card-${idStr}`), document.getElementById(`list-card-${idStr}`)].forEach(card => {
+                if (card) card.classList.toggle("is-modified", isMod);
+            });
 
             // 全体で未保存の変更があるかどうかでbodyの背景色を変化
             const hasAnyMod = Object.keys(editState).some(id => editState[id] && editState[id].isModified);
@@ -2774,293 +2991,293 @@
         // ============================================================
         function setupEventListeners() {
 
-        // タブ切り替え
-        const btnTabCal = document.getElementById("btn-tab-calendar");
-        const btnTabList = document.getElementById("btn-tab-list");
-        const btnTabOther = document.getElementById("btn-tab-other");
-        const btnTabAdmin = document.getElementById("btn-tab-admin");
-        if (btnTabCal) btnTabCal.addEventListener("click", () => switchTab("calendar"));
-        if (btnTabList) btnTabList.addEventListener("click", () => switchTab("list"));
-        if (btnTabOther) btnTabOther.addEventListener("click", () => switchTab("other"));
-        if (btnTabAdmin) btnTabAdmin.addEventListener("click", () => switchTab("admin"));
+            // タブ切り替え
+            const btnTabCal = document.getElementById("btn-tab-calendar");
+            const btnTabList = document.getElementById("btn-tab-list");
+            const btnTabOther = document.getElementById("btn-tab-other");
+            const btnTabAdmin = document.getElementById("btn-tab-admin");
+            if (btnTabCal) btnTabCal.addEventListener("click", () => switchTab("calendar"));
+            if (btnTabList) btnTabList.addEventListener("click", () => switchTab("list"));
+            if (btnTabOther) btnTabOther.addEventListener("click", () => switchTab("other"));
+            if (btnTabAdmin) btnTabAdmin.addEventListener("click", () => switchTab("admin"));
 
-        // 前月・次月・今月に戻るボタン
-        const prevMonthBtn = document.getElementById("prev-month");
-        const nextMonthBtn = document.getElementById("next-month");
-        const returnBtnElSetup = document.getElementById("btn-today-return");
-        const monthDisplayEl = document.getElementById("month-display");
-        if (prevMonthBtn) prevMonthBtn.addEventListener("click", goToPrevMonth);
-        if (nextMonthBtn) nextMonthBtn.addEventListener("click", goToNextMonth);
-        if (returnBtnElSetup) returnBtnElSetup.addEventListener("click", returnToCurrentMonth);
-        if (monthDisplayEl) monthDisplayEl.addEventListener("click", returnToCurrentMonth);
+            // 前月・次月・今月に戻るボタン
+            const prevMonthBtn = document.getElementById("prev-month");
+            const nextMonthBtn = document.getElementById("next-month");
+            const returnBtnElSetup = document.getElementById("btn-today-return");
+            const monthDisplayEl = document.getElementById("month-display");
+            if (prevMonthBtn) prevMonthBtn.addEventListener("click", goToPrevMonth);
+            if (nextMonthBtn) nextMonthBtn.addEventListener("click", goToNextMonth);
+            if (returnBtnElSetup) returnBtnElSetup.addEventListener("click", returnToCurrentMonth);
+            if (monthDisplayEl) monthDisplayEl.addEventListener("click", returnToCurrentMonth);
 
-        // カレンダーのスワイプ（左右スライド）対応
-        const calendarElSetup = document.querySelector(".calendar-card");
-        if (calendarElSetup) {
-            calendarElSetup.addEventListener("touchstart", (e) => {
-                touchStartX = e.changedTouches[0].clientX;
-                touchStartY = e.changedTouches[0].clientY;
-            }, { passive: true });
-            calendarElSetup.addEventListener("touchend", (e) => {
-                const touchEndX = e.changedTouches[0].clientX;
-                const touchEndY = e.changedTouches[0].clientY;
-                handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
-            }, { passive: true });
-            calendarElSetup.addEventListener("mousedown", (e) => {
-                isMouseDown = true;
-                mouseStartX = e.clientX;
-                mouseStartY = e.clientY;
-            });
-            calendarElSetup.addEventListener("mouseup", (e) => {
-                if (!isMouseDown) return;
-                isMouseDown = false;
-                handleSwipe(mouseStartX, mouseStartY, e.clientX, e.clientY);
-            });
-            calendarElSetup.addEventListener("mouseleave", () => {
-                isMouseDown = false;
-            });
-        }
+            // カレンダーのスワイプ（左右スライド）対応
+            const calendarElSetup = document.querySelector(".calendar-card");
+            if (calendarElSetup) {
+                calendarElSetup.addEventListener("touchstart", (e) => {
+                    touchStartX = e.changedTouches[0].clientX;
+                    touchStartY = e.changedTouches[0].clientY;
+                }, { passive: true });
+                calendarElSetup.addEventListener("touchend", (e) => {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const touchEndY = e.changedTouches[0].clientY;
+                    handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
+                }, { passive: true });
+                calendarElSetup.addEventListener("mousedown", (e) => {
+                    isMouseDown = true;
+                    mouseStartX = e.clientX;
+                    mouseStartY = e.clientY;
+                });
+                calendarElSetup.addEventListener("mouseup", (e) => {
+                    if (!isMouseDown) return;
+                    isMouseDown = false;
+                    handleSwipe(mouseStartX, mouseStartY, e.clientX, e.clientY);
+                });
+                calendarElSetup.addEventListener("mouseleave", () => {
+                    isMouseDown = false;
+                });
+            }
 
-        // プロフィール変更ボタン
-        const editProfileBtn = document.getElementById("btn-open-edit-profile");
-        if (editProfileBtn) editProfileBtn.addEventListener("click", () => {
-            loadAndShowRegisterModal(currentUser, true);
-        });
-
-        // 部費・会計情報のオンデマンドポップアップ
-        const loadFeeBtn = document.getElementById("btn-load-fee");
-        if (loadFeeBtn) loadFeeBtn.addEventListener("click", async () => {
-            await loadAndShowFeeModal();
-        });
-
-        // フィルターチップのイベントリスナー
-        document.querySelectorAll("#filter-type-group .chip").forEach(chip => {
-            chip.addEventListener("click", () => {
-                document.querySelectorAll("#filter-type-group .chip").forEach(c => c.classList.remove("active"));
-                chip.classList.add("active");
-                currentTypeFilter = chip.getAttribute("data-type");
-                renderListView();
+            // プロフィール変更ボタン
+            const editProfileBtn = document.getElementById("btn-open-edit-profile");
+            if (editProfileBtn) editProfileBtn.addEventListener("click", () => {
+                loadAndShowRegisterModal(currentUser, true);
             });
-        });
-        document.querySelectorAll("#filter-day-group .chip").forEach(chip => {
-            chip.addEventListener("click", () => {
-                document.querySelectorAll("#filter-day-group .chip").forEach(c => c.classList.remove("active"));
-                chip.classList.add("active");
-                currentDayFilter = chip.getAttribute("data-day");
-                renderListView();
-            });
-        });
-        document.querySelectorAll("#filter-status-group .chip").forEach(chip => {
-            chip.addEventListener("click", () => {
-                document.querySelectorAll("#filter-status-group .chip").forEach(c => c.classList.remove("active"));
-                chip.classList.add("active");
-                currentStatusFilter = chip.getAttribute("data-status");
-                renderListView();
-            });
-        });
 
-        // 表示中の日程を一括設定するボタンのイベントリスナー
-        document.querySelectorAll(".batch-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const targetStatus = btn.getAttribute("data-batch-status");
+            // 部費・会計情報のオンデマンドポップアップ
+            const loadFeeBtn = document.getElementById("btn-load-fee");
+            if (loadFeeBtn) loadFeeBtn.addEventListener("click", async () => {
+                await loadAndShowFeeModal();
+            });
+
+            // フィルターチップのイベントリスナー
+            document.querySelectorAll("#filter-type-group .chip").forEach(chip => {
+                chip.addEventListener("click", () => {
+                    document.querySelectorAll("#filter-type-group .chip").forEach(c => c.classList.remove("active"));
+                    chip.classList.add("active");
+                    currentTypeFilter = chip.getAttribute("data-type");
+                    renderListView();
+                });
+            });
+            document.querySelectorAll("#filter-day-group .chip").forEach(chip => {
+                chip.addEventListener("click", () => {
+                    document.querySelectorAll("#filter-day-group .chip").forEach(c => c.classList.remove("active"));
+                    chip.classList.add("active");
+                    currentDayFilter = chip.getAttribute("data-day");
+                    renderListView();
+                });
+            });
+            document.querySelectorAll("#filter-status-group .chip").forEach(chip => {
+                chip.addEventListener("click", () => {
+                    document.querySelectorAll("#filter-status-group .chip").forEach(c => c.classList.remove("active"));
+                    chip.classList.add("active");
+                    currentStatusFilter = chip.getAttribute("data-status");
+                    renderListView();
+                });
+            });
+
+            // 表示中の日程を一括設定するボタンのイベントリスナー
+            document.querySelectorAll(".batch-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const targetStatus = btn.getAttribute("data-batch-status");
+                    const filtered = getFilteredEvents();
+                    if (filtered.length === 0) { alert("設定対象の日程がありません。"); return; }
+                    const batchComment = document.getElementById("batch-comment-input").value.trim();
+                    let appliedCount = 0;
+                    filtered.forEach(ev => {
+                        if (isEventPast(ev.date)) return;
+                        const evId = String(ev.eventId);
+                        const item = getEditItem(evId);
+                        item.status = targetStatus;
+                        if (batchComment !== "") item.comment = batchComment;
+                        checkModified(evId);
+                        appliedCount++;
+                    });
+                    renderListView();
+                    updateSubmitButtonUI();
+                    if (appliedCount > 0) {
+                        const statusText = targetStatus ? `『${targetStatus}』` : "クリア";
+                        showToast(`⚡ ${appliedCount}件を${statusText}に設定しました（※最下部の『回答を一括保存する』を押してください）`);
+                    } else {
+                        showToast("変更可能な日程がありません（過去の練習は締め切られています）");
+                    }
+                });
+            });
+
+            // 備考のみ一括適用ボタン
+            const batchCommentBtn = document.getElementById("btn-batch-apply-comment");
+            if (batchCommentBtn) batchCommentBtn.addEventListener("click", () => {
+                const batchComment = document.getElementById("batch-comment-input").value.trim();
                 const filtered = getFilteredEvents();
                 if (filtered.length === 0) { alert("設定対象の日程がありません。"); return; }
-                const batchComment = document.getElementById("batch-comment-input").value.trim();
+                if (batchComment === "") {
+                    const ok = confirm("一括備考欄が空です。表示中の全日程の備考をクリア（空）にしますか？");
+                    if (!ok) return;
+                }
                 let appliedCount = 0;
                 filtered.forEach(ev => {
                     if (isEventPast(ev.date)) return;
                     const evId = String(ev.eventId);
                     const item = getEditItem(evId);
-                    item.status = targetStatus;
-                    if (batchComment !== "") item.comment = batchComment;
+                    item.comment = batchComment;
                     checkModified(evId);
                     appliedCount++;
                 });
                 renderListView();
                 updateSubmitButtonUI();
                 if (appliedCount > 0) {
-                    const statusText = targetStatus ? `『${targetStatus}』` : "クリア";
-                    showToast(`⚡ ${appliedCount}件を${statusText}に設定しました（※最下部の『回答を一括保存する』を押してください）`);
+                    showToast(`⚡ ${appliedCount}件に備考を一括適用しました（※最下部の『回答を一括保存する』を押してください）`);
                 } else {
                     showToast("変更可能な日程がありません（過去の練習は締め切られています）");
                 }
             });
-        });
 
-        // 備考のみ一括適用ボタン
-        const batchCommentBtn = document.getElementById("btn-batch-apply-comment");
-        if (batchCommentBtn) batchCommentBtn.addEventListener("click", () => {
-            const batchComment = document.getElementById("batch-comment-input").value.trim();
-            const filtered = getFilteredEvents();
-            if (filtered.length === 0) { alert("設定対象の日程がありません。"); return; }
-            if (batchComment === "") {
-                const ok = confirm("一括備考欄が空です。表示中の全日程の備考をクリア（空）にしますか？");
-                if (!ok) return;
-            }
-            let appliedCount = 0;
-            filtered.forEach(ev => {
-                if (isEventPast(ev.date)) return;
-                const evId = String(ev.eventId);
-                const item = getEditItem(evId);
-                item.comment = batchComment;
-                checkModified(evId);
-                appliedCount++;
-            });
-            renderListView();
-            updateSubmitButtonUI();
-            if (appliedCount > 0) {
-                showToast(`⚡ ${appliedCount}件に備考を一括適用しました（※最下部の『回答を一括保存する』を押してください）`);
-            } else {
-                showToast("変更可能な日程がありません（過去の練習は締め切られています）");
-            }
-        });
+            // 一括送信ボタンの処理（日付をまたいで変更された全日程を送信）
+            const submitAllBtn = document.getElementById("btn-submit-all");
+            if (submitAllBtn) submitAllBtn.addEventListener("click", async () => {
+                const submitBtn = document.getElementById("btn-submit-all");
 
-        // 一括送信ボタンの処理（日付をまたいで変更された全日程を送信）
-        const submitAllBtn = document.getElementById("btn-submit-all");
-        if (submitAllBtn) submitAllBtn.addEventListener("click", async () => {
-            const submitBtn = document.getElementById("btn-submit-all");
+                // 変更があったイベント（または現在ステータスが入っている全イベント）を抽出
+                const changedEvents = Object.keys(editState).filter(evId => editState[evId].isModified);
 
-            // 変更があったイベント（または現在ステータスが入っている全イベント）を抽出
-            const changedEvents = Object.keys(editState).filter(evId => editState[evId].isModified);
-
-            if (changedEvents.length === 0) {
-                alert("変更された回答はありません。");
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = "送信中...";
-            submitBtn.style.background = "#94a3b8";
-            showSyncIndicator(true);
-
-            const answers = [];
-            const lineMessages = [];
-
-            // 日付順にソートしてメッセージとペイロードを作成
-            const sortedEventIds = changedEvents.sort((a, b) => {
-                const evA = cachedEvents.find(e => String(e.eventId) === a);
-                const evB = cachedEvents.find(e => String(e.eventId) === b);
-                return toStandardYMD(evA ? evA.date : "").localeCompare(toStandardYMD(evB ? evB.date : ""));
-            });
-
-            sortedEventIds.forEach(evId => {
-                const ev = cachedEvents.find(e => String(e.eventId) === evId);
-                if (!ev) return;
-                if (isEventPast(ev.date)) return; // 過去日程は絶対に送信・更新しない（安全ガード）
-
-                const data = editState[evId];
-                const status = data.status;
-                const comment = data.comment || "";
-
-                answers.push({
-                    eventId: evId,
-                    status: status,
-                    comment: comment,
-                    isDelete: !status // statusが空ならスプレッドシート上から消去
-                });
-
-                // 日付・曜日フォーマット
-                const [y, m, d] = toStandardYMD(ev.date).split("-").map(Number);
-                const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
-                const dateStr = `${m}/${d}(${weekDay})`;
-
-                const statusText = status ? status : "【消去】";
-                lineMessages.push(`・${dateStr} ${ev.title}: ${statusText}${comment ? ' (' + comment + ')' : ''}`);
-            });
-
-            const payload = {
-                apiKey: API_KEY,
-                userId: currentUser.userId,
-                name: currentUser.displayName, // 登録した部員氏名
-                userName: currentUser.displayName, // 互換用
-                answers: answers
-            };
-
-            try {
-                // ★ GASへの送信（no-corsを廃止し、JSONレスポンスを厳密に検証）
-                const res = await fetch(GAS_API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain" },
-                    body: JSON.stringify(payload)
-                });
-                const resData = await res.json();
-                if (!resData.success) {
-                    throw new Error(resData.message || "サーバー側で出欠の保存に失敗しました");
+                if (changedEvents.length === 0) {
+                    alert("変更された回答はありません。");
+                    return;
                 }
 
-                // 送信完了後に手元の cachedAttendances と editState を確定更新
-                answers.forEach(ans => {
-                    const existingIdx = cachedAttendances.findIndex(a => String(a.eventId) === String(ans.eventId));
-                    if (ans.isDelete) {
-                        if (existingIdx !== -1) cachedAttendances.splice(existingIdx, 1);
-                    } else {
-                        if (existingIdx !== -1) {
-                            cachedAttendances[existingIdx].status = ans.status;
-                            cachedAttendances[existingIdx].comment = ans.comment;
+                submitBtn.disabled = true;
+                submitBtn.textContent = "送信中...";
+                submitBtn.style.background = "#94a3b8";
+                showSyncIndicator(true);
+
+                const answers = [];
+                const lineMessages = [];
+
+                // 日付順にソートしてメッセージとペイロードを作成
+                const sortedEventIds = changedEvents.sort((a, b) => {
+                    const evA = cachedEvents.find(e => String(e.eventId) === a);
+                    const evB = cachedEvents.find(e => String(e.eventId) === b);
+                    return toStandardYMD(evA ? evA.date : "").localeCompare(toStandardYMD(evB ? evB.date : ""));
+                });
+
+                sortedEventIds.forEach(evId => {
+                    const ev = cachedEvents.find(e => String(e.eventId) === evId);
+                    if (!ev) return;
+                    if (isEventPast(ev.date)) return; // 過去日程は絶対に送信・更新しない（安全ガード）
+
+                    const data = editState[evId];
+                    const status = data.status;
+                    const comment = data.comment || "";
+
+                    answers.push({
+                        eventId: evId,
+                        status: status,
+                        comment: comment,
+                        isDelete: !status // statusが空ならスプレッドシート上から消去
+                    });
+
+                    // 日付・曜日フォーマット
+                    const [y, m, d] = toStandardYMD(ev.date).split("-").map(Number);
+                    const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
+                    const dateStr = `${m}/${d}(${weekDay})`;
+
+                    const statusText = status ? status : "【消去】";
+                    lineMessages.push(`・${dateStr} ${ev.title}: ${statusText}${comment ? ' (' + comment + ')' : ''}`);
+                });
+
+                const payload = {
+                    apiKey: API_KEY,
+                    userId: currentUser.userId,
+                    name: currentUser.displayName, // 登録した部員氏名
+                    userName: currentUser.displayName, // 互換用
+                    answers: answers
+                };
+
+                try {
+                    // ★ GASへの送信（no-corsを廃止し、JSONレスポンスを厳密に検証）
+                    const res = await fetch(GAS_API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain" },
+                        body: JSON.stringify(payload)
+                    });
+                    const resData = await res.json();
+                    if (!resData.success) {
+                        throw new Error(resData.message || "サーバー側で出欠の保存に失敗しました");
+                    }
+
+                    // 送信完了後に手元の cachedAttendances と editState を確定更新
+                    answers.forEach(ans => {
+                        const existingIdx = cachedAttendances.findIndex(a => String(a.eventId) === String(ans.eventId));
+                        if (ans.isDelete) {
+                            if (existingIdx !== -1) cachedAttendances.splice(existingIdx, 1);
                         } else {
-                            cachedAttendances.push({
-                                eventId: String(ans.eventId),
-                                userId: currentUser.userId,
-                                name: currentUser.displayName,
-                                status: ans.status,
-                                comment: ans.comment,
-                                updatedAt: new Date().toISOString()
-                            });
+                            if (existingIdx !== -1) {
+                                cachedAttendances[existingIdx].status = ans.status;
+                                cachedAttendances[existingIdx].comment = ans.comment;
+                            } else {
+                                cachedAttendances.push({
+                                    eventId: String(ans.eventId),
+                                    userId: currentUser.userId,
+                                    name: currentUser.displayName,
+                                    status: ans.status,
+                                    comment: ans.comment,
+                                    updatedAt: new Date().toISOString()
+                                });
+                            }
                         }
-                    }
-                    const item = editState[ans.eventId];
-                    if (item) {
-                        item.originalStatus = ans.status;
-                        item.originalComment = ans.comment;
-                        item.isModified = false;
-                    }
-                });
-
-                // 手元の画面を更新
-                updateSubmitButtonUI();
-                renderEventDetails();
-                if (currentTab === "calendar") renderCalendar();
-                if (currentTab === "list") renderListView();
-                if (currentTab === "other") renderOtherView();
-
-                // LINEトークへの一括送信
-                if (typeof liff !== "undefined" && liff.isInClient() && lineMessages.length > 0) {
-                    await liff.sendMessages([
-                        {
-                            type: "text",
-                            text: `【出欠一括更新】\n` + lineMessages.join("\n")
+                        const item = editState[ans.eventId];
+                        if (item) {
+                            item.originalStatus = ans.status;
+                            item.originalComment = ans.comment;
+                            item.isModified = false;
                         }
-                    ]).catch(() => { });
-                }
+                    });
 
-                // 送信完了通知
-                if (typeof liff !== "undefined" && liff.isInClient()) {
-                    const shouldClose = confirm(`全${answers.length}件の回答を一括保存しました！\n\nLINEトーク画面に戻りますか？`);
-                    if (shouldClose) {
-                        liff.closeWindow();
+                    // 手元の画面を更新
+                    updateSubmitButtonUI();
+                    renderEventDetails();
+                    if (currentTab === "calendar") renderCalendar();
+                    if (currentTab === "list") renderListView();
+                    if (currentTab === "other") renderOtherView();
+
+                    // LINEトークへの一括送信
+                    if (typeof liff !== "undefined" && liff.isInClient() && lineMessages.length > 0) {
+                        await liff.sendMessages([
+                            {
+                                type: "text",
+                                text: `【出欠一括更新】\n` + lineMessages.join("\n")
+                            }
+                        ]).catch(() => { });
                     }
-                } else {
-                    showToast(`全${answers.length}件の回答を一括保存しました！`);
+
+                    // 送信完了通知
+                    if (typeof liff !== "undefined" && liff.isInClient()) {
+                        const shouldClose = confirm(`全${answers.length}件の回答を一括保存しました！\n\nLINEトーク画面に戻りますか？`);
+                        if (shouldClose) {
+                            liff.closeWindow();
+                        }
+                    } else {
+                        showToast(`全${answers.length}件の回答を一括保存しました！`);
+                    }
+
+                    // 変更したイベントのメンバー一覧キャッシュのみ破棄（次開いた時に最新取得）
+                    answers.forEach(ans => {
+                        delete eventAttendeesCache[ans.eventId];
+                    });
+
+                } catch (err) {
+                    console.error("送信エラー:", err);
+                    alert("送信中にエラーが発生しました: " + err.message);
+                } finally {
+                    showSyncIndicator(false);
+                    updateSubmitButtonUI();
                 }
+            }); // end submitAllBtn click
 
-                // 変更したイベントのメンバー一覧キャッシュのみ破棄（次開いた時に最新取得）
-                answers.forEach(ans => {
-                    delete eventAttendeesCache[ans.eventId];
-                });
-
-            } catch (err) {
-                console.error("送信エラー:", err);
-                alert("送信中にエラーが発生しました: " + err.message);
-            } finally {
-                showSyncIndicator(false);
-                updateSubmitButtonUI();
-            }
-        }); // end submitAllBtn click
-
-        // 全タブ共通の更新ボタンリスナー
-        document.querySelectorAll(".tab-refresh-trigger").forEach(btn => {
-            btn.addEventListener("click", refreshAllDataAsync);
-        });
+            // 全タブ共通の更新ボタンリスナー
+            document.querySelectorAll(".tab-refresh-trigger").forEach(btn => {
+                btn.addEventListener("click", refreshAllDataAsync);
+            });
 
         } // end setupEventListeners()
 
@@ -3198,15 +3415,15 @@
                 <div class="members-list">
                   ${sortedList.length === 0 ? '<div style="color:#888; text-align:center; padding: 6px 0;">まだ回答はありません</div>' :
                     sortedList.map(a => {
-                      const gradeBadge = a.grade ? `<span style="font-size:0.72rem; color:var(--text-sub); background:#f1f5f9; padding:1px 5px; border-radius:4px; margin-right:4px;">${escapeHtml(a.grade)}</span>` : '';
-                      return `
+                        const gradeBadge = a.grade ? `<span style="font-size:0.72rem; color:var(--text-sub); background:#f1f5f9; padding:1px 5px; border-radius:4px; margin-right:4px;">${escapeHtml(a.grade)}</span>` : '';
+                        return `
                         <div class="member-row">
                           <span>${gradeBadge}<b>${escapeHtml(a.name || a.userName)}</b>（${escapeHtml(a.status)}）</span>
                           <span style="color:#777;">${escapeHtml(a.comment || "")}</span>
                         </div>
                       `;
                     }).join('')
-                  }
+                }
                 </div>
             `;
         }
@@ -3249,6 +3466,7 @@
                 renderCalendar();
                 renderEventDetails();
             } else if (tab === "list") {
+                renderMonthFilterChips();
                 renderListView();
             } else if (tab === "other") {
                 renderOtherView();
@@ -3568,6 +3786,69 @@
 
         // フィルター・一括操作ボタン（setupEventListeners に移動済み）
 
+        // 月フィルター用チップ描画（今月を明記・デフォルト選択・複数選択可）
+        function renderMonthFilterChips() {
+            const group = document.getElementById("filter-month-group");
+            if (!group) return;
+
+            const now = new Date();
+            const curY = now.getFullYear();
+            const curM = now.getMonth() + 1;
+            const curYM = `${curY}-${String(curM).padStart(2, '0')}`;
+
+            // デフォルトで今月が未選択なら今月を追加
+            if (selectedFilterMonths.size === 0) {
+                selectedFilterMonths.add(curYM);
+            }
+
+            // 表示する月リスト（先月、今月、来月、再来月、3ヶ月後の5ヶ月分）
+            const monthsToShow = [];
+            for (let offset = -1; offset <= 3; offset++) {
+                const d = new Date(curY, curM - 1 + offset, 1);
+                const y = d.getFullYear();
+                const m = d.getMonth() + 1;
+                const ym = `${y}-${String(m).padStart(2, '0')}`;
+                monthsToShow.push({
+                    ym: ym,
+                    year: y,
+                    month: m,
+                    isCurrent: (ym === curYM)
+                });
+            }
+
+            let html = "";
+            monthsToShow.forEach(item => {
+                const isActive = selectedFilterMonths.has(item.ym);
+                const label = item.isCurrent ? `${item.month}月 (今月)` : `${item.month}月`;
+                const style = item.isCurrent ? "font-weight: 700;" : "";
+                html += `<button type="button" class="chip ${isActive ? 'active' : ''} ${item.isCurrent ? 'this-month' : ''}" data-month="${item.ym}" style="${style}">${label}</button>`;
+            });
+
+            group.innerHTML = html;
+
+            // クリックリスナー設定（複数選択可 ＆ 未ロード月のオンデマンド自動取得）
+            group.querySelectorAll(".chip").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const ym = btn.getAttribute("data-month");
+                    if (selectedFilterMonths.has(ym)) {
+                        selectedFilterMonths.delete(ym);
+                    } else {
+                        selectedFilterMonths.add(ym);
+                        // オンデマンド取得チェック（今月・来月以外で未ロードの場合）
+                        const [yStr, mStr] = ym.split("-");
+                        const yNum = Number(yStr);
+                        const mNum = Number(mStr);
+                        const slashYM = `${yNum}/${String(mNum).padStart(2, '0')}`;
+                        if (!loadedMonths.has(slashYM)) {
+                            await ensureMonthEventsLoaded(yNum, mNum);
+                        }
+                    }
+                    renderMonthFilterChips();
+                    renderListView();
+                });
+            });
+        }
+
         // フィルター条件に一致するイベント一覧を取得（終了したイベントは一番下に並ぶ）
         function getFilteredEvents() {
             return cachedEvents
@@ -3575,6 +3856,14 @@
                 .filter(ev => {
                     const ymd = toStandardYMD(ev.date);
                     if (!ymd) return false;
+
+                    // 月フィルター（複数選択）
+                    if (selectedFilterMonths.size > 0) {
+                        const ym = ymd.substring(0, 7); // "yyyy-MM"
+                        if (!selectedFilterMonths.has(ym)) {
+                            return false;
+                        }
+                    }
 
                     // 種別フィルター
                     if (currentTypeFilter !== "all") {
@@ -3664,11 +3953,21 @@
 
                 html += `
                   <div class="event-card ${isMod ? 'is-modified' : ''}" id="list-card-${evId}" data-event-id="${evId}">
+                    <!-- カード右上の参加人数表示 -->
+                    <div class="card-top-right">
+                      <div class="event-people-badge" title="参加予定人数（参加・遅刻・早退の合計）">
+                        <span class="badge-icon">👥</span>
+                        <span class="badge-label">参加</span>
+                        <span class="badge-num">${eventItem.people !== undefined ? eventItem.people : 0}</span>
+                        <span class="badge-unit">人</span>
+                      </div>
+                    </div>
+
                     <div class="list-date-badge">
                       <span style="${dayColorStyle}">📅 ${m}/${d} (${weekDay})</span>
                       <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-sub);">🕒 ${escapeHtml(eventItem.time)}</span>
                     </div>
-                    <div class="event-title">
+                    <div class="event-title" style="padding-right: 95px;">
                       <span class="title-badge" style="background-color: ${color};"></span>
                       ${escapeHtml(eventItem.title)}
                       ${isPast ? '<span class="status-badge-closed">終了</span>' : ''}
@@ -3746,20 +4045,47 @@
             });
         }
 
-        // 前月・次月移動
-        function goToPrevMonth() {
+        // 前月・次月移動（未ロード月はオンデマンド取得）
+        async function goToPrevMonth() {
             viewDate.setMonth(viewDate.getMonth() - 1);
+            const y = viewDate.getFullYear();
+            const m = viewDate.getMonth() + 1;
             renderCalendar();
+            renderEventDetails();
+            const slashYM = `${y}/${String(m).padStart(2, '0')}`;
+            if (!loadedMonths.has(slashYM)) {
+                await ensureMonthEventsLoaded(y, m);
+                renderCalendar();
+                renderEventDetails();
+            }
         }
 
-        function goToNextMonth() {
+        async function goToNextMonth() {
             viewDate.setMonth(viewDate.getMonth() + 1);
+            const y = viewDate.getFullYear();
+            const m = viewDate.getMonth() + 1;
             renderCalendar();
+            renderEventDetails();
+            const slashYM = `${y}/${String(m).padStart(2, '0')}`;
+            if (!loadedMonths.has(slashYM)) {
+                await ensureMonthEventsLoaded(y, m);
+                renderCalendar();
+                renderEventDetails();
+            }
         }
 
-        function returnToCurrentMonth() {
+        async function returnToCurrentMonth() {
             viewDate = new Date();
+            const y = viewDate.getFullYear();
+            const m = viewDate.getMonth() + 1;
             renderCalendar();
+            renderEventDetails();
+            const slashYM = `${y}/${String(m).padStart(2, '0')}`;
+            if (!loadedMonths.has(slashYM)) {
+                await ensureMonthEventsLoaded(y, m);
+                renderCalendar();
+                renderEventDetails();
+            }
         }
 
         // 前月・次月・今月に戻るボタン、スワイプ（setupEventListeners に移動済み）
@@ -3973,7 +4299,7 @@
 
         function getRecentRegularEvent() {
             const now = new Date();
-            const todayStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+            const todayStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
             // 今日以降の正規練
             const futureRegular = adminData.events.filter(e => e.date >= todayStr && e.title.includes("正規"));
             if (futureRegular.length > 0) return futureRegular[0];
@@ -4505,7 +4831,7 @@
                             try {
                                 const file = new File([blob], filename, { type: "image/png" });
                                 await navigator.share({ files: [file], title: title });
-                            } catch (e) {}
+                            } catch (e) { }
                         } else {
                             const a = document.createElement("a");
                             a.href = dataUrl;
@@ -5349,7 +5675,7 @@
             }
 
             const today = new Date();
-            const todayYMD = `${today.getFullYear()}/${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
+            const todayYMD = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
 
             if (!adminSchedSelectedYMD) {
                 adminSchedSelectedYMD = todayYMD;
@@ -5582,7 +5908,7 @@
             const modal = document.getElementById("admin-batch-event-modal");
             const now = new Date();
             const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-            document.getElementById("admin-batch-month").value = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth()+1).padStart(2, '0')}`;
+            document.getElementById("admin-batch-month").value = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}`;
 
             let selectedDay = 3; // 水曜
             document.querySelectorAll("#admin-batch-day-chips .admin-chip-btn").forEach(btn => {
