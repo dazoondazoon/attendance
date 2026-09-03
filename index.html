@@ -1770,13 +1770,16 @@
 
             <!-- 選択日の出欠編集エリア -->
             <div id="admin-proxy-day-edit-area" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-bottom:14px;">
-                <div id="admin-proxy-selected-date-info" style="font-size:0.85rem; font-weight:bold; margin-bottom:8px; color:#1e293b;">日付をタップして出欠を変更できます</div>
+                <div id="admin-proxy-selected-date-info" style="font-size:0.85rem; font-weight:bold; margin-bottom:6px; color:#1e293b;">日付をタップして出欠を変更できます</div>
+                <!-- 1日に複数件ある場合の練習選択スイッチ -->
+                <div id="admin-proxy-multi-events-switch" class="hidden" style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;"></div>
                 <div class="admin-btn-chips" id="admin-proxy-cal-chips" style="margin-bottom:8px;">
                     <button type="button" class="admin-chip-btn" data-status="参加">参加</button>
                     <button type="button" class="admin-chip-btn" data-status="遅刻">遅刻</button>
                     <button type="button" class="admin-chip-btn" data-status="早退">早退</button>
                     <button type="button" class="admin-chip-btn" data-status="未定">未定</button>
                     <button type="button" class="admin-chip-btn" data-status="不参加">不参加</button>
+                    <button type="button" class="admin-chip-btn" id="btn-admin-proxy-clear-status" data-status="" style="color:#64748b; border-style:dashed;">✕ 未選択</button>
                 </div>
                 <input type="text" id="admin-proxy-cal-comment" class="admin-input" placeholder="備考 (遅刻理由など)" style="font-size:0.8rem; padding:6px 8px;">
             </div>
@@ -4823,6 +4826,7 @@
         let proxyCalDate = new Date();
         let proxyCalEdits = {}; // { [eventId]: { status, comment, originalStatus, originalComment } }
         let proxyCalSelectedEventId = null;
+        let proxyCalSelectedYMD = "";
 
         function openAdminMemberAttCalendar(userId) {
             const m = adminData.members.find(x => x.userId === userId);
@@ -4832,6 +4836,7 @@
             proxyCalDate = new Date();
             proxyCalEdits = {};
             proxyCalSelectedEventId = null;
+            proxyCalSelectedYMD = "";
 
             document.getElementById("admin-member-att-cal-title").textContent = `${m.name} さんの出欠管理`;
             document.getElementById("admin-member-att-modal").classList.remove("hidden");
@@ -4856,7 +4861,7 @@
                 await saveProxyCalChanges();
             };
 
-            // 出欠チップ
+            // 出欠チップ（同じステータス再タップで未選択にトグル解除、✕未選択ボタン対応）
             document.querySelectorAll("#admin-proxy-cal-chips .admin-chip-btn").forEach(btn => {
                 btn.onclick = () => {
                     if (!proxyCalSelectedEventId) {
@@ -4864,7 +4869,10 @@
                         return;
                     }
                     const targetStatus = btn.getAttribute("data-status");
-                    setProxyAttendanceForSelectedEvent(targetStatus);
+                    const currentStatus = getProxyEventStatus(proxyCalSelectedEventId);
+                    // すでに同じステータスが選ばれている場合、または「✕未選択」を押した場合は未選択（空文字）
+                    const newStatus = (targetStatus === currentStatus || targetStatus === "") ? "" : targetStatus;
+                    setProxyAttendanceForSelectedEvent(newStatus);
                 };
             });
 
@@ -4885,6 +4893,13 @@
                 }
                 updateProxySaveButtonUI();
             };
+        }
+
+        // 現在の代理出欠ステータスを取得（編集中の内容を優先）
+        function getProxyEventStatus(evId) {
+            if (proxyCalEdits[evId]) return proxyCalEdits[evId].status || "";
+            const rec = adminData.attendances.find(a => String(a.eventId) === String(evId) && String(a.userId) === String(proxyCalUserId));
+            return rec ? (rec.status || "") : "";
         }
 
         function closeProxyCalModal() {
@@ -4944,7 +4959,7 @@
                         else if (status === "不参加") dotColor = "#ef4444";
 
                         const label = status ? status.charAt(0) : "・";
-                        badgeHtml += `<span style="background:${dotColor}; color:#fff; font-size:0.65rem; padding:1px 3px; border-radius:3px; font-weight:bold; margin-top:2px; display:inline-block;">${label}</span>`;
+                        badgeHtml += `<span style="background:${dotColor}; color:#fff; font-size:0.65rem; padding:1px 3px; border-radius:3px; font-weight:bold; margin-top:2px; display:inline-block;" title="${escapeHtml(ev.title)}: ${status || '未回答'}">${label}</span>`;
                     });
                 }
 
@@ -4952,7 +4967,8 @@
                     cell.style.outline = "2px solid var(--primary)";
                 }
 
-                if (dayEvents.some(e => String(e.eventId) === String(proxyCalSelectedEventId))) {
+                // 選択中の日付セルをハイライト
+                if (ymdStr === proxyCalSelectedYMD || dayEvents.some(e => String(e.eventId) === String(proxyCalSelectedEventId))) {
                     cell.classList.add("selected");
                 }
 
@@ -4964,7 +4980,7 @@
                 if (dayEvents.length > 0) {
                     cell.style.cursor = "pointer";
                     cell.onclick = () => {
-                        selectProxyDayEvent(dayEvents[0], ymdStr);
+                        selectProxyDay(ymdStr, null);
                         renderProxyCalendar();
                     };
                 }
@@ -4973,33 +4989,79 @@
             }
         }
 
-        function selectProxyDayEvent(eventObj, ymdStr) {
-            proxyCalSelectedEventId = String(eventObj.eventId);
+        // 日付およびイベント選択処理（同日複数イベント対応）
+        function selectProxyDay(ymdStr, preferredEventId) {
+            proxyCalSelectedYMD = ymdStr;
+            const dayEvents = adminData.events.filter(e => e.date === ymdStr);
+            if (dayEvents.length === 0) return;
+
+            // 対象イベントの決定
+            let activeEv = dayEvents[0];
+            if (preferredEventId) {
+                const found = dayEvents.find(e => String(e.eventId) === String(preferredEventId));
+                if (found) activeEv = found;
+            }
+            proxyCalSelectedEventId = String(activeEv.eventId);
+
             const [y, m, d] = ymdStr.split("/").map(Number);
             const weekDay = WEEK_NAMES[new Date(y, m - 1, d).getDay()];
-            document.getElementById("admin-proxy-selected-date-info").innerHTML = `
-                📅 ${m}/${d} (${weekDay}) ${escapeHtml(eventObj.title)} (${escapeHtml(eventObj.time)})
-            `;
 
-            let currentStatus = "";
+            const infoEl = document.getElementById("admin-proxy-selected-date-info");
+            const switchEl = document.getElementById("admin-proxy-multi-events-switch");
+
+            // 同日に複数件の練習がある場合、切り替えスイッチを表示
+            if (dayEvents.length > 1) {
+                infoEl.innerHTML = `📅 ${m}/${d} (${weekDay}) <span style="font-size:0.75rem; color:#64748b;">(全${dayEvents.length}件の練習)</span>`;
+                switchEl.classList.remove("hidden");
+                switchEl.innerHTML = "";
+
+                dayEvents.forEach(ev => {
+                    const isCurrent = String(ev.eventId) === proxyCalSelectedEventId;
+                    const evStatus = getProxyEventStatus(ev.eventId);
+                    const statusBadge = evStatus ? `[${evStatus}]` : `[未回答]`;
+
+                    const switchBtn = document.createElement("button");
+                    switchBtn.type = "button";
+                    switchBtn.className = `admin-chip-btn ${isCurrent ? 'active' : ''}`;
+                    switchBtn.style.fontSize = "0.75rem";
+                    switchBtn.style.padding = "4px 8px";
+                    switchBtn.innerHTML = `${escapeHtml(ev.title)} (${escapeHtml(ev.time)}) <span style="font-size:0.7rem; opacity:0.9;">${statusBadge}</span>`;
+                    switchBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        selectProxyDay(ymdStr, ev.eventId);
+                        renderProxyCalendar();
+                    };
+                    switchEl.appendChild(switchBtn);
+                });
+            } else {
+                infoEl.innerHTML = `📅 ${m}/${d} (${weekDay}) ${escapeHtml(activeEv.title)} (${escapeHtml(activeEv.time)})`;
+                switchEl.classList.add("hidden");
+                switchEl.innerHTML = "";
+            }
+
+            // 出欠ステータスと備考の反映
+            const currentStatus = getProxyEventStatus(proxyCalSelectedEventId);
             let currentComment = "";
             if (proxyCalEdits[proxyCalSelectedEventId]) {
-                currentStatus = proxyCalEdits[proxyCalSelectedEventId].status;
                 currentComment = proxyCalEdits[proxyCalSelectedEventId].comment || "";
             } else {
                 const rec = adminData.attendances.find(a => String(a.eventId) === proxyCalSelectedEventId && String(a.userId) === String(proxyCalUserId));
-                if (rec) {
-                    currentStatus = rec.status || "";
-                    currentComment = rec.comment || "";
-                }
+                if (rec) currentComment = rec.comment || "";
             }
 
             document.querySelectorAll("#admin-proxy-cal-chips .admin-chip-btn").forEach(b => {
-                b.classList.toggle("active", b.getAttribute("data-status") === currentStatus);
+                const bStatus = b.getAttribute("data-status");
+                if (currentStatus === "") {
+                    // 未選択の場合
+                    b.classList.toggle("active", bStatus === "");
+                } else {
+                    b.classList.toggle("active", bStatus === currentStatus);
+                }
             });
             document.getElementById("admin-proxy-cal-comment").value = currentComment;
         }
 
+        // ステータス更新（未選択 "" の場合は isDelete: true）
         function setProxyAttendanceForSelectedEvent(status) {
             if (!proxyCalSelectedEventId) return;
             const rec = adminData.attendances.find(a => String(a.eventId) === proxyCalSelectedEventId && String(a.userId) === String(proxyCalUserId));
@@ -5007,16 +5069,32 @@
             const origComment = rec ? (rec.comment || "") : "";
             const currentComment = document.getElementById("admin-proxy-cal-comment").value.trim();
 
-            proxyCalEdits[proxyCalSelectedEventId] = {
-                status: status,
-                comment: currentComment,
-                originalStatus: origStatus,
-                originalComment: origComment
-            };
+            if (status === "" && origStatus === "" && origComment === currentComment) {
+                // 元々未回答で変更もなければ編集キューから削除
+                delete proxyCalEdits[proxyCalSelectedEventId];
+            } else {
+                proxyCalEdits[proxyCalSelectedEventId] = {
+                    status: status,
+                    comment: currentComment,
+                    originalStatus: origStatus,
+                    originalComment: origComment,
+                    isDelete: (status === "")
+                };
+            }
 
             document.querySelectorAll("#admin-proxy-cal-chips .admin-chip-btn").forEach(b => {
-                b.classList.toggle("active", b.getAttribute("data-status") === status);
+                const bStatus = b.getAttribute("data-status");
+                if (status === "") {
+                    b.classList.toggle("active", bStatus === "");
+                } else {
+                    b.classList.toggle("active", bStatus === status);
+                }
             });
+
+            // 同日複数件表示のバッジを即時更新
+            if (proxyCalSelectedYMD) {
+                selectProxyDay(proxyCalSelectedYMD, proxyCalSelectedEventId);
+            }
 
             updateProxySaveButtonUI();
             renderProxyCalendar();
@@ -5067,20 +5145,26 @@
                 const json = await res.json();
                 if (!json.success) throw new Error(json.message || "出欠の保存に失敗しました");
 
-                // ローカルキャッシュを一括更新
+                // ローカルキャッシュを一括更新（未選択の場合は削除）
                 attList.forEach(item => {
                     const existingIdx = adminData.attendances.findIndex(a => String(a.eventId) === String(item.eventId) && String(a.userId) === String(proxyCalUserId));
-                    if (existingIdx !== -1) {
-                        adminData.attendances[existingIdx].status = item.status;
-                        adminData.attendances[existingIdx].comment = item.comment;
+                    if (!item.status) {
+                        if (existingIdx !== -1) {
+                            adminData.attendances.splice(existingIdx, 1);
+                        }
                     } else {
-                        adminData.attendances.push({
-                            eventId: String(item.eventId),
-                            userId: proxyCalUserId,
-                            name: targetName,
-                            status: item.status,
-                            comment: item.comment
-                        });
+                        if (existingIdx !== -1) {
+                            adminData.attendances[existingIdx].status = item.status;
+                            adminData.attendances[existingIdx].comment = item.comment;
+                        } else {
+                            adminData.attendances.push({
+                                eventId: String(item.eventId),
+                                userId: proxyCalUserId,
+                                name: targetName,
+                                status: item.status,
+                                comment: item.comment
+                            });
+                        }
                     }
                 });
 
