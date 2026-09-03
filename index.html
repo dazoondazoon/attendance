@@ -2838,13 +2838,16 @@
             };
 
             try {
-                // ★ GASへの送信が終わるまでは「送信中...」のまま待機
-                await fetch(GAS_API_URL, {
+                // ★ GASへの送信（no-corsを廃止し、JSONレスポンスを厳密に検証）
+                const res = await fetch(GAS_API_URL, {
                     method: "POST",
-                    mode: "no-cors",
                     headers: { "Content-Type": "text/plain" },
                     body: JSON.stringify(payload)
                 });
+                const resData = await res.json();
+                if (!resData.success) {
+                    throw new Error(resData.message || "サーバー側で出欠の保存に失敗しました");
+                }
 
                 // 送信完了後に手元の cachedAttendances と editState を確定更新
                 answers.forEach(ans => {
@@ -2901,17 +2904,10 @@
                     showToast(`全${answers.length}件の回答を一括保存しました！`);
                 }
 
-                // 念のため裏側で最新データを再同期
-                (async () => {
-                    try {
-                        eventAttendeesCache = {};
-                        await fetchData(currentUser.userId);
-                        updateSubmitButtonUI();
-                        renderEventDetails();
-                        if (currentTab === "calendar") renderCalendar();
-                        if (currentTab === "list") renderListView();
-                    } catch (e) { }
-                })();
+                // 変更したイベントのメンバー一覧キャッシュのみ破棄（次開いた時に最新取得）
+                answers.forEach(ans => {
+                    delete eventAttendeesCache[ans.eventId];
+                });
 
             } catch (err) {
                 console.error("送信エラー:", err);
@@ -3848,6 +3844,27 @@
             return adminData.events[adminData.events.length - 1] || null;
         }
 
+        // 指定イベントの出欠データが未取得ならオンデマンド取得して補完マージ
+        async function ensureAdminEventAttendances(evId) {
+            if (!evId) return;
+            const hasData = adminData.attendances.some(a => String(a.eventId) === String(evId));
+            if (hasData) return;
+            try {
+                const res = await fetch(`${GAS_API_URL}?key=${API_KEY}&action=getEventAttendances&eventId=${encodeURIComponent(evId)}`);
+                const data = await res.json();
+                if (data.success && Array.isArray(data.attendances)) {
+                    data.attendances.forEach(att => {
+                        const exists = adminData.attendances.some(a => String(a.eventId) === String(att.eventId) && String(a.userId) === String(att.userId));
+                        if (!exists) {
+                            adminData.attendances.push(att);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.warn("出欠補完取得エラー:", e);
+            }
+        }
+
         function initCourtSplitView() {
             const selectEl = document.getElementById("admin-court-event-select");
             selectEl.innerHTML = "";
@@ -3870,10 +3887,11 @@
                 selectEl.value = courtState.eventId;
             }
 
-            selectEl.onchange = () => {
+            selectEl.onchange = async () => {
                 courtState.eventId = selectEl.value;
                 courtState.excludedUserIds.clear();
                 courtState.customMembers = [];
+                await ensureAdminEventAttendances(courtState.eventId);
                 const ev = adminData.events.find(e => String(e.eventId) === String(courtState.eventId));
                 if (ev) applyDefaultCourtSettingsForEvent(ev);
                 updateCourtSplitPreview();
@@ -4438,10 +4456,11 @@
                 selectEl.value = rallyState.eventId;
             }
 
-            selectEl.onchange = () => {
+            selectEl.onchange = async () => {
                 rallyState.eventId = selectEl.value;
                 rallyState.excludedUserIds.clear();
                 rallyState.customMembers = [];
+                await ensureAdminEventAttendances(rallyState.eventId);
                 updateRallyPreview();
             };
 
@@ -5022,39 +5041,48 @@
             saveBtn.textContent = "保存中...";
             showToast("代理出欠を一括保存中...");
 
-            try {
-                for (const evId of Object.keys(proxyCalEdits)) {
-                    const edit = proxyCalEdits[evId];
-                    await fetch(GAS_API_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain" },
-                        body: JSON.stringify({
-                            apiKey: API_KEY,
-                            action: "adminUpdateAttendance",
-                            adminUserId: currentUser.userId,
-                            targetUserId: proxyCalUserId,
-                            targetEventId: evId,
-                            targetName: targetName,
-                            status: edit.status,
-                            comment: edit.comment
-                        })
-                    });
+            const attList = Object.keys(proxyCalEdits).map(evId => {
+                const edit = proxyCalEdits[evId];
+                return {
+                    eventId: evId,
+                    status: edit.status,
+                    comment: edit.comment
+                };
+            });
 
-                    // ローカルキャッシュ更新
-                    const existingIdx = adminData.attendances.findIndex(a => String(a.eventId) === String(evId) && String(a.userId) === String(proxyCalUserId));
+            try {
+                // 1回のPOSTリクエストで全件一括送信（高速バッチ処理）
+                const res = await fetch(GAS_API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify({
+                        apiKey: API_KEY,
+                        action: "adminUpdateAttendance",
+                        adminUserId: currentUser.userId,
+                        targetUserId: proxyCalUserId,
+                        targetName: targetName,
+                        attendances: attList
+                    })
+                });
+                const json = await res.json();
+                if (!json.success) throw new Error(json.message || "出欠の保存に失敗しました");
+
+                // ローカルキャッシュを一括更新
+                attList.forEach(item => {
+                    const existingIdx = adminData.attendances.findIndex(a => String(a.eventId) === String(item.eventId) && String(a.userId) === String(proxyCalUserId));
                     if (existingIdx !== -1) {
-                        adminData.attendances[existingIdx].status = edit.status;
-                        adminData.attendances[existingIdx].comment = edit.comment;
+                        adminData.attendances[existingIdx].status = item.status;
+                        adminData.attendances[existingIdx].comment = item.comment;
                     } else {
                         adminData.attendances.push({
-                            eventId: String(evId),
+                            eventId: String(item.eventId),
                             userId: proxyCalUserId,
                             name: targetName,
-                            status: edit.status,
-                            comment: edit.comment
+                            status: item.status,
+                            comment: item.comment
                         });
                     }
-                }
+                });
 
                 showToast(`✅ ${count}件の出欠を変更・保存しました`);
                 proxyCalEdits = {};
