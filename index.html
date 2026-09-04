@@ -2994,11 +2994,11 @@
             });
 
             if (modifiedCount > 0) {
-                submitBtn.textContent = `回答を一括保存する (${modifiedCount}件の変更)`;
+                submitBtn.textContent = `回答を保存する (${modifiedCount}件の変更)`;
                 submitBtn.style.background = "var(--primary)";
                 document.body.classList.add("has-unsaved-changes");
             } else {
-                submitBtn.textContent = "回答を一括保存する";
+                submitBtn.textContent = "回答を保存する";
                 submitBtn.style.background = "var(--primary)";
                 document.body.classList.remove("has-unsaved-changes");
             }
@@ -3115,7 +3115,7 @@
                     updateSubmitButtonUI();
                     if (appliedCount > 0) {
                         const statusText = targetStatus ? `『${targetStatus}』` : "クリア";
-                        showToast(`⚡ ${appliedCount}件を${statusText}に設定しました（※最下部の『回答を一括保存する』を押してください）`);
+                        showToast(`⚡ ${appliedCount}件を${statusText}に設定しました（※最下部の『回答を保存する』を押してください）`);
                     } else {
                         showToast("変更可能な日程がありません（過去の練習は締め切られています）");
                     }
@@ -3144,7 +3144,7 @@
                 renderListView();
                 updateSubmitButtonUI();
                 if (appliedCount > 0) {
-                    showToast(`⚡ ${appliedCount}件に備考を一括適用しました（※最下部の『回答を一括保存する』を押してください）`);
+                    showToast(`⚡ ${appliedCount}件に備考を一括適用しました（※最下部の『回答を保存する』を押してください）`);
                 } else {
                     showToast("変更可能な日程がありません（過去の練習は締め切られています）");
                 }
