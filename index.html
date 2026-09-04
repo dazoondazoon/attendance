@@ -3271,16 +3271,6 @@
                     if (currentTab === "list") renderListView();
                     if (currentTab === "other") renderOtherView();
 
-                    // LINEトークへの一括送信
-                    if (typeof liff !== "undefined" && liff.isInClient() && lineMessages.length > 0) {
-                        await liff.sendMessages([
-                            {
-                                type: "text",
-                                text: `【出欠一括更新】\n` + lineMessages.join("\n")
-                            }
-                        ]).catch(() => { });
-                    }
-
                     // 送信完了通知
                     if (typeof liff !== "undefined" && liff.isInClient()) {
                         const shouldClose = confirm(`全${answers.length}件の回答を一括保存しました！\n\nLINEトーク画面に戻りますか？`);
