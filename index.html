@@ -2311,6 +2311,13 @@
             cachedAttendances = data.attendances || [];
             if (data.userProfile) currentUserProfile = data.userProfile;
 
+            // ★ 全イベントの回答メンバー一覧が一括同梱されている場合はキャッシュに即座に展開（オンデマンド通信ゼロ化）
+            if (data.eventAttendees && typeof data.eventAttendees === "object") {
+                Object.keys(data.eventAttendees).forEach(evId => {
+                    eventAttendeesCache[evId] = data.eventAttendees[evId];
+                });
+            }
+
             // 今月と来月をloadedMonthsに初期登録
             const now = new Date();
             const y1 = now.getFullYear();
@@ -3260,9 +3267,32 @@
                         showToast(`全${answers.length}件の回答を一括保存しました！`);
                     }
 
-                    // 変更したイベントのメンバー一覧キャッシュのみ破棄（次開いた時に最新取得）
+                    // 手元のメンバー一覧キャッシュ（eventAttendeesCache）も最新状態に即時更新
                     answers.forEach(ans => {
-                        delete eventAttendeesCache[ans.eventId];
+                        if (!eventAttendeesCache[ans.eventId]) return;
+                        const attendeesList = eventAttendeesCache[ans.eventId];
+                        const idx = attendeesList.findIndex(m => String(m.userId) === String(currentUser.userId));
+                        if (ans.isDelete) {
+                            if (idx !== -1) attendeesList.splice(idx, 1);
+                        } else {
+                            if (idx !== -1) {
+                                attendeesList[idx].status = ans.status;
+                                attendeesList[idx].comment = ans.comment;
+                            } else {
+                                attendeesList.push({
+                                    eventId: String(ans.eventId),
+                                    userId: currentUser.userId,
+                                    name: currentUser.displayName,
+                                    userName: currentUser.displayName,
+                                    status: ans.status,
+                                    comment: ans.comment,
+                                    grade: (currentUserProfile && currentUserProfile.grade) ? currentUserProfile.grade : "",
+                                    furigana: "",
+                                    univ: "",
+                                    updatedAt: new Date().toISOString()
+                                });
+                            }
+                        }
                     });
 
                 } catch (err) {
