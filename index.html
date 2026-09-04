@@ -2389,6 +2389,12 @@
                         initEditState();
                     }
 
+                    if (data.eventAttendees && typeof data.eventAttendees === "object") {
+                        Object.keys(data.eventAttendees).forEach(evId => {
+                            eventAttendeesCache[evId] = data.eventAttendees[evId];
+                        });
+                    }
+
                     loadedMonths.add(ymSlash);
                     return true;
                 }
@@ -3151,8 +3157,10 @@
             });
 
             // 一括送信ボタンの処理（日付をまたいで変更された全日程を送信）
+            let isSubmittingAttendance = false;
             const submitAllBtn = document.getElementById("btn-submit-all");
             if (submitAllBtn) submitAllBtn.addEventListener("click", async () => {
+                if (isSubmittingAttendance) return;
                 const submitBtn = document.getElementById("btn-submit-all");
 
                 // 変更があったイベント（または現在ステータスが入っている全イベント）を抽出
@@ -3163,6 +3171,7 @@
                     return;
                 }
 
+                isSubmittingAttendance = true;
                 submitBtn.disabled = true;
                 submitBtn.textContent = "送信中...";
                 submitBtn.style.background = "#94a3b8";
@@ -3212,12 +3221,16 @@
                 };
 
                 try {
-                    // ★ GASへの送信（no-corsを廃止し、JSONレスポンスを厳密に検証）
-                    const res = await fetch(GAS_API_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain" },
-                        body: JSON.stringify(payload)
-                    });
+                    // ★ GASへの送信（no-corsを廃止し、JSONレスポンスを厳密に検証 ＋ 15秒タイムアウト保護）
+                    const res = await withTimeout(
+                        fetch(GAS_API_URL, {
+                            method: "POST",
+                            headers: { "Content-Type": "text/plain" },
+                            body: JSON.stringify(payload)
+                        }),
+                        15000,
+                        "サーバーへの送信がタイムアウトしました。電波環境をお確かめのうえ再試行してください。"
+                    );
                     const resData = await res.json();
                     if (!resData.success) {
                         throw new Error(resData.message || "サーバー側で出欠の保存に失敗しました");
@@ -3310,6 +3323,7 @@
                     console.error("送信エラー:", err);
                     alert("送信中にエラーが発生しました: " + err.message);
                 } finally {
+                    isSubmittingAttendance = false;
                     showSyncIndicator(false);
                     updateSubmitButtonUI();
                 }
