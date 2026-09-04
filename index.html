@@ -2260,6 +2260,17 @@
                     checkAndShowAdminTab();
                 }
 
+                // ★ 管理者データが初期ロードで同梱されている場合は即座にキャッシュ格納（管理者タブ表示が0秒に）
+                if (initData && initData.adminData) {
+                    adminData = {
+                        members: initData.adminData.members || [],
+                        ranks: initData.adminData.ranks || [],
+                        events: initData.adminData.events || [],
+                        attendances: initData.adminData.attendances || [],
+                        isLoaded: true
+                    };
+                }
+
                 // カレンダーおよび出欠状態を最新データでスムーズに再描画
                 initEditState();
                 renderCalendar();
