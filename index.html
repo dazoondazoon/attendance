@@ -378,19 +378,19 @@
         /* 集計サマリーバー */
         .summary-stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             background: #f8fafc;
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 6px 2px;
+            padding: 8px 4px;
             margin-bottom: 12px;
             text-align: center;
-            font-size: 0.72rem;
+            font-size: 0.75rem;
         }
 
         .stat-item b {
             display: block;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text);
         }
 
@@ -406,21 +406,21 @@
             color: var(--sunday);
         }
 
-        /* トグル式出欠ボタン (5択) */
+        /* トグル式出欠ボタン (3択) */
         .status-group {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 4px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             margin-bottom: 8px;
         }
 
         .status-btn {
             text-align: center;
-            padding: 8px 0;
+            padding: 10px 0;
             border: 1.5px solid var(--border);
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.78rem;
+            font-size: 0.85rem;
             font-weight: bold;
             background: #fff;
             color: var(--text-sub);
@@ -441,18 +441,6 @@
             color: #05a847 !important;
         }
 
-        .status-btn[data-val="遅刻"].active {
-            background-color: #eff6ff !important;
-            border-color: #3b82f6 !important;
-            color: #2563eb !important;
-        }
-
-        .status-btn[data-val="早退"].active {
-            background-color: #f5f3ff !important;
-            border-color: #8b5cf6 !important;
-            color: #7c3aed !important;
-        }
-
         .status-btn[data-val="未定"].active {
             background-color: #fffbeb !important;
             border-color: #f59e0b !important;
@@ -467,14 +455,6 @@
 
         .status-btn[data-val="参加"]:hover:not(.active) {
             background: #f7fdf9;
-        }
-
-        .status-btn[data-val="遅刻"]:hover:not(.active) {
-            background: #f8faff;
-        }
-
-        .status-btn[data-val="早退"]:hover:not(.active) {
-            background: #faf8ff;
         }
 
         .status-btn[data-val="未定"]:hover:not(.active) {
@@ -713,14 +693,14 @@
 
         .batch-btn-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 6px;
         }
 
         .batch-btn {
             padding: 9px 0;
             border-radius: 8px;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             font-weight: bold;
             cursor: pointer;
             border: 1px solid var(--border);
@@ -739,18 +719,6 @@
             background: #eefbf3;
             border-color: #06c755;
             color: #05a847;
-        }
-
-        .batch-late {
-            background: #eff6ff;
-            border-color: #3b82f6;
-            color: #2563eb;
-        }
-
-        .batch-early {
-            background: #f5f3ff;
-            border-color: #8b5cf6;
-            color: #7c3aed;
         }
 
         .batch-pending {
@@ -1585,8 +1553,6 @@
                     </div>
                     <div class="batch-btn-grid">
                         <button type="button" class="batch-btn batch-join" data-batch-status="参加">一括 参加</button>
-                        <button type="button" class="batch-btn batch-late" data-batch-status="遅刻">一括 遅刻</button>
-                        <button type="button" class="batch-btn batch-early" data-batch-status="早退">一括 早退</button>
                         <button type="button" class="batch-btn batch-pending" data-batch-status="未定">一括 未定</button>
                         <button type="button" class="batch-btn batch-absent" data-batch-status="不参加">一括 不参加</button>
                         <button type="button" class="batch-btn batch-clear" data-batch-status="">クリア</button>
@@ -1677,8 +1643,8 @@
                         <div
                             style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; text-align:center; font-size:0.75rem; border-top:1px dashed #e2e8f0; padding-top:8px;">
                             <div>参加: <b id="stat-detail-join" style="color:var(--primary-dark);">0</b></div>
-                            <div>遅刻: <b id="stat-detail-late" style="color:var(--text);">0</b></div>
-                            <div>早退: <b id="stat-detail-early" style="color:var(--text);">0</b></div>
+                            <div>未定: <b id="stat-detail-pending" style="color:var(--pending);">0</b></div>
+                            <div>不参加: <b id="stat-detail-absent" style="color:var(--sunday);">0</b></div>
                         </div>
                     </div>
                 </div>
@@ -2008,14 +1974,12 @@
                     style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;"></div>
                 <div class="admin-btn-chips" id="admin-proxy-cal-chips" style="margin-bottom:8px;">
                     <button type="button" class="admin-chip-btn" data-status="参加">参加</button>
-                    <button type="button" class="admin-chip-btn" data-status="遅刻">遅刻</button>
-                    <button type="button" class="admin-chip-btn" data-status="早退">早退</button>
                     <button type="button" class="admin-chip-btn" data-status="未定">未定</button>
                     <button type="button" class="admin-chip-btn" data-status="不参加">不参加</button>
                     <button type="button" class="admin-chip-btn" id="btn-admin-proxy-clear-status" data-status=""
                         style="color:#64748b; border-style:dashed;">✕ 未選択</button>
                 </div>
-                <input type="text" id="admin-proxy-cal-comment" class="admin-input" placeholder="備考 (遅刻理由など)"
+                <input type="text" id="admin-proxy-cal-comment" class="admin-input" placeholder="備考 (理由など)"
                     style="font-size:0.8rem; padding:6px 8px;">
             </div>
 
@@ -2844,7 +2808,7 @@
           <div class="event-card ${isMod ? 'is-modified' : ''}" id="card-${evId}" data-event-id="${evId}">
             <!-- カード右上の参加人数表示 -->
             <div class="card-top-right">
-              <div class="event-people-badge" title="参加予定人数（参加・遅刻・早退の合計）">
+              <div class="event-people-badge" title="参加予定人数">
                 <span class="badge-label"> 参加 </span>
                 <span class="badge-num">${eventItem.people !== undefined ? eventItem.people : 0}</span>
                 <span class="badge-unit"> 人 </span>
@@ -2861,16 +2825,14 @@
               <div>🏸 場所: ${escapeHtml(eventItem.place)}</div>
             </div>
 
-            <!-- 出欠ボタン（5択 & トグル消去対応、過去練習はロック） -->
+            <!-- 出欠ボタン（3択 & トグル消去対応、過去練習はロック） -->
             <div class="status-group ${isPast ? 'disabled' : ''}" data-event-id="${evId}">
               <div class="status-btn ${myStatus === '参加' ? 'active' : ''}" data-val="参加">参加</div>
-              <div class="status-btn ${myStatus === '遅刻' ? 'active' : ''}" data-val="遅刻">遅刻</div>
-              <div class="status-btn ${myStatus === '早退' ? 'active' : ''}" data-val="早退">早退</div>
               <div class="status-btn ${myStatus === '未定' ? 'active' : ''}" data-val="未定">未定</div>
               <div class="status-btn ${myStatus === '不参加' ? 'active' : ''}" data-val="不参加">不参加</div>
             </div>
 
-            <textarea id="comment-${evId}" rows="2" placeholder="備考（遅刻理由や未定の詳細など）" ${isPast ? 'disabled' : ''}>${escapeHtml(myComment)}</textarea>
+            <textarea id="comment-${evId}" rows="2" placeholder="備考（未定の理由など）" ${isPast ? 'disabled' : ''}>${escapeHtml(myComment)}</textarea>
             ${isPast ? '<div class="closed-notice">※過去の練習のため、出欠の修正は締め切られています</div>' : ''}
 
             <!-- 回答メンバー一覧トグルボタン（オンデマンド取得） -->
@@ -3411,17 +3373,17 @@
             return 90;
         }
 
-        // 回答メンバー一覧を（参加・遅刻・早退 ＞ 不参加 ＞ 未定）かつ（学年順 ＞ 五十音順）でソート
+        // 回答メンバー一覧を（参加 ＞ 不参加 ＞ 未定）かつ（学年順 ＞ 五十音順）でソート
         function sortAttendees(attendees) {
             function getStatusGroup(status) {
-                if (status === "参加" || status === "遅刻" || status === "早退") return 1;
+                if (status === "参加") return 1;
                 if (status === "不参加") return 2;
                 if (status === "未定") return 3;
                 return 4;
             }
 
             return attendees.slice().sort((a, b) => {
-                // 1. ステータスグループ順（参加系 ＞ 不参加 ＞ 未定）
+                // 1. ステータスグループ順（参加 ＞ 不参加 ＞ 未定）
                 const groupA = getStatusGroup(a.status);
                 const groupB = getStatusGroup(b.status);
                 if (groupA !== groupB) return groupA - groupB;
@@ -3441,7 +3403,6 @@
         // 参加人数集計バー ＋ メンバー一覧HTMLのレンダリング（学年・五十音順ソート済み）
         function renderExpandContent(containerEl, attendees) {
             const countJoin = attendees.filter(a => a.status === "参加").length;
-            const countLate = attendees.filter(a => a.status === "遅刻" || a.status === "早退").length;
             const countPending = attendees.filter(a => a.status === "未定").length;
             const countAbsent = attendees.filter(a => a.status === "不参加").length;
 
@@ -3451,7 +3412,6 @@
                 <!-- 集計バー -->
                 <div class="summary-stats" style="margin-top: 10px; margin-bottom: 8px;">
                   <div class="stat-item stat-join">参加<b>${countJoin}人</b></div>
-                  <div class="stat-item">遅刻/早退<b>${countLate}人</b></div>
                   <div class="stat-item stat-pending">未定<b>${countPending}人</b></div>
                   <div class="stat-item stat-absent">不参加<b>${countAbsent}人</b></div>
                 </div>
@@ -3552,13 +3512,13 @@
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-            // 今日以降のイベントで、自分が「参加」「遅刻」「早退」と回答しているものを日付順で探索
+            // 今日以降のイベントで、自分が「参加」と回答しているものを日付順で探索
             const futureAttendingEvents = cachedEvents.filter(ev => {
                 const ymd = toStandardYMD(ev.date);
                 if (!ymd || ymd < todayStr) return false;
                 const item = getEditItem(ev.eventId);
                 const status = item ? item.status : "";
-                return (status === "参加" || status === "遅刻" || status === "早退");
+                return (status === "参加");
             }).sort((a, b) => {
                 return toStandardYMD(a.date).localeCompare(toStandardYMD(b.date));
             });
@@ -3600,7 +3560,7 @@
             }
         }
 
-        // 今月の練習参加回数と目安部費の集計
+        // 今月の練習参加回数とステータス内訳の集計
         function updateMonthlyAttendanceStats() {
             const now = new Date();
             const currentYear = now.getFullYear();
@@ -3614,30 +3574,28 @@
             });
 
             let joinCount = 0;
-            let lateCount = 0;
-            let earlyCount = 0;
+            let pendingCount = 0;
+            let absentCount = 0;
 
             currentMonthEvents.forEach(ev => {
                 const item = getEditItem(ev.eventId);
                 const status = item ? item.status : "";
                 if (status === "参加") joinCount++;
-                else if (status === "遅刻") lateCount++;
-                else if (status === "早退") earlyCount++;
+                else if (status === "未定") pendingCount++;
+                else if (status === "不参加") absentCount++;
             });
-
-            const total = joinCount + lateCount + earlyCount;
 
             const badgeEl = document.getElementById("stat-current-month-badge");
             const totalEl = document.getElementById("stat-join-count");
             const joinEl = document.getElementById("stat-detail-join");
-            const lateEl = document.getElementById("stat-detail-late");
-            const earlyEl = document.getElementById("stat-detail-early");
+            const pendingEl = document.getElementById("stat-detail-pending");
+            const absentEl = document.getElementById("stat-detail-absent");
 
             if (badgeEl) badgeEl.textContent = `${currentMonth}月`;
-            if (totalEl) totalEl.textContent = total;
+            if (totalEl) totalEl.textContent = joinCount;
             if (joinEl) joinEl.textContent = joinCount;
-            if (lateEl) lateEl.textContent = lateCount;
-            if (earlyEl) earlyEl.textContent = earlyCount;
+            if (pendingEl) pendingEl.textContent = pendingCount;
+            if (absentEl) absentEl.textContent = absentCount;
         }
 
         // プロフィール変更・部費ボタン（setupEventListeners に移動済み）
@@ -4000,7 +3958,7 @@
                   <div class="event-card ${isMod ? 'is-modified' : ''}" id="list-card-${evId}" data-event-id="${evId}">
                     <!-- カード右上の参加人数表示 -->
                     <div class="card-top-right">
-                      <div class="event-people-badge" title="参加予定人数（参加・遅刻・早退の合計）">
+                      <div class="event-people-badge" title="参加予定人数">
                         <span class="badge-label"> 参加 </span>
                         <span class="badge-num">${eventItem.people !== undefined ? eventItem.people : 0}</span>
                         <span class="badge-unit"> 人 </span>
@@ -4020,16 +3978,14 @@
                       <div>🏸 場所: ${escapeHtml(eventItem.place)}</div>
                     </div>
 
-                    <!-- 出欠ボタン（5択 & トグル消去対応、過去練習はロック） -->
+                    <!-- 出欠ボタン（3択 & トグル消去対応、過去練習はロック） -->
                     <div class="status-group ${isPast ? 'disabled' : ''}" data-event-id="${evId}">
                       <div class="status-btn ${myStatus === '参加' ? 'active' : ''}" data-val="参加">参加</div>
-                      <div class="status-btn ${myStatus === '遅刻' ? 'active' : ''}" data-val="遅刻">遅刻</div>
-                      <div class="status-btn ${myStatus === '早退' ? 'active' : ''}" data-val="早退">早退</div>
                       <div class="status-btn ${myStatus === '未定' ? 'active' : ''}" data-val="未定">未定</div>
                       <div class="status-btn ${myStatus === '不参加' ? 'active' : ''}" data-val="不参加">不参加</div>
                     </div>
 
-                    <textarea id="list-comment-${evId}" rows="1" placeholder="備考（遅刻理由など）" ${isPast ? 'disabled' : ''}>${escapeHtml(myComment)}</textarea>
+                    <textarea id="list-comment-${evId}" rows="1" placeholder="備考（未定の理由など）" ${isPast ? 'disabled' : ''}>${escapeHtml(myComment)}</textarea>
                     ${isPast ? '<div class="closed-notice">※過去の練習のため、出欠の修正は締め切られています</div>' : ''}
 
                     <!-- 回答メンバー一覧トグルボタン（オンデマンド取得） -->
@@ -4509,8 +4465,8 @@
 
         function getActiveCourtMembers() {
             const evId = String(courtState.eventId);
-            // 出欠データから参加・遅刻・早退を取得
-            const atts = adminData.attendances.filter(a => String(a.eventId) === evId && (a.status === "参加" || a.status === "遅刻" || a.status === "早退"));
+            // 出欠データから参加者を取得
+            const atts = adminData.attendances.filter(a => String(a.eventId) === evId && a.status === "参加");
             const map = new Map();
 
             atts.forEach(a => {
@@ -5020,7 +4976,7 @@
 
         function getActiveRallyMembers() {
             const evId = String(rallyState.eventId);
-            const atts = adminData.attendances.filter(a => String(a.eventId) === evId && (a.status === "参加" || a.status === "遅刻" || a.status === "早退"));
+            const atts = adminData.attendances.filter(a => String(a.eventId) === evId && a.status === "参加");
             const map = new Map();
 
             atts.forEach(a => {
@@ -5460,8 +5416,6 @@
 
                         let dotColor = "#94a3b8";
                         if (status === "参加") dotColor = "#06c755";
-                        else if (status === "遅刻") dotColor = "#f97316";
-                        else if (status === "早退") dotColor = "#eab308";
                         else if (status === "未定") dotColor = "#8b5cf6";
                         else if (status === "不参加") dotColor = "#ef4444";
 
