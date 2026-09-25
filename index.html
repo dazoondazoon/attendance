@@ -1286,6 +1286,11 @@
             background: #e2e8f0;
         }
 
+        .admin-step-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
         .admin-member-chips-wrap {
             display: flex;
             flex-wrap: wrap;
@@ -1698,10 +1703,12 @@
                         <div class="admin-control-group">
                             <label class="admin-control-label">面の数</label>
                             <div class="admin-btn-chips" id="admin-court-count-chips">
+                                <button type="button" class="admin-chip-btn" data-courts="1">1面</button>
                                 <button type="button" class="admin-chip-btn" data-courts="2">2面</button>
                                 <button type="button" class="admin-chip-btn" data-courts="3">3面</button>
                                 <button type="button" class="admin-chip-btn" data-courts="4">4面</button>
                                 <button type="button" class="admin-chip-btn" data-courts="5">5面</button>
+                                <button type="button" class="admin-chip-btn" data-courts="6">6面</button>
                             </div>
                             <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
                                 <span style="font-size:0.75rem; color:#64748b;">自由指定:</span>
@@ -4511,18 +4518,51 @@
             renderCourtCapacitiesUI();
         }
 
+        function changeCourtCapacity(idx, step) {
+            const M = courtState.capacities.length;
+            if (M <= 1) return; // 1面の場合は他面がないため調整不可
+
+            // 対象面が最後の面なら最後から2番目の面、それ以外なら最後の面を調節
+            const targetIdx = (idx === M - 1) ? M - 2 : M - 1;
+
+            const newIdxVal = courtState.capacities[idx] + step;
+            const newTargetVal = courtState.capacities[targetIdx] - step;
+
+            // 人数は 0 以上でなければならない
+            if (newIdxVal < 0 || newTargetVal < 0) return;
+
+            courtState.capacities[idx] = newIdxVal;
+            courtState.capacities[targetIdx] = newTargetVal;
+
+            renderCourtCapacitiesUI();
+            updateCourtSplitPreview();
+        }
+
         function renderCourtCapacitiesUI() {
             const container = document.getElementById("admin-court-capacities-list");
             container.innerHTML = "";
+            const M = courtState.capacities.length;
+            const totalCap = courtState.capacities.reduce((a, b) => a + b, 0);
+
+            // ヘッダー情報（合計人数）
+            const headerInfo = document.createElement("div");
+            headerInfo.style.cssText = "display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:0.75rem; color:#64748b;";
+            headerInfo.innerHTML = `<span>配分設定 (全${M}面)</span><span>合計: <b>${totalCap}</b>人</span>`;
+            container.appendChild(headerInfo);
+
             courtState.capacities.forEach((cap, idx) => {
+                const targetIdx = (M <= 1) ? -1 : ((idx === M - 1) ? M - 2 : M - 1);
+                const canMinus = (M > 1) && (cap > 0);
+                const canPlus = (M > 1) && (targetIdx >= 0 && courtState.capacities[targetIdx] > 0);
+
                 const row = document.createElement("div");
                 row.className = "admin-capacity-row";
                 row.innerHTML = `
                     <span>第${idx + 1}面</span>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <button type="button" class="admin-step-btn" data-step="-1" data-idx="${idx}">-</button>
+                        <button type="button" class="admin-step-btn" data-step="-1" data-idx="${idx}" ${!canMinus ? 'disabled' : ''}>-</button>
                         <b style="min-width:24px; text-align:center;">${cap}人</b>
-                        <button type="button" class="admin-step-btn" data-step="1" data-idx="${idx}">+</button>
+                        <button type="button" class="admin-step-btn" data-step="1" data-idx="${idx}" ${!canPlus ? 'disabled' : ''}>+</button>
                     </div>
                 `;
                 container.appendChild(row);
@@ -4532,9 +4572,7 @@
                 btn.onclick = () => {
                     const idx = parseInt(btn.getAttribute("data-idx"), 10);
                     const step = parseInt(btn.getAttribute("data-step"), 10);
-                    courtState.capacities[idx] = Math.max(0, courtState.capacities[idx] + step);
-                    renderCourtCapacitiesUI();
-                    updateCourtSplitPreview();
+                    changeCourtCapacity(idx, step);
                 };
             });
         }
@@ -4604,6 +4642,14 @@
                         courts[c].push(pool[mIdx++]);
                     }
                 }
+                // 未配置メンバーがいる場合のセーフティ
+                while (mIdx < pool.length) {
+                    let minCourtIdx = 0;
+                    for (let c = 1; c < M; c++) {
+                        if (courts[c].length < courts[minCourtIdx].length) minCourtIdx = c;
+                    }
+                    courts[minCourtIdx].push(pool[mIdx++]);
+                }
             } else if (mode === "block_random") {
                 // 面数ごとのブロックに分けてシャッフル配置
                 let p = 0;
@@ -4622,13 +4668,22 @@
                             courts[c].push(block[bIdx++]);
                         }
                     }
-                    // 定員で余った人を残りの面へ
+                    // 定員で余った人を残りの面へ（安全弁付き：無限ループを完全防止）
                     while (bIdx < block.length) {
+                        let placed = false;
                         for (let c = 0; c < M; c++) {
                             if (courts[c].length < (caps[c] || 999)) {
                                 courts[c].push(block[bIdx++]);
+                                placed = true;
                                 break;
                             }
+                        }
+                        if (!placed) {
+                            let minCourtIdx = 0;
+                            for (let c = 1; c < M; c++) {
+                                if (courts[c].length < courts[minCourtIdx].length) minCourtIdx = c;
+                            }
+                            courts[minCourtIdx].push(block[bIdx++]);
                         }
                     }
                     p += blockSize;
@@ -4645,6 +4700,14 @@
                     for (let i = 0; i < count && mIdx < pool.length; i++) {
                         courts[c].push(pool[mIdx++]);
                     }
+                }
+                // 未配置メンバーがいる場合のセーフティ
+                while (mIdx < pool.length) {
+                    let minCourtIdx = 0;
+                    for (let c = 1; c < M; c++) {
+                        if (courts[c].length < courts[minCourtIdx].length) minCourtIdx = c;
+                    }
+                    courts[minCourtIdx].push(pool[mIdx++]);
                 }
             }
 
