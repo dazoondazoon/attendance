@@ -2113,6 +2113,27 @@
         let eventAttendeesCache = {}; // 各イベントの回答メンバー一覧のオンデマンドキャッシュ { [eventId]: Array }
         let cachedFeeData = null; // 部費情報のオンデマンドキャッシュ
         let isEventsLoading = true; // イベント情報のロード中フラグ
+        let initialDataPromise = null; // 初回データ取得のPromise（オンデマンド取得の重複通信防止＆待機用）
+
+        // 管理者データ（部員名簿、ランク表、全練習出欠）
+        let adminData = {
+            members: [],
+            ranks: [],
+            events: [],
+            attendances: [],
+            isLoaded: false
+        };
+
+        // イベントの最新参加予定人数を計算（キャッシュがあればリアルタイム集計、なければeventItem.people）
+        function getEventParticipantCount(eventItem) {
+            if (!eventItem) return 0;
+            const evId = String(eventItem.eventId);
+            const attendees = eventAttendeesCache[evId];
+            if (attendees && Array.isArray(attendees)) {
+                return attendees.filter(a => a.status === "参加" || a.status === "遅刻" || a.status === "早退").length;
+            }
+            return eventItem.people !== undefined ? eventItem.people : 0;
+        }
 
         // 全イベントに対するローカルの回答編集状態を管理（日付をまたいでも消えない）
         let editState = {}; // { [eventId]: { status: string, comment: string, isModified: boolean } }
@@ -2150,6 +2171,13 @@
                     if (userNameEl && currentUser.displayName) userNameEl.textContent = currentUser.displayName;
                     checkAndShowAdminTab();
                 }
+                const savedAttendees = localStorage.getItem("badminton_event_attendees");
+                if (savedAttendees) {
+                    eventAttendeesCache = JSON.parse(savedAttendees);
+                }
+                // 管理者データはlocalStorageに保存せず、毎回GASから最新を取得する（常に最新情報を保証）
+                // 旧バージョンで保存されたキャッシュが残っている場合は削除
+                try { localStorage.removeItem("badminton_admin_data"); } catch (_) {}
             } catch (e) {
                 console.warn("ローカルキャッシュ読み込みスキップ:", e);
             }
@@ -2211,8 +2239,9 @@
                 }
 
                 // 2. 最新のイベント日程 ＋ 出欠データの取得（タイムアウト12秒）
+                initialDataPromise = fetchData(currentUser.userId);
                 const initData = await withTimeout(
-                    fetchData(currentUser.userId),
+                    initialDataPromise,
                     12000,
                     "サーバーからのデータ取得がタイムアウトしました"
                 );
@@ -2231,7 +2260,7 @@
                     checkAndShowAdminTab();
                 }
 
-                // ★ 管理者データが初期ロードで同梱されている場合は即座にキャッシュ格納（管理者タブ表示が0秒に）
+                // ★ 管理者データが初期ロードで同梱されている場合は即座にメモリキャッシュへ格納（localStorage保存はしない＝常に最新を取得）
                 if (initData && initData.adminData) {
                     adminData = {
                         members: initData.adminData.members || [],
@@ -2250,6 +2279,17 @@
                 updateSubmitButtonUI();
                 if (currentTab === "list") renderListView();
                 if (currentTab === "other") renderOtherView();
+
+                // ★ GAS初回レスポンス到着時に開いていたメンバー一覧も最新キャッシュで再描画
+                document.querySelectorAll(".members-expand-area:not(.hidden)").forEach(expandEl => {
+                    const toggleBtn = document.querySelector(`.members-toggle[data-target="${expandEl.id}"]`);
+                    if (toggleBtn) {
+                        const evId = toggleBtn.getAttribute("data-event-id");
+                        if (evId && eventAttendeesCache[evId]) {
+                            renderExpandContent(expandEl, eventAttendeesCache[evId]);
+                        }
+                    }
+                });
 
                 // 初回アクセス（nameシートに未登録）の場合のみ、カレンダーの上にポップアップとして重ねて表示
                 if (initData && initData.isRegistered === false) {
@@ -2275,6 +2315,8 @@
                 } else {
                     showToast(isManualRetry ? "再試行に失敗しました。電波環境をお確かめください。" : "最新データの取得に失敗しました（保存済みデータを表示中）");
                 }
+            } finally {
+                initialDataPromise = null;
             }
         }
 
@@ -2298,6 +2340,9 @@
                 Object.keys(data.eventAttendees).forEach(evId => {
                     eventAttendeesCache[evId] = data.eventAttendees[evId];
                 });
+                try {
+                    localStorage.setItem("badminton_event_attendees", JSON.stringify(eventAttendeesCache));
+                } catch (e) { }
             }
 
             // 今月と来月をloadedMonthsに初期登録
@@ -2364,6 +2409,9 @@
                         Object.keys(data.eventAttendees).forEach(evId => {
                             eventAttendeesCache[evId] = data.eventAttendees[evId];
                         });
+                        try {
+                            localStorage.setItem("badminton_event_attendees", JSON.stringify(eventAttendeesCache));
+                        } catch (e) { }
                     }
 
                     loadedMonths.add(ymSlash);
@@ -2817,7 +2865,7 @@
             <div class="card-top-right">
               <div class="event-people-badge" title="参加予定人数">
                 <span class="badge-label"> 参加 </span>
-                <span class="badge-num">${eventItem.people !== undefined ? eventItem.people : 0}</span>
+                <span class="badge-num">${getEventParticipantCount(eventItem)}</span>
                 <span class="badge-unit"> 人 </span>
               </div>
             </div>
@@ -3233,23 +3281,6 @@
                         }
                     });
 
-                    // 手元の画面を更新
-                    updateSubmitButtonUI();
-                    renderEventDetails();
-                    if (currentTab === "calendar") renderCalendar();
-                    if (currentTab === "list") renderListView();
-                    if (currentTab === "other") renderOtherView();
-
-                    // 送信完了通知
-                    if (typeof liff !== "undefined" && liff.isInClient()) {
-                        const shouldClose = confirm(`全${answers.length}件の回答を一括保存しました！\n\nLINEトーク画面に戻りますか？`);
-                        if (shouldClose) {
-                            liff.closeWindow();
-                        }
-                    } else {
-                        showToast(`全${answers.length}件の回答を一括保存しました！`);
-                    }
-
                     // 手元のメンバー一覧キャッシュ（eventAttendeesCache）も最新状態に即時更新
                     answers.forEach(ans => {
                         if (!eventAttendeesCache[ans.eventId]) return;
@@ -3277,6 +3308,36 @@
                             }
                         }
                     });
+                    try {
+                        localStorage.setItem("badminton_event_attendees", JSON.stringify(eventAttendeesCache));
+                    } catch (e) { }
+
+                    // 手元の画面を更新（参加人数バッジおよび開いているメンバー一覧の再描画）
+                    updateSubmitButtonUI();
+                    renderEventDetails();
+                    if (currentTab === "calendar") renderCalendar();
+                    if (currentTab === "list") renderListView();
+                    if (currentTab === "other") renderOtherView();
+
+                    document.querySelectorAll(".members-expand-area:not(.hidden)").forEach(expandEl => {
+                        const toggleBtn = document.querySelector(`.members-toggle[data-target="${expandEl.id}"]`);
+                        if (toggleBtn) {
+                            const evId = toggleBtn.getAttribute("data-event-id");
+                            if (evId && eventAttendeesCache[evId]) {
+                                renderExpandContent(expandEl, eventAttendeesCache[evId]);
+                            }
+                        }
+                    });
+
+                    // 送信完了通知
+                    if (typeof liff !== "undefined" && liff.isInClient()) {
+                        const shouldClose = confirm(`全${answers.length}件の回答を一括保存しました！\n\nLINEトーク画面に戻りますか？`);
+                        if (shouldClose) {
+                            liff.closeWindow();
+                        }
+                    } else {
+                        showToast(`全${answers.length}件の回答を一括保存しました！`);
+                    }
 
                 } catch (err) {
                     console.error("送信エラー:", err);
@@ -3349,7 +3410,23 @@
                 return;
             }
 
-            // なければGASからオンデマンド取得
+            // バックグラウンドで初回データ取得中なら、その完了を待つ（重複オンデマンド通信の防止）
+            if (initialDataPromise) {
+                try {
+                    btn.textContent = "回答メンバーを読み込み中...";
+                    await initialDataPromise;
+                    if (eventAttendeesCache[evId]) {
+                        renderExpandContent(expandEl, eventAttendeesCache[evId]);
+                        expandEl.classList.remove("hidden");
+                        btn.textContent = "回答メンバー一覧を閉じる ▲";
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("初期ロード待機エラー:", e);
+                }
+            }
+
+            // それでもなければGASからオンデマンド取得
             try {
                 btn.textContent = "回答メンバーを読み込み中...";
                 const res = await fetch(`${GAS_API_URL}?key=${API_KEY}&action=getEventAttendances&eventId=${encodeURIComponent(evId)}`);
@@ -3357,6 +3434,10 @@
                 if (!data.success) throw new Error(data.message);
 
                 eventAttendeesCache[evId] = data.attendances || [];
+                try {
+                    localStorage.setItem("badminton_event_attendees", JSON.stringify(eventAttendeesCache));
+                } catch (e) { }
+
                 renderExpandContent(expandEl, eventAttendeesCache[evId]);
                 expandEl.classList.remove("hidden");
                 btn.textContent = "回答メンバー一覧を閉じる ▲";
@@ -3967,7 +4048,7 @@
                     <div class="card-top-right">
                       <div class="event-people-badge" title="参加予定人数">
                         <span class="badge-label"> 参加 </span>
-                        <span class="badge-num">${eventItem.people !== undefined ? eventItem.people : 0}</span>
+                        <span class="badge-num">${getEventParticipantCount(eventItem)}</span>
                         <span class="badge-unit"> 人 </span>
                       </div>
                     </div>
@@ -4173,14 +4254,6 @@
             }
         }
 
-        let adminData = {
-            members: [],
-            ranks: [],
-            events: [],
-            attendances: [],
-            isLoaded: false
-        };
-
         let currentAdminSubView = "court"; // court | rally | members | schedule
 
         // 面分け表の状態
@@ -4225,7 +4298,7 @@
             }
         });
 
-        // 管理者データのオンデマンドロード
+        // 管理者データのオンデマンドロード（初期ロード済みなら0秒スキップ）
         async function loadAdminDataAsync(forceRefresh = false) {
             if (adminData.isLoaded && !forceRefresh) return;
             showToast("管理者データを取得中...");
@@ -4244,6 +4317,9 @@
                     attendances: json.attendances || [],
                     isLoaded: true
                 };
+                try {
+                    localStorage.setItem("badminton_admin_data", JSON.stringify(adminData));
+                } catch (e) { }
                 showToast("管理者データを読み込みました");
             } catch (err) {
                 console.error(err);
