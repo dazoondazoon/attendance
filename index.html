@@ -2265,7 +2265,7 @@
                     adminData = {
                         members: initData.adminData.members || [],
                         ranks: initData.adminData.ranks || [],
-                        events: initData.adminData.events || [],
+                        events: (initData.adminData.events || []).slice().sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0)),
                         attendances: initData.adminData.attendances || [],
                         isLoaded: true
                     };
@@ -4315,7 +4315,7 @@
                 adminData = {
                     members: json.members || [],
                     ranks: json.ranks || [],
-                    events: json.events || [],
+                    events: (json.events || []).slice().sort((a, b) => (a.date > b.date ? 1 : a.date < b.date ? -1 : 0)),
                     attendances: json.attendances || [],
                     isLoaded: true
                 };
@@ -4556,11 +4556,14 @@
 
             atts.forEach(a => {
                 if (!courtState.excludedUserIds.has(a.userId)) {
+                    // attendances の name より members マスタの名前を優先（文字化け対策）
+                    const masterMember = adminData.members.find(m => String(m.userId) === String(a.userId));
+                    const resolvedName = masterMember ? masterMember.name : a.name;
                     map.set(a.userId, {
                         userId: a.userId,
-                        name: a.name,
+                        name: resolvedName,
                         status: a.status,
-                        rank: findUserRank(a.name)
+                        rank: findUserRank(resolvedName)
                     });
                 }
             });
@@ -5143,11 +5146,14 @@
 
             atts.forEach(a => {
                 if (!rallyState.excludedUserIds.has(a.userId)) {
+                    // attendances の name より members マスタの名前を優先（文字化け対策）
+                    const masterMember = adminData.members.find(m => String(m.userId) === String(a.userId));
+                    const resolvedName = masterMember ? masterMember.name : a.name;
                     map.set(a.userId, {
                         userId: a.userId,
-                        name: a.name,
+                        name: resolvedName,
                         status: a.status,
-                        rank: findUserRank(a.name)
+                        rank: findUserRank(resolvedName)
                     });
                 }
             });
