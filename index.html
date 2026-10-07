@@ -4263,7 +4263,8 @@
             capacities: [],
             mode: "block_random",
             excludedUserIds: new Set(),
-            customMembers: []
+            customMembers: [],
+            lastCourts: null  // プレビュー時の振り分け結果をキャッシュ（保存/コピー時に再利用）
         };
 
         // 基礎打ち表の状態
@@ -4271,7 +4272,8 @@
             eventId: "",
             mode: "rank",
             excludedUserIds: new Set(),
-            customMembers: []
+            customMembers: [],
+            lastPairs: null  // プレビュー時のペアリング結果をキャッシュ（保存/コピー時に再利用）
         };
 
         // 共通安全確認モーダル
@@ -4676,8 +4678,9 @@
                 chipsWrap.appendChild(chip);
             });
 
-            // 振り分け実行
+            // 振り分け実行（結果をキャッシュ：保存/コピー時に同じ結果を使用するため）
             const courts = doCourtSplitAlgorithm(members, courtState.courtCount, courtState.capacities, courtState.mode);
+            courtState.lastCourts = courts;
 
             // 白黒の普通の表（HTML Table）生成
             const previewBox = document.getElementById("admin-court-preview-box");
@@ -4866,7 +4869,7 @@
             return canvas;
         }
 
-        // 基礎打ち専用 Canvas 描画（項目名なし、奇数は最下行3分割横並び、文字大きく）
+        // 基礎打ち専用 Canvas 描画（左端に番号列あり、奇数は最下行3分割横並び、文字大きく）
         function createRallyCanvas(title, pairs) {
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
@@ -4875,51 +4878,69 @@
             const padding = 16;
             const titleHeight = 44;
             const rowHeight = 34; // 余白狭めスリム
-            const tableWidth = 340; // 基礎打ち表の標準幅
+            const numColWidth = 28; // 左端の番号列幅
+            const tableWidth = 340; // 基礎打ち表の標準幅（番号列の右側）
             const totalRows = pairs.length;
+            const totalWidth = numColWidth + tableWidth;
             const totalHeight = titleHeight + totalRows * rowHeight + padding * 2;
 
-            canvas.width = (tableWidth + padding * 2) * scale;
+            canvas.width = (totalWidth + padding * 2) * scale;
             canvas.height = totalHeight * scale;
             ctx.scale(scale, scale);
 
             // 背景（白）
             ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, tableWidth + padding * 2, totalHeight);
+            ctx.fillRect(0, 0, totalWidth + padding * 2, totalHeight);
 
             // タイトル
             ctx.fillStyle = "#000000";
             ctx.font = "bold 16px sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText(title, (tableWidth + padding * 2) / 2, padding + 18);
+            ctx.fillText(title, (totalWidth + padding * 2) / 2, padding + 18);
 
             const startY = padding + titleHeight;
+            const dataStartX = padding + numColWidth; // 番号列の右端 = 名前列の開始X
+
             ctx.strokeStyle = "#000000";
             ctx.lineWidth = 1;
-            ctx.font = "bold 15px sans-serif";
 
             pairs.forEach((p, rIdx) => {
                 const y = startY + rIdx * rowHeight;
+
+                // 番号セル（左端）
+                ctx.strokeRect(padding, y, numColWidth, rowHeight);
+                ctx.fillStyle = "#64748b";
+                ctx.font = "bold 12px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(String(rIdx + 1), padding + numColWidth / 2, y + rowHeight / 2);
+
+                ctx.fillStyle = "#000000";
+                ctx.font = "bold 15px sans-serif";
+
                 if (p.length === 3) {
                     // 3分割で横並び
                     const cellW = tableWidth / 3;
                     for (let c = 0; c < 3; c++) {
-                        const x = padding + c * cellW;
+                        const x = dataStartX + c * cellW;
                         ctx.strokeRect(x, y, cellW, rowHeight);
+                        ctx.textAlign = "center";
                         ctx.fillText(p[c].name || "", x + cellW / 2, y + rowHeight / 2);
                     }
                 } else if (p.length === 2) {
                     // 2分割で横並び
                     const cellW = tableWidth / 2;
                     for (let c = 0; c < 2; c++) {
-                        const x = padding + c * cellW;
+                        const x = dataStartX + c * cellW;
                         ctx.strokeRect(x, y, cellW, rowHeight);
+                        ctx.textAlign = "center";
                         ctx.fillText(p[c].name || "", x + cellW / 2, y + rowHeight / 2);
                     }
                 } else if (p.length === 1) {
-                    ctx.strokeRect(padding, y, tableWidth, rowHeight);
-                    ctx.fillText(p[0].name || "", padding + tableWidth / 2, y + rowHeight / 2);
+                    ctx.strokeRect(dataStartX, y, tableWidth, rowHeight);
+                    ctx.textAlign = "center";
+                    ctx.fillText(p[0].name || "", dataStartX + tableWidth / 2, y + rowHeight / 2);
                 }
             });
 
@@ -4991,8 +5012,9 @@
         async function saveCourtSplitImage() {
             const ev = adminData.events.find(e => String(e.eventId) === String(courtState.eventId));
             const evTitle = ev ? `${ev.date} ${ev.title} 面分け表` : "面分け表";
+            // プレビューと同じ結果を使用（キャッシュがなければ再計算）
             const members = getActiveCourtMembers();
-            const courts = doCourtSplitAlgorithm(members, courtState.courtCount, courtState.capacities, courtState.mode);
+            const courts = courtState.lastCourts || doCourtSplitAlgorithm(members, courtState.courtCount, courtState.capacities, courtState.mode);
 
             const headers = courts.map((c, idx) => `第${idx + 1}面 (${c.length}名)`);
             let maxRows = 0;
@@ -5009,8 +5031,9 @@
         async function copyCourtSplitImage() {
             const ev = adminData.events.find(e => String(e.eventId) === String(courtState.eventId));
             const evTitle = ev ? `${ev.date} ${ev.title} 面分け表` : "面分け表";
+            // プレビューと同じ結果を使用（キャッシュがなければ再計算）
             const members = getActiveCourtMembers();
-            const courts = doCourtSplitAlgorithm(members, courtState.courtCount, courtState.capacities, courtState.mode);
+            const courts = courtState.lastCourts || doCourtSplitAlgorithm(members, courtState.courtCount, courtState.capacities, courtState.mode);
 
             const headers = courts.map((c, idx) => `第${idx + 1}面 (${c.length}名)`);
             let maxRows = 0;
@@ -5206,30 +5229,34 @@
                 chipsWrap.appendChild(chip);
             });
 
-            // ペアリング実行
+            // ペアリング実行（結果をキャッシュ：保存/コピー時に同じ結果を使用するため）
             const pairs = doRallyPairing(members, rallyState.mode);
+            rallyState.lastPairs = pairs;
 
-            // コート番号・ペア番号・項目名は表示しない。奇数の最下行は3分割横並び。
+            // 左端に番号列を追加。奇数の最下行は3分割横並び。
             const previewBox = document.getElementById("admin-rally-preview-box");
             let tableHtml = '<table class="admin-plain-table"><tbody>';
-            pairs.forEach(p => {
+            pairs.forEach((p, pIdx) => {
+                const numCell = `<td style="width:2em; text-align:center; color:#64748b; font-size:0.75rem; font-weight:bold; border-right:1px solid #d1d5db;">${pIdx + 1}</td>`;
                 if (p.length === 3) {
                     tableHtml += `
                         <tr>
-                            <td style="width:33.33%;">${escapeHtml(p[0].name)}</td>
-                            <td style="width:33.33%;">${escapeHtml(p[1].name)}</td>
-                            <td style="width:33.33%;">${escapeHtml(p[2].name)}</td>
+                            ${numCell}
+                            <td style="width:33%;">${escapeHtml(p[0].name)}</td>
+                            <td style="width:33%;">${escapeHtml(p[1].name)}</td>
+                            <td style="width:33%;">${escapeHtml(p[2].name)}</td>
                         </tr>
                     `;
                 } else if (p.length === 2) {
                     tableHtml += `
                         <tr>
+                            ${numCell}
                             <td style="width:50%;">${escapeHtml(p[0].name)}</td>
                             <td style="width:50%;">${escapeHtml(p[1].name)}</td>
                         </tr>
                     `;
                 } else if (p.length === 1) {
-                    tableHtml += `<tr><td colspan="2" style="width:100%;">${escapeHtml(p[0].name)}</td></tr>`;
+                    tableHtml += `<tr>${numCell}<td colspan="2" style="width:100%;">${escapeHtml(p[0].name)}</td></tr>`;
                 }
             });
             tableHtml += '</tbody></table>';
@@ -5239,8 +5266,9 @@
         async function saveRallyImage() {
             const ev = adminData.events.find(e => String(e.eventId) === String(rallyState.eventId));
             const evTitle = ev ? `${ev.date} ${ev.title} 基礎打ち表` : "基礎打ち表";
+            // プレビューと同じ結果を使用（キャッシュがなければ再計算）
             const members = getActiveRallyMembers();
-            const pairs = doRallyPairing(members, rallyState.mode);
+            const pairs = rallyState.lastPairs || doRallyPairing(members, rallyState.mode);
 
             const canvas = createRallyCanvas(evTitle, pairs);
             await triggerImageSaveOrShare(canvas, `rally_${(ev ? ev.date : 'date').replace(/\//g, '')}.png`, evTitle);
@@ -5249,8 +5277,9 @@
         async function copyRallyImage() {
             const ev = adminData.events.find(e => String(e.eventId) === String(rallyState.eventId));
             const evTitle = ev ? `${ev.date} ${ev.title} 基礎打ち表` : "基礎打ち表";
+            // プレビューと同じ結果を使用（キャッシュがなければ再計算）
             const members = getActiveRallyMembers();
-            const pairs = doRallyPairing(members, rallyState.mode);
+            const pairs = rallyState.lastPairs || doRallyPairing(members, rallyState.mode);
 
             const canvas = createRallyCanvas(evTitle, pairs);
             canvas.toBlob(async blob => {
