@@ -1782,6 +1782,7 @@
                             <div class="admin-btn-chips" id="admin-rally-mode-chips">
                                 <button type="button" class="admin-chip-btn active" data-mode="rank">ランク順</button>
                                 <button type="button" class="admin-chip-btn" data-mode="reverse">逆ランク順</button>
+                                <button type="button" class="admin-chip-btn" data-mode="reverse_random">逆ランク順ランダム</button>
                             </div>
                         </div>
 
@@ -5192,7 +5193,15 @@
                         }
                     }
                 }
-            } else if (mode === "reverse") {
+            } else if (mode === "reverse" || mode === "reverse_random") {
+                if (mode === "reverse_random") {
+                    // 逆ランク順ランダム：下位半分（奇数なら半分+1人）をシャッフルしてから逆ランク順で組む
+                    const lowerStart = Math.floor(pool.length / 2);
+                    for (let i = pool.length - 1; i > lowerStart; i--) {
+                        const j = lowerStart + Math.floor(Math.random() * (i - lowerStart + 1));
+                        [pool[i], pool[j]] = [pool[j], pool[i]];
+                    }
+                }
                 // 逆ランク順（トップ＆ボトム）
                 let left = 0;
                 let right = pool.length - 1;
